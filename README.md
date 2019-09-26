@@ -1,2 +1,2 @@
-# REMME-Block-Producer
+# REMME-BP-web
 REMME Block Producer by josien.net
