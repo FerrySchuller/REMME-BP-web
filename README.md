@@ -2,6 +2,7 @@
 REMME Block Producer by josien.net
 
 
+'''
   apt install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools nginx
   root@remme0:/prod# git clone https://github.com/FerrySchuller/REMME-BP-web.git
   root@remme0:/prod# cd REMME-BP-web/
@@ -9,6 +10,7 @@ REMME Block Producer by josien.net
   root@remme0:/prod/REMME-BP-web# . env/bin/activate
   (env) root@remme0:/prod/REMME-BP-web# pip install --upgrade pip
   (env) root@remme0:/prod/REMME-BP-web# pip install -r requirements.txt
+'''
 
 
   cat /etc/systemd/system/josien.net.service
