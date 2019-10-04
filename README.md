@@ -2,32 +2,37 @@
 REMME Block Producer by josien.net
 
 
+Dependencies, the code and virtual environment
+
 ```
-  apt install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools nginx
-  root@remme0:/prod# git clone https://github.com/FerrySchuller/REMME-BP-web.git
-  root@remme0:/prod# cd REMME-BP-web/
-  root@remme0:/prod/REMME-BP-web# python3 -m venv env
-  root@remme0:/prod/REMME-BP-web# . env/bin/activate
-  (env) root@remme0:/prod/REMME-BP-web# pip install --upgrade pip
-  (env) root@remme0:/prod/REMME-BP-web# pip install -r requirements.txt
+apt install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools nginx
+root@remme0:/prod# git clone https://github.com/FerrySchuller/REMME-BP-web.git
+root@remme0:/prod# cd REMME-BP-web/
+root@remme0:/prod/REMME-BP-web# python3 -m venv env
+root@remme0:/prod/REMME-BP-web# . env/bin/activate
+(env) root@remme0:/prod/REMME-BP-web# pip install --upgrade pip
+(env) root@remme0:/prod/REMME-BP-web# pip install -r requirements.txt
 ```
 
 
-  cat /etc/systemd/system/josien.net.service
+systemd config:
+```
+cat /etc/systemd/system/josien.net.service
 
-  [Unit]
-  Description=uWSGI josien.net
-  After=network.target
+[Unit]
+Description=uWSGI josien.net
+After=network.target
   
-  [Service]
-  User=root
-  Group=www-data
-  WorkingDirectory=/prod/REMME-BP-web
-  Environment="PATH=/prod/REMME-BP-web/env/bin"
-  ExecStart=/prod/REMME-BP-web/env/bin/uwsgi --ini web.ini
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=/prod/REMME-BP-web
+Environment="PATH=/prod/REMME-BP-web/env/bin"
+ExecStart=/prod/REMME-BP-web/env/bin/uwsgi --ini web.ini
 
-  [Install]
-  WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
+```
 
 
 
