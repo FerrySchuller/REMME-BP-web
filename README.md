@@ -1,5 +1,5 @@
 # REMME-BP-web
-REMME Block Producer by josien.net
+REMME Block Producer Flask app by josien.net
 
 
 Dependencies, the code and virtual environment
