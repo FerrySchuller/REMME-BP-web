@@ -34,9 +34,9 @@ ExecStart=/prod/REMME-BP-web/env/bin/uwsgi --ini web.ini
 [Install]
 WantedBy=multi-user.target
 
-systemctl start josien.net
-systemctl status josien.net
-systemctl enable josien.net
+# systemctl start josien.net
+# systemctl status josien.net
+# systemctl enable josien.net
 
 ```
 
@@ -81,7 +81,7 @@ add_header X-Xss-Protection "1; mode=block" always;
     }
 }
 
-ln -s /etc/nginx/sites-available/josien.net /etc/nginx/sites-enabled/josien.net
-systemctl status nginx
-systemctl restart nginx
+# ln -s /etc/nginx/sites-available/josien.net /etc/nginx/sites-enabled/josien.net
+# systemctl status nginx
+# systemctl restart nginx
 ```
