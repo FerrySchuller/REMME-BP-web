@@ -11,6 +11,7 @@ js = Bundle( 'js/bootstrap.js',
              output='gen/josien.js')
 
 css = Bundle( 'css/bootstrap.css',
+              'css/navbar-top-fixed.css',
               'css/josien.css',
               filters='cssmin',
               output='gen/josien.css')
