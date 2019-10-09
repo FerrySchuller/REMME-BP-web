@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}EU Block Producer by Josien.net{% endblock %}
+
+{% block content -%}
+<div class="container">
+
+<h3>EU Block Producer by Josien.net</h3>
+
+
+{%- endblock content %}
+
+{% block scripts %}
+    {{ super() }}
+<!-- 
+<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/graph_refresh.js') }}"></script>
+-->
+<script type=text/javascript>
+  var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+{%- endblock scripts %}
