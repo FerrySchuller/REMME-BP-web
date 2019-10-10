@@ -1,4 +1,6 @@
 from flask import render_template, jsonify
+import json
+from pprint import pprint
 from app.app import app
 
 
@@ -11,6 +13,14 @@ from app.app import app
 @app.route('/')
 def index():
    return render_template( 'index.html' )
+
+@app.route('/dev')
+def dev():
+    with open('app/rem_usdt_ohlc') as j:
+        data = json.load(j)
+        pprint(data)
+        print(type(data))
+    return(str(data))
 
 @app.route('/bp.json')
 def bp():
