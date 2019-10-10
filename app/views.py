@@ -18,9 +18,7 @@ def index():
 def dev():
     with open('app/rem_usdt_ohlc') as j:
         data = json.load(j)
-        pprint(data)
-        print(type(data))
-    return(str(data))
+    return render_template( 'dev.html', d=data )
 
 @app.route('/bp.json')
 def bp():

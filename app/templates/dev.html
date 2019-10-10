@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}DEV{% endblock %}
+
+{% block content -%}
+<div class="container-fluid">
+
+<div style="padding-top:10px;" id="contain" style="height: 400px; min-width: 310px"></div>
+
+
+<h4>EU Block Producer by Josien.net</h4>
+
+{{ d.data }}
+
+</div>
+
+{%- endblock content %}
+
+{% block scripts %}
+    {{ super() }}
+<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
+<script type=text/javascript>var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};</script>
+{%- endblock scripts %}
