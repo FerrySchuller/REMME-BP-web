@@ -71,8 +71,6 @@ server {
         proxy_redirect off;
         include uwsgi_params;
         uwsgi_pass unix:/prod/REMME-BP-web/web.sock;
-        add_header Content-Security-Policy "img-src * 'self' data: blob: https:; default-src 'self' https://*.googleapis.com https://*.googletagmanager.com https://*.google-analytics.com https://s.ytimg.com https://www.youtube.com https://josien.net https://*.googleapis.com https://*.gstatic.com https://*.w.org data: 'unsafe-inline' 'unsafe-eval';" always;
-add_header X-Xss-Protection "1; mode=block" always;
         add_header X-Frame-Options "SAMEORIGIN" always;
         add_header X-Content-Type-Options "nosniff" always;
         add_header Access-Control-Allow-Origin "https://josien.net";
