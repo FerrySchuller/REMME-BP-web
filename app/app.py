@@ -5,10 +5,9 @@ app = Flask(__name__, instance_relative_config=True)
 assets = Environment(app)
 
 
-js = Bundle( 'js/jquery-3.4.1.js',
-             'js/bootstrap.js',
+js = Bundle( 'js/jquery-3.4.1.slim.js',
              'js/highstock.js',
-             'js/josien.js',
+             'js/bootstrap.js',
              filters='jsmin',
              output='gen/josien.js')
 
