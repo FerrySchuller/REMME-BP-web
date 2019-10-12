@@ -20,6 +20,13 @@ def dev():
         data = json.load(j)
     return render_template( 'dev.html', d=data )
 
+
+@app.route('/_ohlc/<int:days>')
+@app.route('/_ohlc')
+def graph_status(days=1):
+    data = {}
+    return jsonify(data)
+
 @app.route('/bp.json')
 def bp():
     data =  { "producer_account_name": "dvvcjmkvkpsq",

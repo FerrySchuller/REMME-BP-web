@@ -1,0 +1,2 @@
+DEBUG = True
+WTF_CSRF_SECRET_KEY = 'xxxx'
