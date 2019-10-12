@@ -32,7 +32,6 @@ def graph_status(days=1):
                 del l[1]
                 data.append(list(map(float, l)))
 
-    pprint(data)
     return jsonify(data)
 
 @app.route('/bp.json')
