@@ -24,7 +24,15 @@ def dev():
 @app.route('/_ohlc/<int:days>')
 @app.route('/_ohlc')
 def graph_status(days=1):
-    data = {}
+    data = []
+    with open('app/rem_usdt_ohlc') as j:
+        d = json.load(j)
+        if 'data' in d:
+            for l in d['data']:
+                del l[1]
+                data.append(list(map(float, l)))
+
+    pprint(data)
     return jsonify(data)
 
 @app.route('/bp.json')

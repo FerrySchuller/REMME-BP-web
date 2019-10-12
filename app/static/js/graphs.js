@@ -1,40 +1,37 @@
 $(document).ready(function(){
+    // $.getJSON('https://www.highcharts.com/samples/data/aapl-ohlc.json', function (data) {
     var days = 10;
     $.getJSON($SCRIPT_ROOT + '/_ohlc/' + days, function(data) {
-  });
-});
+    console.log(data);
+
+    // create the chart
+    Highcharts.stockChart('con', {
 
 
-$(document).ready(function(){
-    $.getJSON('https://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json&callback=?', function (data)    {
-        // Create the chart
+        rangeSelector: {
+            selected: 1
+        },
 
-        var dataObject = {
-            rangeSelector: {
-                selected: 1,
-                inputEnabled: $('#con').width() > 480
-            },
+        title: {
+            text: 'REMME rem / usdt'
+        },
 
-            title: {
-                text: 'AAPL Stock Price'
-            },
-
-            series: [{
-                name: 'AAPL',
-                data: data,
-                tooltip: {
-                    valueDecimals: 2
-                }
-            }]
-
-            ,
-
-            chart: {
-                renderTo: 'con'
+        series: [{
+            type: 'candlestick',
+            name: 'REMME Stock Price',
+            data: data,
+            dataGrouping: {
+                units: [
+                    [
+                        'week', // unit name
+                        [1] // allowed multiples
+                    ], [
+                        'month',
+                        [1, 2, 3, 4, 6]
+                    ]
+                ]
             }
-
-        };
-
-         var chart = new Highcharts.stockChart(dataObject);
+        }]
     });
-    });
+});
+});
