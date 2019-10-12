@@ -1,12 +1,10 @@
 $(document).ready(function(){
-    // $.getJSON('https://www.highcharts.com/samples/data/aapl-ohlc.json', function (data) {
     var days = 10;
     $.getJSON($SCRIPT_ROOT + '/_ohlc/' + days, function(data) {
-    console.log(data);
+    // console.log(data);
 
     // create the chart
     Highcharts.stockChart('con', {
-
 
         rangeSelector: {
             selected: 1
@@ -33,5 +31,5 @@ $(document).ready(function(){
             }
         }]
     });
-});
+  });
 });
