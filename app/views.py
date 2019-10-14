@@ -1,5 +1,9 @@
 from flask import render_template, jsonify
+import os
 import json
+from datetime import datetime, timedelta
+from pathlib import Path
+import requests
 from pprint import pprint
 from app.app import app
 
@@ -14,25 +18,44 @@ from app.app import app
 def index():
    return render_template( 'index.html' )
 
+
 @app.route('/dev')
 def dev():
-    with open('app/rem_usdt_ohlc') as j:
-        data = json.load(j)
+    data = {}
     return render_template( 'dev.html', d=data )
 
 
 @app.route('/_ohlc/<int:days>')
 @app.route('/_ohlc')
-def graph_status(days=1):
-    data = []
-    with open('app/rem_usdt_ohlc') as j:
-        d = json.load(j)
-        if 'data' in d:
-            for l in d['data']:
-                del l[1]
-                data.append(list(map(float, l)))
+def graph_status(days=1, coin='app/rem'):
 
-    return jsonify(data)
+    if Path(coin).exists():
+        p = Path(coin)
+        file_time = datetime.fromtimestamp(p.stat().st_mtime) + timedelta(minutes=60)
+        file_to_old_time = datetime.today()
+        if (file_time < file_to_old_time):
+
+            params = { 'fsym': 'REM',
+                       'tsym': 'USDT',
+                       'limit': 2000,
+                       'api_key': os.getenv('cryptocompare_key')   }
+            r = requests.get('https://min-api.cryptocompare.com/data/v2/histoday', params=params)
+ 
+            if r.ok and r.json:
+                print('new file')
+                p.write_text(r.text)
+
+  
+    with open('app/rem') as j:
+        data = json.load(j)
+        l = []
+        if 'Data' in data and 'Data' in data['Data']:
+            for ohlc in data['Data']['Data']:
+                if ohlc['open'] is not 0:
+                    time = ohlc['time'] * 1000
+                    l.append([time, ohlc['open'], ohlc['high'], ohlc['low'], ohlc['close']])
+
+    return jsonify(l)
 
 @app.route('/bp.json')
 def bp():
