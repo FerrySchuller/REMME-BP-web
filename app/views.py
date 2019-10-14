@@ -53,8 +53,9 @@ def graph_status(days=1, coin='app/rem'):
             for ohlc in data['Data']['Data']:
                 if ohlc['open'] is not 0:
                     time = ohlc['time'] * 1000
-                    l.append([time, ohlc['open'], ohlc['high'], ohlc['low'], ohlc['close']])
+                    l.append([time, ohlc['open'], ohlc['high'], ohlc['low'], ohlc['close'], ohlc['volumefrom']])
 
+    pprint(l)
     return jsonify(l)
 
 @app.route('/bp.json')
