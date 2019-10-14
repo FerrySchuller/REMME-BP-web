@@ -27,26 +27,32 @@ def dev():
 
 @app.route('/_ohlc/<int:days>')
 @app.route('/_ohlc')
-def graph_status(days=1, coin='app/rem'):
+def graph_status(days=1, coin='rem'):
+
+    def get_ohlc():
+        p = Path(coin)
+        params = { 'fsym': coin.upper(),
+                   'tsym': 'USDT',
+                    'limit': 2000,
+                    'api_key': os.getenv('cryptocompare_key')   }
+        r = requests.get('https://min-api.cryptocompare.com/data/v2/histoday', params=params)
+
+        if r.ok and r.json:
+            print('new file')
+            p.write_text(r.text)
+
+
+    if not Path(coin).exists():
+        get_ohlc()
 
     if Path(coin).exists():
         p = Path(coin)
-        file_time = datetime.fromtimestamp(p.stat().st_mtime) + timedelta(minutes=60)
-        file_to_old_time = datetime.today()
-        if (file_time < file_to_old_time):
+        file_time = datetime.fromtimestamp(p.stat().st_mtime) + timedelta(minutes=1)
+        if (file_time < datetime.today()):
+            get_ohlc()
 
-            params = { 'fsym': 'REM',
-                       'tsym': 'USDT',
-                       'limit': 2000,
-                       'api_key': os.getenv('cryptocompare_key')   }
-            r = requests.get('https://min-api.cryptocompare.com/data/v2/histoday', params=params)
- 
-            if r.ok and r.json:
-                print('new file')
-                p.write_text(r.text)
 
-  
-    with open('app/rem') as j:
+    with open(coin) as j:
         data = json.load(j)
         l = []
         if 'Data' in data and 'Data' in data['Data']:
