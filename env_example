@@ -1,1 +1,6 @@
-cryptocompare_key = key
+# copy this file to .env in the root of the app
+#
+#
+# Get a key at https://min-api.cryptocompare.com/documentation
+# Crypto compare is used for historical ohlc data in the graphs.
+cryptocompare_key = <key>
