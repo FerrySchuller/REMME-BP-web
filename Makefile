@@ -18,3 +18,5 @@ pull:
 	git reset --hard HEAD
 	git clean -f -d
 	git pull
+	systemctl restart josien.net
+	systemctl status josien.net

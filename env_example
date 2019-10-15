@@ -3,4 +3,6 @@
 #
 # Get a key at https://min-api.cryptocompare.com/documentation
 # Crypto compare is used for historical ohlc data in the graphs.
-cryptocompare_key = <key>
+cryptocompare_key=<key>
+
+SECRET_KEY='=I]t\ZE^|%8iY/Tm'
