@@ -1,4 +1,4 @@
-from flask import render_template, jsonify
+from flask import render_template, jsonify, flash
 import os
 import json
 from datetime import datetime, timedelta
@@ -16,7 +16,7 @@ from app.app import app
 
 @app.route('/')
 def index():
-   return render_template( 'index.html' )
+    return render_template( 'index.html' )
 
 
 @app.route('/dev')
@@ -38,7 +38,7 @@ def graph_status(days=1, coin='rem'):
         r = requests.get('https://min-api.cryptocompare.com/data/v2/histoday', params=params)
 
         if r.ok and r.json:
-            print('new file')
+            flash( 'New OHLC data cached.', 'info' )
             p.write_text(r.text)
 
 
