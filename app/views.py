@@ -63,11 +63,12 @@ def graph_status(days=1, coin='rem'):
 
     return jsonify(l)
 
+
 @app.route('/bp.json')
 def bp():
     data =  { "producer_account_name": "dvvcjmkvkpsq",
               "org": {
-                "candidate_name": "",
+                "candidate_name": "josien.net",
                 "website": "https://josien.net",
                 "code_of_conduct":"",
                 "ownership_disclosure":"",

@@ -40,7 +40,7 @@ $(document).ready(function(){
         },
 
         title: {
-            text: 'REMME'
+            text: 'REMME rem/usdt'
         },
 
         yAxis: [{
