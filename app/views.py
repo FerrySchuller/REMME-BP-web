@@ -29,6 +29,7 @@ def dev():
 @app.route('/_ohlc')
 def graph_status(days=1, coin='rem'):
 
+    l = []
     def get_ohlc():
         p = Path(coin)
         params = { 'fsym': coin.upper(),
@@ -54,7 +55,6 @@ def graph_status(days=1, coin='rem'):
 
     with open(coin) as j:
         data = json.load(j)
-        l = []
         if 'Data' in data and 'Data' in data['Data']:
             for ohlc in data['Data']['Data']:
                 if ohlc['open'] is not 0:
