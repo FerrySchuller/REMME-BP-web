@@ -48,7 +48,7 @@ def graph_status(days=1, coin='rem'):
 
     if Path(coin).exists():
         p = Path(coin)
-        file_time = datetime.fromtimestamp(p.stat().st_mtime) + timedelta(minutes=1)
+        file_time = datetime.fromtimestamp(p.stat().st_mtime) + timedelta(minutes=30)
         if (file_time < datetime.today()):
             get_ohlc()
 
