@@ -1,7 +1,7 @@
 import os
 import requests
 
-GA_TRACKING_ID = os.environ['GA_TRACKING_ID']
+GA_TRACKING_ID = os.getenv('GA_TRACKING_ID', False)
 
 
 def track_event(category, action, label=None, value=0):
