@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 import requests
 from pprint import pprint
+from app.lib.josien import track_event
 from app.app import app
 
 
@@ -16,6 +17,7 @@ from app.app import app
 
 @app.route('/')
 def index():
+    track_event( category='index', action='test index')
     return render_template( 'index.html' )
 
 
