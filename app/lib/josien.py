@@ -2,7 +2,6 @@ import os
 import requests
 
 GA_TRACKING_ID = os.getenv('GA_TRACKING_ID', False)
-print(GA_TRACKING_ID)
 
 
 def track_event(category, action, label=None, value=0):
