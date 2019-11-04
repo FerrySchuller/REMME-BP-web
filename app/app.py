@@ -18,6 +18,7 @@ js = Bundle( 'js/jquery-3.4.1.min.js',
 css = Bundle( 'css/bootstrap.css',
               'css/navbar-top-fixed.css',
               'css/animate.css',
+              'css/fontawesome.css',
               'css/josien.css',
               filters='cssmin',
               output='gen/josien.css')
