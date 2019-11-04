@@ -68,7 +68,7 @@ def graph_status(days=1, coin='rem'):
 
 @app.route('/bp.json')
 def bp():
-    data =  { "producer_account_name": "dvvcjmkvkpsq",
+    data =  { "producer_account_name": "josiendotnet",
               "org": {
                 "candidate_name": "josien.net",
                 "website": "https://josien.net",
@@ -112,19 +112,6 @@ def bp():
                   "api_endpoint": "",
                   "ssl_endpoint": ""
                 },
-                {
-                  "location": {
-                    "name": "",
-                    "country": "",
-                    "latitude": 0,
-                    "longitude": 0
-                  },
-                  "node_type":"seed",
-                  "p2p_endpoint": "",
-                  "bnet_endpoint": "",
-                  "api_endpoint": "",
-                  "ssl_endpoint": ""
-                }
               ]
             }
 
