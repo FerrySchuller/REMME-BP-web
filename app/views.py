@@ -21,6 +21,18 @@ def index():
     return render_template( 'index.html' )
 
 
+@app.route('/code_of_conduct')
+def code_of_conduct():
+    track_event( category='index', action='code_of_conduct')
+    return render_template( 'code_of_conduct.html' )
+
+
+@app.route('/ownership_disclosure')
+def ownership_disclosure():
+    track_event( category='index', action='ownership_disclosure')
+    return render_template( 'ownership_disclosure.html' )
+
+
 @app.route('/dev')
 def dev():
     data = {}
@@ -72,8 +84,8 @@ def bp():
               "org": {
                 "candidate_name": "josien.net",
                 "website": "https://josien.net",
-                "code_of_conduct":"",
-                "ownership_disclosure":"",
+                "code_of_conduct":"https://josien.net/code_of_conduct",
+                "ownership_disclosure":"https://josien.net/ownership_disclosure",
                 "email":"",
                 "branding":{
                   "logo_256":"",
@@ -81,28 +93,25 @@ def bp():
                   "logo_svg":""
                 },
                 "location": {
-                  "name": "",
-                  "country": "",
-                  "latitude": 0,
-                  "longitude": 0
+                  "name": "The Hague",
+                  "country": "NL",
+                  "latitude": 52.3667,
+                  "longitude": 4.8945 
                 },
                 "social": {
                   "steemit": "ferryschuller",
                   "twitter": "josien_net",
-                  "youtube": "",
                   "facebook": "josien.net",
                   "github": "FerrySchuller",
                   "reddit": "josien_net",
-                  "keybase": "",
                   "telegram": "JosienNet",
-                  "wechat":""
                 }
               },
               "nodes": [
                 { 
                   "location": {
-                    "name": "",
-                    "country": "Netherlands",
+                    "name": "The Hague",
+                    "country": "NL",
                     "latitude": 52.3667,
                     "longitude": 4.8945
                   },
