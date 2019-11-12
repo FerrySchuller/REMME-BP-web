@@ -102,7 +102,7 @@ def bp():
                   "steemit": "ferryschuller",
                   "twitter": "josien_net",
                   "facebook": "josien.net",
-                  "github": "https://github.com/FerrySchuller/REMME-BP-web",
+                  "github": "FerrySchuller/REMME-BP-web",
                   "reddit": "josien_net",
                   "telegram": "JosienNet",
                 }
