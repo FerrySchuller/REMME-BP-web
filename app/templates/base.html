@@ -44,18 +44,26 @@
           <li class="nav-item {% if request.path == '/' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('index') }}">Home <span class="sr-only">(current)</span></a>
           </li>
-
           <!--
           <li class="nav-item {% if request.path == '/dev' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('dev') }}">dev <span class="sr-only">(current)</span></a>
           </li>
           -->
+          <li class="nav-item {% if request.path == '/code_of_conduct' %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('code_of_conduct') }}">Code of Conduct <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item {% if request.path == '/ownership_disclosure' %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('ownership_disclosure') }}">Ownership Disclosure <span class="sr-only">(current)</span></a>
+          </li>
+        </ul>
 
+        <ul class="navbar-nav navbar-right">
           <li class="nav-item {% if request.path == '/bs.json' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('bp') }}">bp.json <span class="sr-only">(current)</span></a>
           </li>
 
         </ul>
+
       </div>
     </nav>
 
