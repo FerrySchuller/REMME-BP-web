@@ -1,13 +1,29 @@
 from flask import render_template, jsonify, flash
-import os
+import os, sys
 import json
+import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
 import requests
 from pprint import pprint
-from app.lib.josien import track_event
+from app.lib.josien import track_event, jlog, cmd_run
 from app.app import app
 
+
+log_file = os.getenv('LOG_FILE', False)
+jlog = jlog(stdout=True, feil=log_file)
+
+
+def get_account(account):
+    o = cmd_run('remcli get account {0} --json'.format(account))
+    j = False
+    if o:
+        try:
+            j = json.loads(o)
+        except:
+            print(sys.exc_info())
+    
+    return j
 
 # lets encrypt once for domain validation
 #@app.route("/.well-known/acme-challenge/<key>")
@@ -18,7 +34,8 @@ from app.app import app
 @app.route('/')
 def index():
     track_event( category='index', action='test index')
-    return render_template( 'index.html' )
+    josiendotnet = get_account('josiendotnet')
+    return render_template( 'index.html', josiendotnet=josiendotnet )
 
 
 @app.route('/code_of_conduct')
