@@ -12,3 +12,6 @@ SECRET_KEY='=I]t\ZE^|%8iY/Tm'
 # google analytics
 GA_TRACKING_ID=<google analytics id>
 
+#log file
+LOG_FILE="/var/log/josien.log"
+
