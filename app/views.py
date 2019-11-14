@@ -15,7 +15,7 @@ jlog = jlog(stdout=True, feil=log_file)
 
 
 def get_account(account):
-    o = cmd_run('remcli get account {0} --json'.format(account))
+    o = cmd_run('/usr/bin/remcli get account {0} --json'.format(account))
     j = False
     if o:
         try:
