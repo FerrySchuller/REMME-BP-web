@@ -8,8 +8,6 @@ import requests
 from pprint import pprint
 from app.lib.josien import track_event, jlog, cmd_run
 from app.app import app
-import locale
-locale.setlocale(locale.LC_ALL, '')
 
 
 log_file = os.getenv('LOG_FILE', False)
@@ -106,8 +104,6 @@ def _listproducers():
         if 'rows' in lp:
             for row in lp['rows']:
                 i = {}
-                print(format(1234567, ',d'))
-                print('{:0,.2f}'.format(float(row['total_votes'])))
                 i['position'] = 0
                 i['owner'] = row['owner']
                 i['total_votes'] = '{:0,.2f}'.format(float(row['total_votes']))
