@@ -66,6 +66,7 @@ def _get_account():
         d['data'] = []
         for k,v in josiendotnet.items():
             i = {}
+            i['position'] = 0
             i['key'] = k
             i['value'] = str(v)
             d['data'].append(i)
