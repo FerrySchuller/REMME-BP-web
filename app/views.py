@@ -8,10 +8,13 @@ import requests
 from pprint import pprint
 from app.lib.josien import track_event, jlog, cmd_run
 from app.app import app
+import locale
+locale.setlocale(locale.LC_ALL, '')
 
 
 log_file = os.getenv('LOG_FILE', False)
 jlog = jlog(stdout=True, feil=log_file)
+
 
 
 def get_account(account):
@@ -25,6 +28,19 @@ def get_account(account):
     
     return j
 
+
+def listproducers():
+    o = cmd_run('/usr/bin/remcli system listproducers --json')
+    j = False
+    if o:
+        try:
+            j = json.loads(o)
+        except:  
+            print(sys.exc_info())
+
+    return j
+
+
 # lets encrypt once for domain validation
 #@app.route("/.well-known/acme-challenge/<key>")
 #def letsencrypt():
@@ -34,7 +50,6 @@ def get_account(account):
 @app.route('/')
 def index():
     track_event( category='index', action='test index')
-    josiendotnet = get_account('josiendotnet')
     return render_template( 'index.html' )
 
 
@@ -48,6 +63,12 @@ def code_of_conduct():
 def ownership_disclosure():
     track_event( category='index', action='ownership_disclosure')
     return render_template( 'ownership_disclosure.html' )
+
+@app.route('/producers')
+def producers():
+    track_event( category='index', action='Producers')
+    return render_template( 'producers.html' )
+
 
 
 @app.route('/dev')
@@ -70,6 +91,29 @@ def _get_account():
             i['key'] = k
             i['value'] = str(v)
             d['data'].append(i)
+
+    return jsonify(d)
+
+
+@app.route('/_listproducers')
+def _listproducers():
+    d = False
+    lp = listproducers()
+
+    if lp and isinstance(lp, dict):
+        d = {}
+        d['data'] = []
+        if 'rows' in lp:
+            for row in lp['rows']:
+                i = {}
+                print(format(1234567, ',d'))
+                print('{:0,.2f}'.format(float(row['total_votes'])))
+                i['position'] = 0
+                i['owner'] = row['owner']
+                i['total_votes'] = '{:0,.2f}'.format(float(row['total_votes']))
+                i['url'] = '<a href="{0}" target="_blank" >{0}</a>'.format(row['url'])
+                i['is_active'] = row['is_active']
+                d['data'].append(i)
 
     return jsonify(d)
 
