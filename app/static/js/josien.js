@@ -30,7 +30,7 @@ $(document).ready(function() {
                      { "data": "total_votes" },
                      { "data": "url" },
                      { "data": "is_active"} ],
-        "order": [ [0, "desc"] ],
+        "order": [ [2, "desc"] ],
         "searching": false,
         "paging": false,
         "info": false,
