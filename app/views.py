@@ -35,7 +35,7 @@ def get_account(account):
 def index():
     track_event( category='index', action='test index')
     josiendotnet = get_account('josiendotnet')
-    return render_template( 'index.html', josiendotnet=josiendotnet )
+    return render_template( 'index.html' )
 
 
 @app.route('/code_of_conduct')
@@ -54,6 +54,24 @@ def ownership_disclosure():
 def dev():
     data = {}
     return render_template( 'dev.html', d=data )
+
+
+@app.route('/_get_account')
+def _get_account():
+    d = False
+    josiendotnet = get_account('josiendotnet')
+    
+    if josiendotnet:
+        d = {}
+        d['data'] = []
+        for k,v in josiendotnet.items():
+            i = {}
+            i['key'] = k
+            i['value'] = str(v)
+            d['data'].append(i)
+
+    return jsonify(d)
+
 
 
 @app.route('/_ohlc/<int:days>')

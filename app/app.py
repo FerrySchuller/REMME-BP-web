@@ -11,7 +11,9 @@ js = Bundle( 'js/jquery-3.4.1.min.js',
              'js/highstock.js',
              'js/bootstrap.js',
              'js/bootstrap-notify.js',
+             'js/datatables.js',
              'js/dark-unica.js',
+             'js/josien.js',
              filters='jsmin',
              output='gen/josien.js')
 
@@ -19,6 +21,7 @@ css = Bundle( 'css/bootstrap.css',
               'css/navbar-top-fixed.css',
               'css/animate.css',
               'css/fontawesome.css',
+              'css/datatables.css',
               'css/josien.css',
               filters='cssmin',
               output='gen/josien.css')
