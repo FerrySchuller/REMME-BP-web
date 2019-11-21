@@ -4,3 +4,4 @@ app/static/.webassets-cache
 __pycache__
 *.pyc
 .env
+rem
