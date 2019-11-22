@@ -40,6 +40,7 @@ def listproducers():
 
 
 # lets encrypt once for domain validation
+# certbot certonly --manual
 #@app.route("/.well-known/acme-challenge/<key>")
 #def letsencrypt():
 #    return "<key>.<xo>"
