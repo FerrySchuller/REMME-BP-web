@@ -12,7 +12,7 @@ js = Bundle( 'js/jquery-3.4.1.min.js',
              'js/bootstrap.js',
              'js/bootstrap-notify.js',
              'js/datatables.js',
-             'js/dark-unica.js',
+             'js/dark-blue.js',
              'js/josien.js',
              filters='jsmin',
              output='gen/josien.js')
