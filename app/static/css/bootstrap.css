@@ -17,7 +17,7 @@
   --cyan: #17a2b8;
   --white: #fff;
   --gray: #868e96;
-  --gray-dark: #343a40;
+  --gray-dark: #2f1c47;
   --primary: #007bff;
   --secondary: #868e96;
   --success: #28a745;
@@ -25,7 +25,7 @@
   --warning: #ffc107;
   --danger: #dc3545;
   --light: #f8f9fa;
-  --dark: #343a40;
+  --dark: #2f1c47;
   --breakpoint-xs: 0;
   --breakpoint-sm: 576px;
   --breakpoint-md: 768px;
@@ -122,7 +122,7 @@ body {
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  color: #212529;
+  color: #2f1c47;
   text-align: left;
   background-color: #fff;
 }
@@ -601,7 +601,7 @@ kbd {
   padding: 0.2rem 0.4rem;
   font-size: 90%;
   color: #fff;
-  background-color: #212529;
+  background-color: #2f1c47;
   border-radius: 0.2rem;
 }
 
@@ -616,7 +616,7 @@ pre {
   margin-top: 0;
   margin-bottom: 1rem;
   font-size: 90%;
-  color: #212529;
+  color: #2f1c47;
 }
 
 pre code {
@@ -1748,7 +1748,7 @@ pre code {
 
 .table .thead-dark th {
   color: #fff;
-  background-color: #212529;
+  background-color: #2f1c47;
   border-color: #32383e;
 }
 
@@ -1760,7 +1760,7 @@ pre code {
 
 .table-dark {
   color: #fff;
-  background-color: #212529;
+  background-color: #2f1c47;
 }
 
 .table-dark th,
@@ -2511,8 +2511,8 @@ fieldset[disabled] a.btn {
 
 .btn-dark {
   color: #fff;
-  background-color: #343a40;
-  border-color: #343a40;
+  background-color: #2f1c47;
+  border-color: #2f1c47;
 }
 
 .btn-dark:hover {
@@ -2526,8 +2526,8 @@ fieldset[disabled] a.btn {
 }
 
 .btn-dark.disabled, .btn-dark:disabled {
-  background-color: #343a40;
-  border-color: #343a40;
+  background-color: #2f1c47;
+  border-color: #2f1c47;
 }
 
 .btn-dark:not([disabled]):not(.disabled):active, .btn-dark:not([disabled]):not(.disabled).active,
@@ -2726,7 +2726,7 @@ fieldset[disabled] a.btn {
 }
 
 .btn-outline-light:hover {
-  color: #212529;
+  color: #2f1c47;
   background-color: #f8f9fa;
   border-color: #f8f9fa;
 }
@@ -2742,23 +2742,23 @@ fieldset[disabled] a.btn {
 
 .btn-outline-light:not([disabled]):not(.disabled):active, .btn-outline-light:not([disabled]):not(.disabled).active,
 .show > .btn-outline-light.dropdown-toggle {
-  color: #212529;
+  color: #2f1c47;
   background-color: #f8f9fa;
   border-color: #f8f9fa;
   box-shadow: 0 0 0 0.2rem rgba(248, 249, 250, 0.5);
 }
 
 .btn-outline-dark {
-  color: #343a40;
+  color: #2f1c47;
   background-color: transparent;
   background-image: none;
-  border-color: #343a40;
+  border-color: #2f1c47;
 }
 
 .btn-outline-dark:hover {
   color: #fff;
-  background-color: #343a40;
-  border-color: #343a40;
+  background-color: #2f1c47;
+  border-color: #2f1c47;
 }
 
 .btn-outline-dark:focus, .btn-outline-dark.focus {
@@ -2766,15 +2766,15 @@ fieldset[disabled] a.btn {
 }
 
 .btn-outline-dark.disabled, .btn-outline-dark:disabled {
-  color: #343a40;
+  color: #2f1c47;
   background-color: transparent;
 }
 
 .btn-outline-dark:not([disabled]):not(.disabled):active, .btn-outline-dark:not([disabled]):not(.disabled).active,
 .show > .btn-outline-dark.dropdown-toggle {
   color: #fff;
-  background-color: #343a40;
-  border-color: #343a40;
+  background-color: #2f1c47;
+  border-color: #2f1c47;
   box-shadow: 0 0 0 0.2rem rgba(52, 58, 64, 0.5);
 }
 
@@ -2894,7 +2894,7 @@ tbody.collapse.show {
   padding: 0.5rem 0;
   margin: 0.125rem 0 0;
   font-size: 1rem;
-  color: #212529;
+  color: #2f1c47;
   text-align: left;
   list-style: none;
   background-color: #fff;
@@ -2938,7 +2938,7 @@ tbody.collapse.show {
   padding: 0.25rem 1.5rem;
   clear: both;
   font-weight: 400;
-  color: #212529;
+  color: #2f1c47;
   text-align: inherit;
   white-space: nowrap;
   background: none;
@@ -4491,7 +4491,7 @@ tbody.collapse.show {
 
 .badge-dark {
   color: #fff;
-  background-color: #343a40;
+  background-color: #2f1c47;
 }
 
 .badge-dark[href]:focus, .badge-dark[href]:hover {
@@ -4738,7 +4738,7 @@ tbody.collapse.show {
 }
 
 .list-group-item-action:active {
-  color: #212529;
+  color: #2f1c47;
   background-color: #e9ecef;
 }
 
@@ -5443,7 +5443,7 @@ button.close {
 
 .popover-body {
   padding: 0.5rem 0.75rem;
-  color: #212529;
+  color: #2f1c47;
 }
 
 .carousel {
@@ -5721,7 +5721,7 @@ a.bg-light:focus, a.bg-light:hover {
 }
 
 .bg-dark {
-  background-color: #343a40 !important;
+  background-color: #2f1c47 !important;
 }
 
 a.bg-dark:focus, a.bg-dark:hover {
@@ -5789,7 +5789,7 @@ a.bg-dark:focus, a.bg-dark:hover {
 }
 
 .border-dark {
-  border-color: #343a40 !important;
+  border-color: #2f1c47 !important;
 }
 
 .border-white {
@@ -8345,7 +8345,7 @@ a.text-light:focus, a.text-light:hover {
 }
 
 .text-dark {
-  color: #343a40 !important;
+  color: #2f1c47 !important;
 }
 
 a.text-dark:focus, a.text-dark:hover {
