@@ -14,7 +14,6 @@ log_file = os.getenv('LOG_FILE', False)
 jlog = jlog(stdout=True, feil=log_file)
 
 
-
 def get_account(account):
     o = cmd_run('/usr/bin/remcli get account {0} --json'.format(account))
     j = False
@@ -25,6 +24,19 @@ def get_account(account):
             print(sys.exc_info())
     
     return j
+
+
+def get_remswap():
+    o = cmd_run('/usr/bin/remcli --url https://testchain.remme.io get actions rem.swap --json')
+    j = False
+    if o:
+        try:
+            j = json.loads(o)
+        except:
+            print(sys.exc_info())
+
+    return j
+
 
 
 def listproducers():
@@ -69,11 +81,38 @@ def producers():
     return render_template( 'producers.html' )
 
 
+@app.route('/remswap')
+def remswap():
+    track_event( category='index', action='rem.swap')
+    return render_template( 'remswap.html' )
+
+
 
 @app.route('/dev')
 def dev():
     data = {}
     return render_template( 'dev.html', d=data )
+
+
+@app.route('/_get_remswap')
+def _get_remswap():
+    d = False
+    remswap = get_remswap()
+
+    if remswap:
+        d = {}
+        d['data'] = []
+        for k,v in remswap.items():
+            if 'actions' in k:
+                for i in v:
+                    for k,v in i.items():
+                        i = {}
+                        i['position'] = 0
+                        i['key'] = k
+                        i['value'] = str(v)
+                        d['data'].append(i)
+
+    return jsonify(d)
 
 
 @app.route('/_get_account')
