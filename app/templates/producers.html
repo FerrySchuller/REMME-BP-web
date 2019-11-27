@@ -1,30 +1,23 @@
 {% extends "base.html" %}
 {% block title %}EU Block Producer by Josien.net{% endblock %}
-
 {% block content -%}
 <div class="container-fluid">
 <h4>EU Block Producer by Josien.net</h4>
-
-<table id="listproducers" class="table table-sm table-dark table-striped table-bordered nowrap display" style="width:100%">
-  <thead>
-    <tr>
-      <th>position</th>
-      <th>owner</th>
-      <th>total_votes</th>
-      <th>url</th>
-      <th>is_active</th>
-    </tr>
-  </thead>
-</table>
-
-
-
+ <table id="listproducers" class="table table-sm table-dark table-striped table-bordered nowrap display" style="width:100%">
+   <thead>
+     <tr>
+       <th>position</th>
+       <th>owner</th>
+       <th>total_votes</th>
+       <th>url</th>
+       <th>is_active</th>
+     </tr>
+   </thead>
+ </table>
 </div> <!-- end container-fluid -->
-
 {%- endblock content %}
 {% block scripts %}
     {{ super() }}
-<script type="text/javascript" src="{{ url_for('static', filename='js/graphs.js') }}"></script>
 <script type=text/javascript>
   var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 </script>
