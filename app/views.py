@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, flash
+from flask import render_template, jsonify, flash, url_for
 import os, sys
 import json
 import subprocess
@@ -93,6 +93,13 @@ def remswap():
     return render_template( 'remswap.html' )
 
 
+@app.route('/owner/<owner>')
+def owner(owner):
+    track_event( category='index', action='owner')
+    data = get_account(owner)
+    return render_template( 'owner.html', data=data )
+
+
 
 @app.route('/dev')
 def dev():
@@ -110,10 +117,9 @@ def get_permissions():
             owner = get_account(p['owner'])
             if 'permissions' in owner:
                 for permission in owner['permissions']:
-                    #print(p['owner'], permission['perm_name'], permission['parent'], str(permission['required_auth']['keys']))
                     i = {}
                     i['position'] = 0
-                    i['owner'] = p['owner']
+                    i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=p['owner']), p['owner'])
                     i['perm_name'] = permission['perm_name']
                     i['parent'] = permission['parent']
                     i['keys'] = str(permission['required_auth']['keys'])
@@ -174,7 +180,7 @@ def _listproducers():
             for row in lp['rows']:
                 i = {}
                 i['position'] = 0
-                i['owner'] = row['owner']
+                i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=row['owner']), row['owner'])
                 i['total_votes'] = '{:0,.2f}'.format(float(row['total_votes']))
                 i['url'] = '<a href="{0}" target="_blank" >{0}</a>'.format(row['url'])
                 i['is_active'] = row['is_active']
