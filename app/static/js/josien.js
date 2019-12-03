@@ -21,7 +21,7 @@ $(document).ready(function() {
 
 $(document).ready(function() {
     $('#josiendotnet').DataTable( {
-        "ajax": "./_get_account",
+        "ajax": "/_get_account",
          "createdRow": function(row, data, index) {
             if(data.klass) { $(row).addClass(data.klass); } },
          "columnDefs": [ { "targets": [ 0 ],
