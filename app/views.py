@@ -81,6 +81,12 @@ def producers():
     return render_template( 'producers.html' )
 
 
+@app.route('/permissions')
+def permissions():
+    track_event( category='index', action='Permissions')
+    return render_template( 'permissions.html' )
+
+
 @app.route('/remswap')
 def remswap():
     track_event( category='index', action='rem.swap')
@@ -90,8 +96,31 @@ def remswap():
 
 @app.route('/dev')
 def dev():
-    data = {}
     return render_template( 'dev.html', d=data )
+
+
+@app.route('/_get_permissions')
+def get_permissions():
+    lp = listproducers()
+    d = {}
+    d['data'] = []
+
+    if lp and 'rows' in lp:
+        for p in lp['rows']:
+            owner = get_account(p['owner'])
+            if 'permissions' in owner:
+                for permission in owner['permissions']:
+                    #print(p['owner'], permission['perm_name'], permission['parent'], str(permission['required_auth']['keys']))
+                    i = {}
+                    i['position'] = 0
+                    i['owner'] = p['owner']
+                    i['perm_name'] = permission['perm_name']
+                    i['parent'] = permission['parent']
+                    i['keys'] = str(permission['required_auth']['keys'])
+                    d['data'].append(i)
+
+    return jsonify(d)
+
 
 
 @app.route('/_get_remswap')

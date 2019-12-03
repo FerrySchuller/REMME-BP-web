@@ -61,3 +61,25 @@ $(document).ready(function() {
   }, 3000);
 });
 
+$(document).ready(function() {
+    $('#permissions').DataTable( {
+        "ajax": "./_get_permissions",
+         "createdRow": function(row, data, index) {
+            if(data.klass) { $(row).addClass(data.klass); } },
+         "columnDefs": [ { "targets": [ 0 ],
+                           "visible": false } ],
+        "columns": [ { "data": "position" },
+                     { "data": "owner" },
+                     { "data": "perm_name" },
+                     { "data": "parent" },
+                     { "data": "keys"} ],
+        "order": [ [1, "desc"] ],
+        "searching": true,
+        "paging": false,
+        "info": false,
+    });
+    setInterval(function() {
+      $('#listproducers').DataTable().ajax.reload(null, false);
+  }, 9000);
+});
+
