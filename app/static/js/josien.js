@@ -56,7 +56,9 @@ $(document).ready(function() {
         "searching": true,
         "paging": false,
         "info": false,
+        "dom": '<"toolbar">frtip'
     });
+    $("div.toolbar").html('<h4>Block Producers</h4>');
     setInterval(function() {
       $('#listproducers').DataTable().ajax.reload(null, false);
   }, 3000);

@@ -1,1 +1,5 @@
 body {background-color: #f2f3f4;}
+
+.toolbar {
+    float: left;
+}
