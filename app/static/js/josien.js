@@ -53,7 +53,7 @@ $(document).ready(function() {
                      { "data": "url" },
                      { "data": "is_active"} ],
         "order": [ [2, "desc"] ],
-        "searching": false,
+        "searching": true,
         "paging": false,
         "info": false,
     });
