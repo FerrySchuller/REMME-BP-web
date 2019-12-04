@@ -2,10 +2,16 @@
 {% block title %}EU Block Producer by Josien.net{% endblock %}
 {% block content -%}
 <div class="container-fluid">
-<h4>EU Block Producer by Josien.net</h4>
-
-{{ data }}
-
+{% if data %}
+<h4>Detailed information owner: {{ data.account_name }}</h4>
+<br />
+<dl class="row">
+{% for k,v in data.items() %}
+<dt class="col-sm-2">{{ k }}</dt>
+<dd class="col-sm-10">{{ v }}</dd>
+{% endfor %}
+</dl>
+{% endif %}
 </div> <!-- end container-fluid -->
 {%- endblock content %}
 {% block scripts %}

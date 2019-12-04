@@ -150,15 +150,15 @@ def _get_remswap():
     return jsonify(d)
 
 
-@app.route('/_get_account')
-def _get_account():
+@app.route('/_get_account/<owner>')
+def _get_account(owner):
     d = False
-    josiendotnet = get_account('josiendotnet')
+    owner = get_account(owner)
     
-    if josiendotnet:
+    if owner:
         d = {}
         d['data'] = []
-        for k,v in josiendotnet.items():
+        for k,v in owner.items():
             i = {}
             i['position'] = 0
             i['key'] = k

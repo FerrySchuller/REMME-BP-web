@@ -19,9 +19,10 @@ $(document).ready(function() {
 });
 
 
-$(document).ready(function() {
+$(document).ready(function(owner) {
+    var owner = 'josiendotnet';
     $('#josiendotnet').DataTable( {
-        "ajax": "/_get_account",
+        "ajax": "/_get_account/" + owner,
          "createdRow": function(row, data, index) {
             if(data.klass) { $(row).addClass(data.klass); } },
          "columnDefs": [ { "targets": [ 0 ],
