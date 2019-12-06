@@ -12,7 +12,11 @@
 <dd class="col-sm-10">
 {% for p in v %}
 {% for k in p.required_auth['keys'] %}
+{% if p.perm_name == 'owner' %}
+<b>{{ p.perm_name }} {{ p.parent }} {{ k.key }}</b><br />
+{% else %}
 {{ p.perm_name }} {{ p.parent }} {{ k.key }}<br />
+{% endif %}
 {% endfor %}
 {% endfor %}
 </dd>
