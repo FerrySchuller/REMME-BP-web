@@ -7,8 +7,28 @@
 <br />
 <dl class="row">
 {% for k,v in data.items() %}
+{% if k == 'permissions' %}
+<dt class="col-sm-2">{{ k }}</dt>
+<dd class="col-sm-10">
+{% for p in v %}
+{% for k in p.required_auth['keys'] %}
+{{ p.perm_name }} {{ p.parent }} {{ k.key }}<br />
+{% endfor %}
+{% endfor %}
+</dd>
+{% elif k == 'total_resources' %}
+<dt class="col-sm-2">{{ k }}</dt>
+<dd class="col-sm-10">
+owner: {{ v.owner }}<br />
+net_weight: {{ v.net_weight }}<br />
+cpu_weight: {{ v.cpu_weight }}<br />
+own_stake_amount: {{ v.own_stake_amount }}<br />
+free_stake_amount: {{ v.free_stake_amount }}
+</dd>
+{% else %}
 <dt class="col-sm-2">{{ k }}</dt>
 <dd class="col-sm-10">{{ v }}</dd>
+{% endif %}
 {% endfor %}
 </dl>
 {% endif %}
