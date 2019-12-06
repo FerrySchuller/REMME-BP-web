@@ -177,9 +177,12 @@ def _listproducers():
         d = {}
         d['data'] = []
         if 'rows' in lp:
-            for row in lp['rows']:
+            rows = sorted(lp['rows'], key=lambda k: (float(k['total_votes'])), reverse=True)
+            r = 1
+            for row in rows:
                 i = {}
-                i['position'] = 0
+                i['position'] = '{}'.format(r)
+                r += 1
                 i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=row['owner']), row['owner'])
                 i['total_votes'] = '{:0,.2f}'.format(float(row['total_votes']))
                 i['url'] = '<a href="{0}" target="_blank" >{0}</a>'.format(row['url'])
@@ -276,3 +279,7 @@ def bp():
             }
 
     return jsonify(data)
+
+
+if __name__ == '__main__':
+    pass
