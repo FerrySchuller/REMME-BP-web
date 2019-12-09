@@ -24,9 +24,9 @@ def gen_social(feil):
     if os.path.exists(feil):
         with open(feil) as json_file:
             f = json.load(json_file)
-            if 'org' in f and 'social' in f['org']:
+            if 'bp.json' in f and f['bp.json']:
                  o = '<div><ul class="social-network">'
-                 for k,v in f['org']['social'].items():
+                 for k,v in f['bp.json']['org']['social'].items():
                      if v:
                          if k == 'facebook':
                              o += '<li><a target="_blank" href="https://facebook.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
@@ -46,6 +46,16 @@ def gen_social(feil):
     return('')
 
 
+def gen_votes(feil):
+    if os.path.exists(feil):
+        with open(feil) as json_file:
+            f = json.load(json_file)
+            if 'owner' in f and f['owner']:
+                o = ''
+                for producer in f['owner']['voter_info']['producers']:
+                    o += '{}&nbsp;'.format(producer)
+                return(o)
+    return('')
 
 @app.route('/')
 def index():
@@ -176,6 +186,7 @@ def _listproducers():
                 i['total_votes'] = '{:0,.0f}'.format(float(row['total_votes']))
                 i['social'] = gen_social('app/cache/{}.json'.format(row['owner']))
                 i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
+                i['votes'] = gen_votes('app/cache/{}.json'.format(row['owner']))
                 i['is_active'] = '<i class="fa fa-check"></i>' if row['is_active'] == 1 else 'x'
                 d['data'].append(i)
 

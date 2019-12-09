@@ -52,6 +52,7 @@ $(document).ready(function() {
                      { "data": "total_votes" },
                      { "data": "social" },
                      { "data": "url" },
+                     { "data": "votes" },
                      { "data": "is_active"} ],
         "order": [ [0, "asc"] ],
         "searching": true,
