@@ -1,12 +1,7 @@
 {% extends "base.html" %}
 {% block title %}EU Block Producer by Josien.net{% endblock %}
-
 {% block content -%}
 <div class="container-fluid">
-<h4>EU Block Producer by Josien.net</h4>
-  <div style="padding-top:8px;" id="vol" style="height: 400px; min-width: 310px"></div>
-<br />
-<br />
  <table id="listproducers" class="table table-sm table-dark table-striped table-bordered nowrap display" style="width:100%">
    <thead>
      <tr>
@@ -20,9 +15,10 @@
      </tr>
    </thead>
  </table>
-
-</div> <!-- end container-fluid -->
-
+<br />
+<h4>REM price</h4>
+<div style="padding-top:8px;" id="vol" style="height: 400px; min-width: 310px"></div>
+</div>
 {%- endblock content %}
 {% block scripts %}
     {{ super() }}
