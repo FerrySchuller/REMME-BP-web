@@ -13,9 +13,9 @@ def cache_owner():
         j = False
         for row in lp['rows']:
             d['owner'] = get_account(row['owner'])
+            d['bp.json'] = False
             feil = 'cache/{}.json'.format(row['owner'])
             if row['url']:
-                d['bp.json'] = False
                 url = '{}/bp.json'.format(row['url'])
                 feil = 'cache/{}.json'.format(row['owner'])
 
