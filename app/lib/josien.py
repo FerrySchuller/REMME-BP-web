@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, json
 import subprocess
 import logging
 import logging.handlers
@@ -52,4 +52,39 @@ def cmd_run(cmd):
     else:
         print("Error:", err)
     return ""
+
+
+def listproducers():
+    o = cmd_run('/usr/bin/remcli system listproducers --json')
+    j = False
+    if o:
+        try:
+            j = json.loads(o)
+        except:
+            print(sys.exc_info())
+
+    return j
+
+def get_remswap():
+    o = cmd_run('/usr/bin/remcli --url https://testchain.remme.io get actions rem.swap --json')
+    j = False
+    if o:
+        try:
+            j = json.loads(o)
+        except:
+            print(sys.exc_info())
+
+    return j
+
+
+def get_account(account):
+    o = cmd_run('/usr/bin/remcli get account {0} --json'.format(account))
+    j = False
+    if o:
+        try:
+            j = json.loads(o)
+        except:
+            print(sys.exc_info())
+
+    return j
 

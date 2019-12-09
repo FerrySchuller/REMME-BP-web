@@ -50,6 +50,7 @@ $(document).ready(function() {
         "columns": [ { "data": "position" },
                      { "data": "owner" },
                      { "data": "total_votes" },
+                     { "data": "social" },
                      { "data": "url" },
                      { "data": "is_active"} ],
         "order": [ [0, "asc"] ],
@@ -61,7 +62,7 @@ $(document).ready(function() {
     $("div.toolbar").html('<h4>Block Producers</h4>');
     setInterval(function() {
       $('#listproducers').DataTable().ajax.reload(null, false);
-  }, 3000);
+  }, 12000);
 });
 
 $(document).ready(function() {

@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 import requests
 from pprint import pprint
-from app.lib.josien import track_event, jlog, cmd_run
+from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_remswap, get_account
 from app.app import app
 
 
@@ -14,48 +14,38 @@ log_file = os.getenv('LOG_FILE', False)
 jlog = jlog(stdout=True, feil=log_file)
 
 
-def get_account(account):
-    o = cmd_run('/usr/bin/remcli get account {0} --json'.format(account))
-    j = False
-    if o:
-        try:
-            j = json.loads(o)
-        except:
-            print(sys.exc_info())
-    
-    return j
-
-
-def get_remswap():
-    o = cmd_run('/usr/bin/remcli --url https://testchain.remme.io get actions rem.swap --json')
-    j = False
-    if o:
-        try:
-            j = json.loads(o)
-        except:
-            print(sys.exc_info())
-
-    return j
-
-
-
-def listproducers():
-    o = cmd_run('/usr/bin/remcli system listproducers --json')
-    j = False
-    if o:
-        try:
-            j = json.loads(o)
-        except:  
-            print(sys.exc_info())
-
-    return j
-
-
 # lets encrypt once for domain validation
 # certbot certonly --manual
 #@app.route("/.well-known/acme-challenge/<key>")
 #def letsencrypt():
 #    return "<key>.<xo>"
+
+
+def gen_social(feil):
+    if os.path.exists(feil):
+        with open(feil) as json_file:
+            f = json.load(json_file)
+            if 'org' in f and 'social' in f['org']:
+                 o = '<div><ul class="social-network">'
+                 for k,v in f['org']['social'].items():
+                     if v:
+                         if k == 'facebook':
+                             o += '<li><a target="_blank" href="https://facebook.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                         if k == 'twitter':
+                             o += '<li><a target="_blank" href="https://twitter.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                         if k == 'telegram':
+                             o += '<li><a target="_blank" href="https://t.me/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                         if k == 'reddit':
+                             o += '<li><a target="_blank" href="https://reddit.com/user/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                         if k == 'github':
+                             o += '<li><a target="_blank" href="https://github.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                         if k == 'linkedin':
+                             o += '<li><a target="_blank" href="https://linkedin.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                 o += '</ul></div>'
+
+                 return(o)
+    return('')
+
 
 
 @app.route('/')
@@ -185,6 +175,7 @@ def _listproducers():
                 r += 1
                 i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=row['owner']), row['owner'])
                 i['total_votes'] = '{:0,.0f}'.format(float(row['total_votes']))
+                i['social'] = gen_social('app/cache/{}.json'.format(row['owner']))
                 i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
                 i['is_active'] = row['is_active']
                 d['data'].append(i)
