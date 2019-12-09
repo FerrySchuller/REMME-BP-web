@@ -1,7 +1,6 @@
 from flask import render_template, jsonify, flash, url_for
 import os, sys
 import json
-import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
 import requests

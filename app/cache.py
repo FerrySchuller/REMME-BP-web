@@ -3,8 +3,7 @@ import sys
 import json
 import os
 import requests
-from glob import glob
-from lib.josien import cmd_run, listproducers
+from lib.josien import listproducers
 
 
 def cache_bp_json():
