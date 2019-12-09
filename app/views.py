@@ -40,7 +40,7 @@ def gen_social(feil):
                          if k == 'github':
                              o += '<li><a target="_blank" href="https://github.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
                          if k == 'linkedin':
-                             o += '<li><a target="_blank" href="https://linkedin.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                             o += '<li><a target="_blank" href="https://linkedin.com/in/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
                  o += '</ul></div>'
 
                  return(o)
@@ -250,6 +250,7 @@ def bp():
                   "github": "FerrySchuller/REMME-BP-web",
                   "reddit": "josien_net",
                   "telegram": "JosienNet",
+                  "linkedin": "ferryschuller",
                 }
               },
               "nodes": [

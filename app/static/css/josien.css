@@ -1,4 +1,16 @@
-body {background-color: #f2f3f4;}
+body { 
+  background-color: #f2f3f4;
+}
+
+a {
+  color: #ffffff;
+}
+
+a:hover {
+  color: #3c3c3c;
+}
+
+
 
 .toolbar {
     float: left;
