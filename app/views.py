@@ -177,7 +177,7 @@ def _listproducers():
                 i['total_votes'] = '{:0,.0f}'.format(float(row['total_votes']))
                 i['social'] = gen_social('app/cache/{}.json'.format(row['owner']))
                 i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
-                i['is_active'] = row['is_active']
+                i['is_active'] = '<i class="fa fa-check"></i>' if row['is_active'] == 1 else 'x'
                 d['data'].append(i)
 
     return jsonify(d)
