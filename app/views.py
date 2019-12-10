@@ -8,17 +8,14 @@ from pprint import pprint
 from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_remswap, get_account, remcli_get_info, human_readable
 from app.app import app
 
-
 log_file = os.getenv('LOG_FILE', False)
 jlog = jlog(stdout=True, feil=log_file)
-
 
 # lets encrypt once for domain validation
 # certbot certonly --manual
 #@app.route("/.well-known/acme-challenge/<key>")
 #def letsencrypt():
 #    return "<key>.<xo>"
-
 
 def gen_social(feil):
     if os.path.exists(feil):
