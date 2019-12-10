@@ -12,7 +12,8 @@ def cache_owner():
     if lp and 'rows' in lp:
         j = False
         for row in lp['rows']:
-            d['owner'] = get_account(row['owner'])
+            owner = get_account(row['owner'])
+            d['owner'] = owner
             d['bp.json'] = False
             feil = 'cache/{}.json'.format(row['owner'])
             if row['url']:
@@ -32,8 +33,10 @@ def cache_owner():
 
 def dev():
     i = remcli_get_info()
+    owner = get_account('josiendotnet')
     if i:
-        producing = i['head_block_producer']
+        pprint(owner['head_block_num'])
+        pprint(i['fork_db_head_block_num'])
     
     
 

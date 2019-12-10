@@ -58,6 +58,18 @@ def gen_votes(feil):
     return('')
 
 
+
+def gen_locked_stake(feil):
+    if os.path.exists(feil):
+        with open(feil) as json_file:
+            f = json.load(json_file)
+            if 'owner' in f and f['owner']:
+                o = f['owner']['voter_info']['locked_stake']
+                return(o)
+    return('')
+
+
+
 @app.route('/')
 def index():
     track_event( category='index', action='test index')
@@ -192,6 +204,7 @@ def _listproducers():
                 else:
                     i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=row['owner']), row['owner'])
                 i['total_votes'] = '{:0,.0f}'.format(float(row['total_votes']))
+                i['staked'] = '{:0,.0f}'.format(float(gen_locked_stake('app/cache/{}.json'.format(row['owner']))))
                 i['social'] = gen_social('app/cache/{}.json'.format(row['owner']))
                 i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
                 i['votes'] = gen_votes('app/cache/{}.json'.format(row['owner']))

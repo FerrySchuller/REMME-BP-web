@@ -50,6 +50,7 @@ $(document).ready(function() {
         "columns": [ { "data": "position" },
                      { "data": "owner" },
                      { "data": "total_votes" },
+                     { "data": "staked" },
                      { "data": "social" },
                      { "data": "url" },
                      { "data": "votes" },
