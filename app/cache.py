@@ -5,7 +5,6 @@ import os
 import requests
 from lib.josien import listproducers, get_account, remcli_get_info
 
-
 def cache_owner():
     lp = listproducers()
     d = {}
@@ -36,8 +35,6 @@ def cache_owner():
 def dev():
     pass
     
-
 if __name__ == '__main__':
     #dev()
     cache_owner()
-
