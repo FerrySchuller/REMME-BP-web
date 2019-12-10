@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 import requests
 from pprint import pprint
-from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_remswap, get_account, remcli_get_info
+from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_remswap, get_account, remcli_get_info, human_readable
 from app.app import app
 
 
@@ -205,7 +205,6 @@ def _listproducers():
         if 'rows' in lp:
             rows = sorted(lp['rows'], key=lambda k: (float(k['total_votes'])), reverse=True)
             r = 1
-            total_staked = 0
             for row in rows:
                 i = {}
                 i['position'] = '{}'.format(r)
@@ -215,11 +214,11 @@ def _listproducers():
                     i['owner'] = '<a href={0}>{1}&nbsp;&nbsp;<i class="fas fa-sync fa-spin fa-1x"></i></a>'.format(url_for('owner', owner=row['owner']), row['owner'])
                 else:
                     i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=row['owner']), row['owner'])
-                i['total_votes'] = '{:0,.0f}'.format(float(row['total_votes']))
+                #i['total_votes'] = '{:0,.0f}'.format(float(row['total_votes']))
+                i['total_votes'] = human_readable(row['total_votes'])
                 staked = gen_locked_stake('app/cache/{}.json'.format(row['owner']))
-                total_staked += int(staked)
-                i['total_staked'] = total_staked
-                i['staked'] = '{:0,.0f}'.format(float(staked))
+                #i['staked'] = '{:0,.0f}'.format(float(staked))
+                i['staked'] = human_readable(staked)
                 i['social'] = gen_social('app/cache/{}.json'.format(row['owner']))
                 i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
                 i['votes'] = gen_votes('app/cache/{}.json'.format(row['owner']))
