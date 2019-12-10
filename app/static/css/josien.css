@@ -11,6 +11,10 @@ a:hover {
 }
 
 
+table#listproducers.dataTable tr:hover {
+  background-color: #bb3fe7;
+}
+
 
 .toolbar {
     float: left;
