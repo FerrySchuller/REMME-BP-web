@@ -200,7 +200,7 @@ def _listproducers():
                 i['position'] = '{}'.format(r)
                 r += 1
                 if row['owner'] == producing:
-                    i['klass'] = 'bg-success'
+                    i['klass'] = 'bg-doingwork'
                     i['owner'] = '<a href={0}>{1}&nbsp;&nbsp;<i class="fas fa-sync fa-spin fa-1x"></i></a>'.format(url_for('owner', owner=row['owner']), row['owner'])
                 else:
                     i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=row['owner']), row['owner'])
