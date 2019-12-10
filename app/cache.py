@@ -33,25 +33,8 @@ def cache_owner():
             with open(feil, 'w') as outfile:
                 json.dump(d, outfile)
 
-def human_readable(v):
-    v = '{:0,.0f}'.format(float(v)).split(',')
-    print(v)
-    if len(v) == 4:
-        return('{} M'.format(v[0]))
-    if len(v) == 5:
-        return('{} B'.format(v[0]))
-    if len(v) == 6:
-        return('{} T'.format(v[0]))
-
-    return False
-
 def dev():
-    lp = listproducers()
-    i = remcli_get_info()
-    owner = get_account('remproducer1')
-    for row in lp['rows']:
-        print(human_readable(row['total_votes']))
-    
+    pass
     
 
 if __name__ == '__main__':

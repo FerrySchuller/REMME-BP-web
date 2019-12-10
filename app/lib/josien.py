@@ -103,13 +103,15 @@ def remcli_get_info():
 
 def human_readable(v):
     v = '{:0,.0f}'.format(float(v)).split(',')
+    if len(v) == 2:
+        return('{} k'.format(v[0]))
     if len(v) == 3:
-        return('{} K'.format(v[0]))
-    if len(v) == 4:
         return('{} M'.format(v[0]))
+    if len(v) == 4:
+        return('{} G'.format(v[0]))
     if len(v) == 5:
-        return('{} B'.format(v[0]))
-    if len(v) == 6:
         return('{} T'.format(v[0]))
+    if len(v) == 6:
+        return('{} P'.format(v[0]))
 
     return False
