@@ -63,7 +63,7 @@ $(document).ready(function() {
     $("div.toolbar").html('<h4>Block Producers</h4>');
     setInterval(function() {
       $('#listproducers').DataTable().ajax.reload(null, false);
-  }, 12000);
+  }, 6000);
 });
 
 $(document).ready(function() {
