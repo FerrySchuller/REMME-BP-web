@@ -3,7 +3,7 @@ import sys
 import json
 import os
 import requests
-from lib.josien import listproducers, get_account
+from lib.josien import listproducers, get_account, remcli_get_info
 
 
 def cache_owner():
@@ -30,6 +30,12 @@ def cache_owner():
                 json.dump(d, outfile)
 
 
+def dev():
+    i = remcli_get_info()
+    if i:
+        producing = i['head_block_producer']
+    
+    
 
 if __name__ == '__main__':
     #dev()

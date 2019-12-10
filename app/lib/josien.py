@@ -88,3 +88,15 @@ def get_account(account):
 
     return j
 
+
+def remcli_get_info():
+    o = cmd_run('/usr/bin/remcli get info')
+    j = False
+    if o:
+        try:
+            j = json.loads(o)
+        except:
+            print(sys.exc_info())
+
+    return j
+

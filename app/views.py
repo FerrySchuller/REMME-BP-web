@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 import requests
 from pprint import pprint
-from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_remswap, get_account
+from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_remswap, get_account, remcli_get_info
 from app.app import app
 
 
@@ -169,6 +169,10 @@ def _get_account(owner):
 
 @app.route('/_listproducers')
 def _listproducers():
+    i = remcli_get_info()
+    if i:
+        producing = i['head_block_producer']
+
     d = False
     lp = listproducers()
 
@@ -182,7 +186,10 @@ def _listproducers():
                 i = {}
                 i['position'] = '{}'.format(r)
                 r += 1
-                i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=row['owner']), row['owner'])
+                if row['owner'] == producing:
+                    i['owner'] = '<a href={0}>{1}&nbsp;&nbsp;<i class="fas fa-sync fa-spin fa-1x"></i></a>'.format(url_for('owner', owner=row['owner']), row['owner'])
+                else:
+                    i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=row['owner']), row['owner'])
                 i['total_votes'] = '{:0,.0f}'.format(float(row['total_votes']))
                 i['social'] = gen_social('app/cache/{}.json'.format(row['owner']))
                 i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
