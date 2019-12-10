@@ -44,23 +44,22 @@ $(document).ready(function() {
     $('#listproducers').DataTable( {
         "ajax": "./_listproducers",
          "createdRow": function(row, data, index) {
-            // console.log(data.total_staked);
             if(data.klass) { $(row).addClass(data.klass); } },
          "columnDefs": [ { "targets": [ 3 ],
                            "visible": true } ],
-        "columns": [ { "data": "position" },
-                     { "data": "owner" },
-                     { "data": "total_votes" },
-                     { "data": "staked" },
-                     { "data": "social" },
-                     { "data": "url" },
-                     { "data": "votes" },
-                     { "data": "is_active"} ],
-        "order": [ [0, "asc"] ],
-        "searching": true,
-        "paging": false,
-        "info": false,
-        "dom": '<"toolbar">frtip'
+         "columns": [ { "data": "position" },
+                      { "data": "owner" },
+                      { "data": "total_votes" },
+                      { "data": "staked" },
+                      { "data": "social" },
+                      { "data": "url" },
+                      { "data": "votes" },
+                      { "data": "is_active"} ],
+         "order": [ [0, "asc"] ],
+         "searching": true,
+         "paging": false,
+         "info": false,
+         "dom": '<"toolbar">frtip'
     });
     $("div.toolbar").html('<h4>Block Producers</h4>');
     setInterval(function() {
