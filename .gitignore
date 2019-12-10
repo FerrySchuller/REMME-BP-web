@@ -1,5 +1,6 @@
 env/
 app/.env
+app/cache
 app/static/.webassets-cache
 __pycache__
 *.pyc
