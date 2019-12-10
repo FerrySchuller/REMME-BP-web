@@ -11,9 +11,8 @@ a:hover {
 }
 
 .bg-doingwork {
-  background-color: #917ea7;
+  background-color: #917ea7 !important;
 }
-
 
 
 table#listproducers.dataTable tr:hover {
