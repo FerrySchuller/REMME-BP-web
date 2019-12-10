@@ -57,6 +57,15 @@ def gen_votes(feil):
                 return(o)
     return('')
 
+def get_feil(feil):
+    if os.path.exists(feil):
+        with open(feil) as json_file:
+            try:
+                return(json.load(json_file))
+            except:
+                print(sys.exc_info())
+    return False
+
 
 
 def gen_locked_stake(feil):
@@ -73,7 +82,8 @@ def gen_locked_stake(feil):
 @app.route('/')
 def index():
     track_event( category='index', action='test index')
-    return render_template( 'index.html' )
+    data = get_feil('app/cache/josiendotnet.json')
+    return render_template( 'index.html', data=data )
 
 
 @app.route('/code_of_conduct')
@@ -195,6 +205,7 @@ def _listproducers():
         if 'rows' in lp:
             rows = sorted(lp['rows'], key=lambda k: (float(k['total_votes'])), reverse=True)
             r = 1
+            total_staked = 0
             for row in rows:
                 i = {}
                 i['position'] = '{}'.format(r)
@@ -205,7 +216,10 @@ def _listproducers():
                 else:
                     i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=row['owner']), row['owner'])
                 i['total_votes'] = '{:0,.0f}'.format(float(row['total_votes']))
-                i['staked'] = '{:0,.0f}'.format(float(gen_locked_stake('app/cache/{}.json'.format(row['owner']))))
+                staked = gen_locked_stake('app/cache/{}.json'.format(row['owner']))
+                total_staked += int(staked)
+                i['total_staked'] = total_staked
+                i['staked'] = '{:0,.0f}'.format(float(staked))
                 i['social'] = gen_social('app/cache/{}.json'.format(row['owner']))
                 i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
                 i['votes'] = gen_votes('app/cache/{}.json'.format(row['owner']))

@@ -9,12 +9,15 @@ from lib.josien import listproducers, get_account, remcli_get_info
 def cache_owner():
     lp = listproducers()
     d = {}
+    locked_stake = 0
     if lp and 'rows' in lp:
         j = False
         for row in lp['rows']:
             owner = get_account(row['owner'])
+            locked_stake += int(owner['voter_info']['locked_stake'])
             d['owner'] = owner
             d['bp.json'] = False
+            d['locked_stake_total'] = locked_stake
             feil = 'cache/{}.json'.format(row['owner'])
             if row['url']:
                 url = '{}/bp.json'.format(row['url'])

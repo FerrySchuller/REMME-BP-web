@@ -44,8 +44,9 @@ $(document).ready(function() {
     $('#listproducers').DataTable( {
         "ajax": "./_listproducers",
          "createdRow": function(row, data, index) {
+            // console.log(data.total_staked);
             if(data.klass) { $(row).addClass(data.klass); } },
-         "columnDefs": [ { "targets": [ 0 ],
+         "columnDefs": [ { "targets": [ 3 ],
                            "visible": true } ],
         "columns": [ { "data": "position" },
                      { "data": "owner" },
