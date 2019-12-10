@@ -53,9 +53,10 @@ def gen_votes(feil):
             if 'owner' in f and f['owner']:
                 o = ''
                 for producer in f['owner']['voter_info']['producers']:
-                    o += '{}&nbsp;'.format(producer)
+                    o += '<a href={0}>{1}</a>&nbsp;'.format(url_for('owner', owner=producer), producer)
                 return(o)
     return('')
+
 
 @app.route('/')
 def index():
