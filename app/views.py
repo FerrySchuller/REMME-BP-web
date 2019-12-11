@@ -273,9 +273,9 @@ def bp():
                 "website": "https://josien.net",
                 "code_of_conduct":"https://josien.net/code_of_conduct",
                 "ownership_disclosure":"https://josien.net/ownership_disclosure",
-                "email":"",
+                "email":"ferry@josien.net",
                 "branding":{
-                  "logo_256":"",
+                  "logo_256":"https://josien.net/static/fav/favicon-96x96.png",
                   "logo_1024":"",
                   "logo_svg":""
                 },
