@@ -57,7 +57,8 @@ $(document).ready(function() {
                       { "data": "social" },
                       { "data": "url" },
                       { "data": "votes" },
-                      { "data": "is_active"} ],
+                      // { "data": "is_active"} 
+                    ],
          "order": [ [0, "asc"] ],
          "searching": true,
          "paging": false,

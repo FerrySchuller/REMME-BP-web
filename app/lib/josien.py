@@ -114,6 +114,8 @@ def human_readable(v):
             return('{} T'.format(v[0]))
         if len(v) == 6:
             return('{} P'.format(v[0]))
+        if len(v) == 7:
+            return('{} E'.format(v[0]))
     except:
         print(sys.exc_info())
 
