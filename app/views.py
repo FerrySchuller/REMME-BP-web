@@ -235,12 +235,12 @@ def graph_status(days=1, coin='rem'):
         p = Path(coin)
         params = { 'fsym': coin.upper(),
                    'tsym': 'USDT',
-                    'limit': 2000,
-                    'api_key': os.getenv('cryptocompare_key')   }
+                   'limit': 2000,
+                   'api_key': os.getenv('cryptocompare_key')   }
         r = requests.get('https://min-api.cryptocompare.com/data/v2/histoday', params=params)
 
         if r.ok and r.json:
-            flash( 'New OHLC data cached.', 'info' )
+            #flash( 'New OHLC data cached.', 'info' )
             p.write_text(r.text)
 
 
