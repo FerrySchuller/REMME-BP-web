@@ -205,7 +205,7 @@ def _listproducers():
             rows = sorted(lp['rows'], key=lambda k: (float(k['total_votes'])), reverse=True)
             r = 1
             for row in rows:
-                #feil = get_feil('app/cache/{}.json'.format(row['owner']))
+                feil = get_feil('app/cache/{}.json'.format(row['owner']))
                 i = {}
                 i['position'] = '{}'.format(r)
                 r += 1
@@ -223,6 +223,9 @@ def _listproducers():
                 i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
                 i['votes'] = gen_votes('app/cache/{}.json'.format(row['owner']))
                 i['is_active'] = '<i class="fa fa-check"></i>' if row['is_active'] == 1 else 'x'
+                i['bp_json'] = ''
+                if feil and feil['bp.json']:
+                    i['bp_json'] = '<a target="_blank" href="{}/bp.json"><i class="fa fa-check"></i></a>'.format(row['url'])
                 d['data'].append(i)
 
     return jsonify(d)
