@@ -40,11 +40,14 @@ $(document).ready(function(owner) {
   }, 3000);
 });
 
+
 $(document).ready(function() {
     $('#listproducers').DataTable( {
         "ajax": "./_listproducers",
          "createdRow": function(row, data, index) {
-            if(data.klass) { $(row).addClass(data.klass); } },
+            if(data.klass) { $(row).addClass(data.klass); }
+            // $(row).find('td').attr('data-sort', data.total_votes)
+            },
          "columnDefs": [ { "targets": [ 3 ],
                            "visible": true } ],
          "columns": [ { "data": "position" },
