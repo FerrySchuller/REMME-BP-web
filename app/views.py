@@ -54,6 +54,7 @@ def gen_votes(feil):
                 return(o)
     return('')
 
+
 def get_feil(feil):
     if os.path.exists(feil):
         with open(feil) as json_file:
@@ -116,7 +117,8 @@ def remswap():
 def owner(owner):
     track_event( category='index', action='owner')
     data = get_account(owner)
-    return render_template( 'owner.html', data=data )
+    feil = get_feil('app/cache/{}.json'.format(owner))
+    return render_template( 'owner.html', data=data, feil=feil )
 
 
 
@@ -203,6 +205,7 @@ def _listproducers():
             rows = sorted(lp['rows'], key=lambda k: (float(k['total_votes'])), reverse=True)
             r = 1
             for row in rows:
+                #feil = get_feil('app/cache/{}.json'.format(row['owner']))
                 i = {}
                 i['position'] = '{}'.format(r)
                 r += 1

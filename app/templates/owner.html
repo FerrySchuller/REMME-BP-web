@@ -2,6 +2,9 @@
 {% block title %}EU Block Producer by Josien.net{% endblock %}
 {% block content -%}
 <div class="container-fluid">
+{% if feil and feil['bp.json'] and feil['bp.json'].org.branding.logo_256  %}
+<img src="{{ feil['bp.json'].org.branding.logo_256 }}" class="img-fluid">
+{% endif %}
 {% if data %}
 <h4>Detailed information owner: {{ data.account_name }}</h4>
 <br />
