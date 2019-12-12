@@ -29,6 +29,7 @@ def init(stdout=True):
         pid_file = os.getenv('PID_FILE')
     except:
         print(sys.exc_info())
+        jlog.critical("{}".format(sys.exc_info()))
         sys.exit(1)
 
 
@@ -92,6 +93,7 @@ def status(slaap=600):
                             d['bp_json'] = r.json()
                         except:
                             print(sys.exc_info())
+                            jlog.critical("{}".format(sys.exc_info()))
 
                 add_db(col='owners', tag='cache', slug='cache', data=d)
     
