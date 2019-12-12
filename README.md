@@ -6,7 +6,7 @@ Live site: https://josien.net
 Dependencies, the code and virtual environment.
 
 ```
-apt install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools nginx mongodb
+apt install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools nginx mongodb monit
 root@remme0:/prod# git clone https://github.com/FerrySchuller/REMME-BP-web.git
 root@remme0:/prod# cd REMME-BP-web/
 root@remme0:/prod/REMME-BP-web# python3 -m venv env
