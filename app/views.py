@@ -218,7 +218,11 @@ def _listproducers():
                 i['total_votes'] = '{} <small class="text-muted">{:0,.0f}</small>'.format(human_readable(row['total_votes']), float(row['total_votes']))
                 staked = gen_locked_stake('app/cache/{}.json'.format(row['owner']))
                 #i['staked'] = '{:0,.0f}'.format(float(staked))
-                i['staked'] = '{} <small class="text-muted">{:0,.0f}</small>'.format(human_readable(staked), float(staked))
+                try:
+                    i['staked'] = '{} <small class="text-muted">{:0,.0f}</small>'.format(human_readable(staked), float(staked))
+                except:
+                    i['staked'] = ''
+                    print(sys.exc_info())
                 i['social'] = gen_social('app/cache/{}.json'.format(row['owner']))
                 i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
                 i['votes'] = gen_votes('app/cache/{}.json'.format(row['owner']))
