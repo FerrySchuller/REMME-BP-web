@@ -69,9 +69,9 @@ def is_running():
 
 
 
-def status():
+def status(slaap=600):
     while True:
-
+        
         lp = listproducers()
         d = {}
         locked_stake = 0
@@ -95,7 +95,8 @@ def status():
 
                 add_db(col='owners', tag='cache', slug='cache', data=d)
     
-        sleep(600)
+        jlog.info('Sleeping for: {} seconds'.format(slaap))
+        sleep(slaap)
 
 
 def dev():

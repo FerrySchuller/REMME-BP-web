@@ -6,7 +6,7 @@ Live site: https://josien.net
 Dependencies, the code and virtual environment.
 
 ```
-apt install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools nginx
+apt install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools nginx mongodb
 root@remme0:/prod# git clone https://github.com/FerrySchuller/REMME-BP-web.git
 root@remme0:/prod# cd REMME-BP-web/
 root@remme0:/prod/REMME-BP-web# python3 -m venv env
@@ -41,6 +41,14 @@ WantedBy=multi-user.target
 
 ```
 
+monit config:
+
+'''
+# cat /etc/monit/conf.d/bot 
+check process bot with pidfile /prod/REMME-BP-web/bot.pid
+start program = "/prod/REMME-BP-web/bot_prod.sh start" as uid "root" and gid "root" with timeout 60 seconds
+stop program = "/prod/REMME-BP-web/bot_prod.sh stop"
+'''
 
 
 nginx config:
