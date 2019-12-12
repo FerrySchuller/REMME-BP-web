@@ -43,12 +43,12 @@ WantedBy=multi-user.target
 
 monit config:
 
-'''
+```
 cat /etc/monit/conf.d/bot 
 check process bot with pidfile /prod/REMME-BP-web/bot.pid
 start program = "/prod/REMME-BP-web/bot_prod.sh start" as uid "root" and gid "root" with timeout 60 seconds
 stop program = "/prod/REMME-BP-web/bot_prod.sh stop"
-'''
+```
 
 
 nginx config:
