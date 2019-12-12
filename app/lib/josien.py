@@ -3,8 +3,16 @@ import subprocess
 import logging
 import logging.handlers
 import requests
+from pymongo import MongoClient
+
 
 GA_TRACKING_ID = os.getenv('GA_TRACKING_ID', False)
+
+
+def db():
+    c = MongoClient(connect=False)
+    db = c[os.getenv('DB_NAME')]
+    return db
 
 
 def track_event(category, action, label=None, value=0):
