@@ -14,7 +14,7 @@ from time import sleep
 from datetime import datetime, timedelta, timezone
 from pprint import pprint
 import requests
-from josien import jlog, db, listproducers, get_account
+from josien import jlog, db, listproducers, get_account, remcli_get_info
 
 
 def init(stdout=True):
@@ -72,6 +72,10 @@ def is_running():
 
 def status(slaap=600):
     while True:
+
+        get_info = remcli_get_info()
+        if get_info:
+            add_db(col='get_info', tag='get_info', slug='get_info', data=get_info)
         
         lp = listproducers()
         d = {}
