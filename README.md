@@ -49,7 +49,6 @@ start program = "/prod/REMME-BP-web/bot_prod.sh start" as uid "root" and gid "ro
 stop program = "/prod/REMME-BP-web/bot_prod.sh stop"
 ```
 
-
 nginx config:
 
 ```
