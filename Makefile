@@ -10,7 +10,7 @@ help:
 
 .PHONY: git
 git:
-	git rm --cached -r .
+	#git rm --cached -r .
 	git add -A .
 	git commit -m "$(commit)"
 	git push -u origin master
