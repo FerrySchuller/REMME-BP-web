@@ -15,7 +15,6 @@ root@remme0:/prod/REMME-BP-web# . env/bin/activate
 (env) root@remme0:/prod/REMME-BP-web# pip install -r requirements.txt
 ```
 
-
 systemd config:
 
 ```
