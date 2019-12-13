@@ -1,5 +1,5 @@
 # REMME-BP-web
-REMME Block Producer Flask app by josien.net
+REMME Block Producer Flask / Mongo app by josien.net
 
 Live site: https://josien.net
 
