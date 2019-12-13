@@ -214,14 +214,18 @@ def _listproducers():
                     i['owner'] = '<a href={0}>{1}&nbsp;&nbsp;<i class="fas fa-sync fa-spin fa-1x"></i></a>'.format(url_for('owner', owner=row['owner']), row['owner'])
                 else:
                     i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=row['owner']), row['owner'])
-                #i['total_votes'] = '{:0,.0f}'.format(float(row['total_votes']))
-                i['total_votes'] = '{} <small class="text-muted">{:0,.0f}</small>'.format(human_readable(row['total_votes']), float(row['total_votes']))
-                staked = gen_locked_stake('app/cache/{}.json'.format(row['owner']))
-                #i['staked'] = '{:0,.0f}'.format(float(staked))
                 try:
+                    i['total_votes'] = '{} <small class="text-muted">{:0,.0f}</small>'.format(human_readable(row['total_votes']), float(row['total_votes']))
+                except:
+                    i['total_votes'] = 'No votes'
+                    jlog.critical('Vote error: {}'.format(sys.exc_info()))
+                    print(sys.exc_info())
+                try:
+                    staked = gen_locked_stake('app/cache/{}.json'.format(row['owner']))
                     i['staked'] = '{} <small class="text-muted">{:0,.0f}</small>'.format(human_readable(staked), float(staked))
                 except:
-                    i['staked'] = ''
+                    i['staked'] = 'Nothing staked'
+                    jlog.critical('Staked error: {}'.format(sys.exc_info()))
                     print(sys.exc_info())
                 i['social'] = gen_social('app/cache/{}.json'.format(row['owner']))
                 i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
