@@ -14,7 +14,7 @@ from time import sleep
 from datetime import datetime, timedelta, timezone
 from pprint import pprint
 import requests
-from josien import jlog, db, listproducers, get_account, remcli_get_info
+from josien import jlog, db, listproducers, get_account, remcli_get_info, remcli_get_action_swap
 
 
 def init(stdout=True):
@@ -75,8 +75,12 @@ def status(slaap=600):
 
         get_info = remcli_get_info()
         if get_info:
-            add_db(col='get_info', tag='get_info', slug='get_info', data=get_info)
+            add_db(col='cache', tag='get_info', slug='get_info', data=get_info)
         
+        swap = remcli_get_action_swap()
+        if swap:
+            add_db(col='cache', tag='get_swap', slug='get_swap', data=get_info)
+
         lp = listproducers()
         d = {}
         locked_stake = 0
@@ -99,7 +103,7 @@ def status(slaap=600):
                             print(sys.exc_info())
                             jlog.critical("{}".format(sys.exc_info()))
 
-                add_db(col='owners', tag='cache', slug='cache', data=d)
+                add_db(col='owners', tag='owners', slug='owners', data=d)
     
         jlog.info('Sleeping for: {} seconds'.format(slaap))
         sleep(slaap)

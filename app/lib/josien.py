@@ -109,6 +109,18 @@ def remcli_get_info():
     return j
 
 
+def remcli_get_action_swap():
+    o = cmd_run('/usr/bin/remcli get actions rem.swap -j')
+    j = False
+    if o:
+        try:
+            j = json.loads(o)
+        except:
+            print(sys.exc_info())
+
+    return j
+
+
 def human_readable(v):
     try:
         v = '{:0,.0f}'.format(float(v)).split(',')
