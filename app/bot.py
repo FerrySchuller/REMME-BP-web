@@ -79,7 +79,7 @@ def status(slaap=600):
         
         swap = remcli_get_action_swap()
         if swap:
-            add_db(col='cache', tag='get_swap', slug='get_swap', data=get_info)
+            add_db(col='cache', tag='get_swap', slug='get_swap', data=swap)
 
         lp = listproducers()
         d = {}
