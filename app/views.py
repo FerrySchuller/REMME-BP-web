@@ -193,12 +193,12 @@ def _get_account(owner):
 def lwd(owner):
     if owner:
         lwd = db.cache.find_one({"tag": "last_work_done", "data.{}".format(owner): {"$exists": "True"}})
-        if lwd and 'data' in lwd and lwd['data'][owner] and isinstance(lwd['data'][owner], datetime):
-            od = lwd['data'][owner]
-            now = datetime.now()
-            divv = now - od
-            if divv.seconds == 0:
+        if lwd and 'data' in lwd and owner in lwd['data'] and isinstance(lwd['data'][owner], datetime):
+            divv = datetime.now() - lwd['data'][owner]
+            if divv.seconds and divv.seconds == 0:
                 return("<medium>{}</medium>".format(divv.seconds))
+            #if divv.seconds and divv.seconds > 3600:
+            #    return("<medium class='text-danger'>>1 hour no data</medium>".format())
             if divv.seconds and divv.seconds > 120:
                 return("<medium class='text-danger'>{}</medium>".format(divv.seconds))
             if divv.seconds and divv.seconds < 120:
