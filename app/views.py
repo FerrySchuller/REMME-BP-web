@@ -243,7 +243,12 @@ def _listproducers():
                 i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
                 i['votes'] = gen_votes('app/cache/{}.json'.format(row['owner']))
                 i['is_active'] = '<i class="fa fa-check"></i>' if row['is_active'] == 1 else 'x'
-                i['last_work_done'] = lwd(row['owner'])
+                last_work_done = lwd(row['owner'])
+                i['last_work_done'] = False
+                if last_work_done and last_work_done > 120:
+                    i['last_work_done'] = "<medium class='text-danger'>{}</medium>".format(last_work_done)
+                if last_work_done and last_work_done < 120:
+                    i['last_work_done'] = "<medium class='text-success'>{}</medium>".format(last_work_done)
                 i['bp_json'] = ''
                 if feil and feil['bp.json']:
                     i['bp_json'] = '<a target="_blank" href="{}/bp.json"><i class="fa fa-check"></i></a>'.format(row['url'])
