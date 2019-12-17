@@ -193,11 +193,17 @@ def _get_account(owner):
 def lwd(owner):
     if owner:
         lwd = db.cache.find_one({"tag": "last_work_done", "data.{}".format(owner): {"$exists": "True"}})
-        if lwd and 'data' in lwd and lwd['data'][owner]:
+        if lwd and 'data' in lwd and lwd['data'][owner] and isinstance(lwd['data'][owner], datetime):
             od = lwd['data'][owner]
             now = datetime.now()
             divv = now - od
-            return(divv.seconds)
+            if divv.seconds == 0:
+                return("<medium>{}</medium>".format(divv.seconds))
+            if divv.seconds and divv.seconds > 120:
+                return("<medium class='text-danger'>{}</medium>".format(divv.seconds))
+            if divv.seconds and divv.seconds < 120:
+                return("<medium class='text-success'>{}</medium>".format(divv.seconds))
+
     return(False)
 
 @app.route('/_listproducers')
@@ -243,12 +249,7 @@ def _listproducers():
                 i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
                 i['votes'] = gen_votes('app/cache/{}.json'.format(row['owner']))
                 i['is_active'] = '<i class="fa fa-check"></i>' if row['is_active'] == 1 else 'x'
-                last_work_done = lwd(row['owner'])
-                i['last_work_done'] = False
-                if last_work_done and last_work_done > 120:
-                    i['last_work_done'] = "<medium class='text-danger'>{}</medium>".format(last_work_done)
-                if last_work_done and last_work_done < 120:
-                    i['last_work_done'] = "<medium class='text-success'>{}</medium>".format(last_work_done)
+                i['last_work_done'] = lwd(row['owner'])
                 i['bp_json'] = ''
                 if feil and feil['bp.json']:
                     i['bp_json'] = '<a target="_blank" href="{}/bp.json"><i class="fa fa-check"></i></a>'.format(row['url'])
