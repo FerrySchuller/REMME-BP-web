@@ -3,6 +3,7 @@ import os, sys
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from time import sleep
 import requests
 from pprint import pprint
 from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_remswap, get_account, remcli_get_info, human_readable, db
@@ -195,14 +196,14 @@ def lwd(owner):
         lwd = db.cache.find_one({"tag": "last_work_done", "data.{}".format(owner): {"$exists": "True"}})
         if lwd and 'data' in lwd and owner in lwd['data'] and isinstance(lwd['data'][owner], datetime):
             divv = datetime.now() - lwd['data'][owner]
-            if divv.seconds and divv.seconds == 0:
-                return("<medium>{}</medium>".format(divv.seconds))
             #if divv.seconds and divv.seconds > 3600:
             #    return("<medium class='text-danger'>>1 hour no data</medium>".format())
             if divv.seconds and divv.seconds > 240:
                 return("<medium class='text-danger'>{}</medium>".format(divv.seconds))
             if divv.seconds and divv.seconds < 240:
                 return("<medium class='text-success'>{}</medium>".format(divv.seconds))
+            if divv.seconds:
+                return("<medium>{}</medium>".format(divv.seconds))
 
     return(False)
 
