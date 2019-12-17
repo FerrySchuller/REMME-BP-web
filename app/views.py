@@ -232,7 +232,7 @@ def _listproducers():
                     i['klass'] = 'bg-doingwork'
                     i['owner'] = '<a href={0}>{1}&nbsp;&nbsp;<i class="fas fa-sync fa-spin fa-1x"></i></a>'.format(url_for('owner', owner=row['owner']), row['owner'])
                 else:
-                    i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=row['owner']), row['owner'])
+                    i['owner'] = '<a href={0}>{1} {2}</a>'.format(url_for('owner', owner=row['owner']), row['owner'], lwd(row['owner']))
                 try:
                     i['total_votes'] = '{} <small class="text-muted">{:0,.0f}</small>'.format(human_readable(row['total_votes']), float(row['total_votes']))
                 except:
@@ -250,7 +250,6 @@ def _listproducers():
                 i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
                 i['votes'] = gen_votes('app/cache/{}.json'.format(row['owner']))
                 i['is_active'] = '<i class="fa fa-check"></i>' if row['is_active'] == 1 else 'x'
-                i['last_work_done'] = lwd(row['owner'])
                 i['bp_json'] = ''
                 if feil and feil['bp.json']:
                     i['bp_json'] = '<a target="_blank" href="{}/bp.json"><i class="fa fa-check"></i></a>'.format(row['url'])
