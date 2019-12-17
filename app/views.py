@@ -1,15 +1,16 @@
 from flask import render_template, jsonify, flash, url_for
 import os, sys
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import requests
 from pprint import pprint
-from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_remswap, get_account, remcli_get_info, human_readable
+from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_remswap, get_account, remcli_get_info, human_readable, db
 from app.app import app
 
 log_file = os.getenv('LOG_FILE', False)
 jlog = jlog(stdout=True, feil=log_file)
+db = db()
 
 # lets encrypt once for domain validation
 # certbot certonly --manual
@@ -189,6 +190,16 @@ def _get_account(owner):
     return jsonify(d)
 
 
+def lwd(owner):
+    if owner:
+        lwd = db.cache.find_one({"tag": "last_work_done", "data.{}".format(owner): {"$exists": "True"}})
+        if lwd and 'data' in lwd and lwd['data'][owner]:
+            od = lwd['data'][owner]
+            now = datetime.now()
+            divv = now - od
+            return(divv.seconds)
+    return(False)
+
 @app.route('/_listproducers')
 def _listproducers():
     i = remcli_get_info()
@@ -197,6 +208,7 @@ def _listproducers():
 
     d = False
     lp = listproducers()
+
 
     if lp and isinstance(lp, dict):
         d = {}
@@ -231,6 +243,7 @@ def _listproducers():
                 i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
                 i['votes'] = gen_votes('app/cache/{}.json'.format(row['owner']))
                 i['is_active'] = '<i class="fa fa-check"></i>' if row['is_active'] == 1 else 'x'
+                i['last_work_done'] = lwd(row['owner'])
                 i['bp_json'] = ''
                 if feil and feil['bp.json']:
                     i['bp_json'] = '<a target="_blank" href="{}/bp.json"><i class="fa fa-check"></i></a>'.format(row['url'])

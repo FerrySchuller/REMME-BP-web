@@ -72,6 +72,7 @@ def is_running():
 
 def last_work_done(slaap=2):
     while True:
+
         get_info = remcli_get_info()
         lwd = db.cache.find_one({"tag": "last_work_done"})
         if get_info and lwd and 'data' in lwd:

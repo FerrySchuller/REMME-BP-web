@@ -57,6 +57,7 @@ $(document).ready(function() {
                       { "data": "social" },
                       { "data": "url" },
                       { "data": "votes" },
+                      { "data": "last_work_done" },
                       { "data": "bp_json" },
                       // { "data": "is_active"} 
                     ],
