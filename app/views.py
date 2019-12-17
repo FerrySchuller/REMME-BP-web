@@ -199,9 +199,9 @@ def lwd(owner):
                 return("<medium>{}</medium>".format(divv.seconds))
             #if divv.seconds and divv.seconds > 3600:
             #    return("<medium class='text-danger'>>1 hour no data</medium>".format())
-            if divv.seconds and divv.seconds > 120:
+            if divv.seconds and divv.seconds > 240:
                 return("<medium class='text-danger'>{}</medium>".format(divv.seconds))
-            if divv.seconds and divv.seconds < 120:
+            if divv.seconds and divv.seconds < 240:
                 return("<medium class='text-success'>{}</medium>".format(divv.seconds))
 
     return(False)
