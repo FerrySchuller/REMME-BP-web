@@ -91,7 +91,8 @@ def last_work_done(slaap=2):
             except:
                 print(sys.exc_info())
                 jlog.critical("last_work_done {}".format(sys.exc_info()))
-        else:
+
+        if not lwd and get_info:
             jlog.info("last_work_done INIT".format())
             d = {}
             d['created_at'] = datetime.now(timezone.utc)
