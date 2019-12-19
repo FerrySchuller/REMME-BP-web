@@ -19,9 +19,14 @@ table#listproducers.dataTable tr:hover {
   background-color: #523d6d;
 }
 
-.toolbar {
+.toolbarbps {
     float: left;
 }
+
+.toolbarguardians {
+    float: left;
+}
+
 
 ul.social-network {
 	list-style: none;

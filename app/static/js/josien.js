@@ -35,10 +35,12 @@ $(document).ready(function(owner) {
                      { "data": "producers" } 
                    ],
         "order": [ [1, "desc"] ],
-        "searching": false,
+        "searching": true,
         "paging": false,
         "info": false,
+        "dom": '<"toolbarguardians">frtip'
     });
+    $("div.toolbarguardians").html('<h4>Guardians</h4>');
     setInterval(function() {
       $('#listvoters').DataTable().ajax.reload(null, false);
   }, 3000);
@@ -66,9 +68,9 @@ $(document).ready(function() {
          "searching": true,
          "paging": false,
          "info": false,
-         "dom": '<"toolbar">frtip'
+         "dom": '<"toolbarbps">frtip'
     });
-    $("div.toolbar").html('<h4>Block Producers</h4>');
+    $("div.toolbarbps").html('<h4>Block Producers</h4>');
     setInterval(function() {
       $('#listproducers').DataTable().ajax.reload(null, false);
   }, 6000);
