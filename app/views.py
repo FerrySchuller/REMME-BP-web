@@ -174,7 +174,12 @@ def _listproducers():
     
                     i['social'] = gen_social(owner_cached)
                     i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
-                    i['last_work_done'] = lwd(row['owner'])
+
+                    if row['owner'] == producing:
+                        i['last_work_done'] = '<i class="fas fa-sync fa-spin fa-1x"></i>'
+                    else:
+                        i['last_work_done'] = lwd(row['owner'])
+
                     if owner_cached['data']['bp_json']:
                         i['bp_json'] = '<a target="_blank" href="{}/bp.json"><i class="fa fa-check"></i></a>'.format(row['url'])
                     d['data'].append(i)
