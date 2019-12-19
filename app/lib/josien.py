@@ -62,6 +62,18 @@ def cmd_run(cmd):
     return ""
 
 
+def listvoters():
+    o = cmd_run('/usr/bin/remcli system listvoters --json')
+    j = False
+    if o:
+        try:
+            j = json.loads(o)
+        except:
+            print(sys.exc_info())
+
+    return j
+
+
 def listproducers():
     o = cmd_run('/usr/bin/remcli system listproducers --json')
     j = False

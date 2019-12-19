@@ -20,6 +20,31 @@ $(document).ready(function(owner) {
 });
 
 
+$(document).ready(function(owner) {
+    $('#listvoters').DataTable( {
+        "ajax": "/_listvoters",
+         "createdRow": function(row, data, index) {
+            if(data.klass) { $(row).addClass(data.klass); } },
+         "columnDefs": [ { "targets": [ 0 ],
+                           "visible": true } ],
+        "columns": [ { "data": "owner" },
+                     { "data": "staked" },
+                     { "data": "last_vote_weight" },
+                     { "data": "stake_lock_time" },
+                     { "data": "pending_perstake_reward" },
+                     { "data": "producers" } 
+                   ],
+        "order": [ [1, "desc"] ],
+        "searching": false,
+        "paging": false,
+        "info": false,
+    });
+    setInterval(function() {
+      $('#listvoters').DataTable().ajax.reload(null, false);
+  }, 3000);
+});
+
+
 $(document).ready(function() {
     $('#listproducers').DataTable( {
         "ajax": "./_listproducers",

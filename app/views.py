@@ -7,7 +7,7 @@ from time import sleep
 import pymongo
 import requests
 from pprint import pprint
-from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_remswap, get_account, remcli_get_info, human_readable, db
+from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_remswap, get_account, remcli_get_info, human_readable, db, listvoters
 from app.app import app
 
 log_file = os.getenv('LOG_FILE', False)
@@ -72,6 +72,11 @@ def index():
     track_event( category='index', action='test index')
     return render_template( 'index.html' )
 
+@app.route('/guardians')
+def guardians():
+    track_event( category='guardians', action='guardians')
+    return render_template( 'guardians.html' )
+
 
 @app.route('/code_of_conduct')
 def code_of_conduct():
@@ -131,6 +136,44 @@ def lwd(owner):
 
     return(False)
 
+
+
+
+@app.route('/_listvoters')
+def _listvoters():
+    d = {}
+    d['data'] = []
+    lv = listvoters()
+    if lv and 'rows' in lv:
+        for g in lv['rows']:
+            i = {}
+            i['owner'] = g['owner']
+            try:
+                i['staked'] = "{:0,.0f}".format((float(g['staked']) / 10000))
+            except:
+                i['staked'] = ''
+                jlog.critical('STAKED FLOAT ERROR: {}'.format(sys.exc_info()))
+
+
+            try:
+                i['last_vote_weight'] = "{:0,.0f}".format((float(g['last_vote_weight'])/ 10000))
+            except: 
+                i['last_vote_weight'] = ''
+                jlog.critical('LAST_VOTE_WEIGHT FLOAT ERROR: {}'.format(sys.exc_info()))
+
+            i['stake_lock_time'] = g['stake_lock_time']
+            try:
+                i['pending_perstake_reward'] = "{:.2f}".format((g['pending_perstake_reward'] / 10000))
+            except: 
+                i['pending_perstake_reward'] = ''
+
+            try:
+                i['producers'] = ' '.join(g['producers'])
+            except: 
+                i['producers'] = ''
+        
+            d['data'].append(i)
+    return jsonify(d)
 
 
 @app.route('/_listproducers')
