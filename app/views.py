@@ -2,6 +2,7 @@ from flask import render_template, jsonify, flash, url_for
 import os, sys
 import json
 from datetime import datetime, timedelta, timezone
+from dateutil.parser import parse
 from pathlib import Path
 from time import sleep
 import pymongo
@@ -168,7 +169,11 @@ def _listvoters():
                     i['last_vote_weight'] = ''
                     jlog.critical('LAST_VOTE_WEIGHT FLOAT ERROR: {}'.format(sys.exc_info()))
     
-                i['stake_lock_time'] = g['stake_lock_time']
+                try:
+                    dt = parse(g['stake_lock_time'])
+                    i['stake_lock_time'] = '{:%Y-%m-%d - %H:%M:%S}'.format(dt)
+                except: 
+                    i['stake_lock_time'] = ''
                 try:
                     remme = (g['pending_perstake_reward'] / 10000)
                     if price:
