@@ -4,6 +4,7 @@ import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from time import sleep
+import pymongo
 import requests
 from pprint import pprint
 from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_remswap, get_account, remcli_get_info, human_readable, db
@@ -19,42 +20,29 @@ db = db()
 #def letsencrypt():
 #    return "<key>.<xo>"
 
-def gen_social(feil):
-    if os.path.exists(feil):
-        with open(feil) as json_file:
-            f = json.load(json_file)
-            if 'bp.json' in f and f['bp.json']:
-                 o = '<div><ul class="social-network">'
-                 for k,v in f['bp.json']['org']['social'].items():
-                     if v:
-                         if k == 'facebook':
-                             o += '<li><a target="_blank" href="https://facebook.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                         if k == 'twitter':
-                             o += '<li><a target="_blank" href="https://twitter.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                         if k == 'telegram':
-                             o += '<li><a target="_blank" href="https://t.me/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                         if k == 'reddit':
-                             o += '<li><a target="_blank" href="https://reddit.com/user/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                         if k == 'github':
-                             o += '<li><a target="_blank" href="https://github.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                         if k == 'linkedin':
-                             o += '<li><a target="_blank" href="https://linkedin.com/in/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                 o += '</ul></div>'
 
-                 return(o)
+def gen_social(j):
+    if j['data']['bp_json']:
+        o = '<div><ul class="social-network">'
+        for k,v in j['data']['bp_json']['org']['social'].items():
+            if v:
+                if k == 'facebook':
+                    o += '<li><a target="_blank" href="https://facebook.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                if k == 'twitter':
+                    o += '<li><a target="_blank" href="https://twitter.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                if k == 'telegram':
+                    o += '<li><a target="_blank" href="https://t.me/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                if k == 'reddit':
+                    o += '<li><a target="_blank" href="https://reddit.com/user/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                if k == 'github':
+                    o += '<li><a target="_blank" href="https://github.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                if k == 'linkedin':
+                    o += '<li><a target="_blank" href="https://linkedin.com/in/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+        o += '</ul></div>'
+        return(o)
     return('')
 
 
-def gen_votes(feil):
-    if os.path.exists(feil):
-        with open(feil) as json_file:
-            f = json.load(json_file)
-            if 'owner' in f and f['owner']:
-                o = ''
-                for producer in f['owner']['voter_info']['producers']:
-                    o += '<a href={0}>{1}</a>&nbsp;'.format(url_for('owner', owner=producer), producer)
-                return(o)
-    return('')
 
 
 def get_feil(feil):
@@ -75,15 +63,14 @@ def gen_locked_stake(feil):
             if 'owner' in f and f['owner']:
                 o = f['owner']['voter_info']['locked_stake']
                 return(o)
-    return('')
+    return(False)
 
 
 
 @app.route('/')
 def index():
     track_event( category='index', action='test index')
-    data = get_feil('app/cache/josiendotnet.json')
-    return render_template( 'index.html', data=data )
+    return render_template( 'index.html' )
 
 
 @app.route('/code_of_conduct')
@@ -145,6 +132,7 @@ def lwd(owner):
     return(False)
 
 
+
 @app.route('/_listproducers')
 def _listproducers():
     i = remcli_get_info()
@@ -154,47 +142,43 @@ def _listproducers():
     d = False
     lp = listproducers()
 
-
     if lp and isinstance(lp, dict):
         d = {}
         d['data'] = []
         if 'rows' in lp:
-            rows = sorted(lp['rows'], key=lambda k: (float(k['total_votes'])), reverse=True)
             r = 1
-            for row in rows:
-                feil = get_feil('app/cache/{}.json'.format(row['owner']))
-                i = {}
-                i['position'] = '{}'.format(r)
-                r += 1
-                if row['owner'] == producing:
-                    i['klass'] = 'bg-doingwork'
+            for row in lp['rows']:
+                owner_cached = db.owners.find_one( {"tag": "owners", "data.owner.account_name": "{}".format(row['owner'])}, 
+                                                   sort=[('created_at', pymongo.DESCENDING)])
+                if owner_cached:
+                    ''' INIT table '''
+                    i = {}
+                    i['position'] = False
+                    i['total_votes'] = False
+                    i['social'] = False
+                    i['url'] = False
+                    i['last_work_done'] = False
+                    i['bp_json'] = ''
+    
+    
+                    i['position'] = '{}'.format(r)
+                    r += 1
+    
                     i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=row['owner']), row['owner'])
-                else:
-                    i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=row['owner']), row['owner'])
-                try:
-                    i['total_votes'] = '{} <small class="text-muted">{:0,.0f}</small>'.format(human_readable(row['total_votes']), float(row['total_votes']))
-                except:
-                    i['total_votes'] = 'No votes'
-                    jlog.critical('Vote error: {}'.format(sys.exc_info()))
-                    print(sys.exc_info())
-                try:
-                    staked = gen_locked_stake('app/cache/{}.json'.format(row['owner']))
-                    i['staked'] = '{} <small class="text-muted">{:0,.0f}</small>'.format(human_readable(staked), float(staked))
-                except:
-                    i['staked'] = 'Nothing staked'
-                    jlog.critical('STAKED ERROR: {}'.format(sys.exc_info()))
-                i['social'] = gen_social('app/cache/{}.json'.format(row['owner']))
-                i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
-                i['votes'] = gen_votes('app/cache/{}.json'.format(row['owner']))
-                i['is_active'] = '<i class="fa fa-check"></i>' if row['is_active'] == 1 else 'x'
-                i['last_work_done'] = lwd(row['owner'])
-                if row['owner'] == producing:
-                    i['last_work_done'] = '<i class="fas fa-sync fa-spin fa-1x"></i>'
-                i['bp_json'] = ''
-                if feil and feil['bp.json']:
-                    i['bp_json'] = '<a target="_blank" href="{}/bp.json"><i class="fa fa-check"></i></a>'.format(row['url'])
-                d['data'].append(i)
-
+    
+                    try:
+                        total_votes = (float(row['total_votes']) / 10000)
+                        i['total_votes'] = '{:0,.0f}'.format(total_votes)
+                    except:
+                        jlog.critical('TOTAL VOTES ERROR: {}'.format(sys.exc_info()))
+    
+                    i['social'] = gen_social(owner_cached)
+                    i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
+                    i['last_work_done'] = lwd(row['owner'])
+                    if owner_cached['data']['bp_json']:
+                        i['bp_json'] = '<a target="_blank" href="{}/bp.json"><i class="fa fa-check"></i></a>'.format(row['url'])
+                    d['data'].append(i)
+    
     return jsonify(d)
 
 
