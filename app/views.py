@@ -97,23 +97,6 @@ def ownership_disclosure():
     track_event( category='index', action='ownership_disclosure')
     return render_template( 'ownership_disclosure.html' )
 
-@app.route('/producers')
-def producers():
-    track_event( category='index', action='Producers')
-    return render_template( 'producers.html' )
-
-
-@app.route('/permissions')
-def permissions():
-    track_event( category='index', action='Permissions')
-    return render_template( 'permissions.html' )
-
-
-@app.route('/remswap')
-def remswap():
-    track_event( category='index', action='rem.swap')
-    return render_template( 'remswap.html' )
-
 
 @app.route('/owner/<owner>')
 def owner(owner):
@@ -127,50 +110,6 @@ def owner(owner):
 @app.route('/dev')
 def dev():
     return render_template( 'dev.html', d=data )
-
-
-@app.route('/_get_permissions')
-def get_permissions():
-    lp = listproducers()
-    d = {}
-    d['data'] = []
-
-    if lp and 'rows' in lp:
-        for p in lp['rows']:
-            owner = get_account(p['owner'])
-            if 'permissions' in owner:
-                for permission in owner['permissions']:
-                    i = {}
-                    i['position'] = 0
-                    i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=p['owner']), p['owner'])
-                    i['perm_name'] = permission['perm_name']
-                    i['parent'] = permission['parent']
-                    i['keys'] = str(permission['required_auth']['keys'])
-                    d['data'].append(i)
-
-    return jsonify(d)
-
-
-
-@app.route('/_get_remswap')
-def _get_remswap():
-    d = False
-    remswap = get_remswap()
-
-    if remswap:
-        d = {}
-        d['data'] = []
-        for k,v in remswap.items():
-            if 'actions' in k:
-                for i in v:
-                    for k,v in i.items():
-                        i = {}
-                        i['position'] = 0
-                        i['key'] = k
-                        i['value'] = str(v)
-                        d['data'].append(i)
-
-    return jsonify(d)
 
 
 @app.route('/_get_account/<owner>')
@@ -198,14 +137,17 @@ def lwd(owner):
             divv = datetime.now() - lwd['data'][owner]
             #if divv.seconds and divv.seconds > 3600:
             #    return("<medium class='text-danger'>>1 hour no data</medium>".format())
-            if divv.seconds and divv.seconds > 240:
+            if divv.seconds and divv.seconds > 3600:
                 return("<medium class='text-danger'>{}</medium>".format(divv.seconds))
+            if divv.seconds and divv.seconds > 240:
+                return("<medium class='text-warning'>{}</medium>".format(divv.seconds))
             if divv.seconds and divv.seconds < 240:
                 return("<medium class='text-success'>{}</medium>".format(divv.seconds))
             if divv.seconds:
                 return("<medium>{}</medium>".format(divv.seconds))
 
     return(False)
+
 
 @app.route('/_listproducers')
 def _listproducers():
@@ -244,8 +186,7 @@ def _listproducers():
                     i['staked'] = '{} <small class="text-muted">{:0,.0f}</small>'.format(human_readable(staked), float(staked))
                 except:
                     i['staked'] = 'Nothing staked'
-                    jlog.critical('Staked error: {}'.format(sys.exc_info()))
-                    print(sys.exc_info())
+                    jlog.critical('STAKED ERROR: {}'.format(sys.exc_info()))
                 i['social'] = gen_social('app/cache/{}.json'.format(row['owner']))
                 i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
                 i['votes'] = gen_votes('app/cache/{}.json'.format(row['owner']))
