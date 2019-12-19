@@ -140,7 +140,7 @@ def lwd(owner):
             if divv.seconds and divv.seconds > 3600:
                 return("<medium class='text-warning'>{:.0f} Hours</medium>".format(divv.seconds / 3600))
             if divv.seconds:
-                return("<medium class='text-success'>{} Secs</medium>".format(divv.seconds))
+                return("<medium class='text-success'>{}</medium>".format(divv.seconds))
 
     return(False)
 
