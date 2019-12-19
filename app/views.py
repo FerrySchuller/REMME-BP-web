@@ -147,7 +147,8 @@ def _listproducers():
         d['data'] = []
         if 'rows' in lp:
             r = 1
-            for row in lp['rows']:
+            rows = sorted(lp['rows'], key=lambda k: (float(k['total_votes'])), reverse=True)
+            for row in rows:
                 owner_cached = db.owners.find_one( {"tag": "owners", "data.owner.account_name": "{}".format(row['owner'])}, 
                                                    sort=[('created_at', pymongo.DESCENDING)])
                 if owner_cached:
