@@ -141,10 +141,16 @@ def lwd(owner):
 
 @app.route('/_listvoters')
 def _listvoters():
+    price = False
     d = {}
     d['data'] = []
     lv = listvoters()
     if lv and 'rows' in lv:
+
+        usd_rem = db.cache.find_one( {"tag": "usd_rem"}, 
+                                   sort=[('created_at', pymongo.DESCENDING)])
+        if usd_rem and 'data' in usd_rem and 'USD' in usd_rem['data']:
+            price = usd_rem['data']['USD']
         for g in lv['rows']:
             if (float(g['staked']) > 2500000000):
                 i = {}
@@ -164,7 +170,12 @@ def _listvoters():
     
                 i['stake_lock_time'] = g['stake_lock_time']
                 try:
-                    i['pending_perstake_reward'] = "{:.2f}".format((g['pending_perstake_reward'] / 10000))
+                    remme = (g['pending_perstake_reward'] / 10000)
+                    if price:
+                        rem_usd = remme * price
+                        i['pending_perstake_reward'] = '{:.2f} <small class="text-muted">${:.2f}</small>'.format(remme, rem_usd)
+                    else:
+                        i['pending_perstake_reward'] = "REM: {:.2f}".format(remme)
                 except: 
                     i['pending_perstake_reward'] = ''
     

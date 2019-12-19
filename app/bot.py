@@ -110,6 +110,11 @@ def last_work_done(slaap=2):
 def status(slaap=600):
     while True:
 
+        url = "https://min-api.cryptocompare.com/data/price?fsym=REM&tsyms=USD&api_key={}".format(os.getenv('cryptocompare_key', False))
+        r = requests.get(url)
+        if r and r.ok and r.json:
+            add_db(col='cache', tag='usd_rem', slug='usd_rem', data=r.json())
+
         get_info = remcli_get_info()
         if get_info:
             add_db(col='cache', tag='get_info', slug='get_info', data=get_info)
