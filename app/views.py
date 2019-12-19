@@ -135,16 +135,12 @@ def lwd(owner):
         lwd = db.cache.find_one({"tag": "last_work_done", "data.{}".format(owner): {"$exists": "True"}})
         if lwd and 'data' in lwd and owner in lwd['data'] and isinstance(lwd['data'][owner], datetime):
             divv = datetime.now() - lwd['data'][owner]
-            #if divv.seconds and divv.seconds > 3600:
-            #    return("<medium class='text-danger'>>1 hour no data</medium>".format())
+            if divv.seconds and divv.seconds > 86400:
+                return("<medium class='text-danger'>{:.0f} Days</medium>".format(divv.seconds / 86400))
             if divv.seconds and divv.seconds > 3600:
-                return("<medium class='text-danger'>{}</medium>".format(divv.seconds))
-            if divv.seconds and divv.seconds > 240:
-                return("<medium class='text-warning'>{}</medium>".format(divv.seconds))
-            if divv.seconds and divv.seconds < 240:
-                return("<medium class='text-success'>{}</medium>".format(divv.seconds))
+                return("<medium class='text-warning'>{:.0f} Hours</medium>".format(divv.seconds / 3600))
             if divv.seconds:
-                return("<medium>{}</medium>".format(divv.seconds))
+                return("<medium class='text-success'>{} Secs</medium>".format(divv.seconds))
 
     return(False)
 
