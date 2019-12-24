@@ -63,7 +63,7 @@ def cmd_run(cmd):
 
 
 def listvoters():
-    o = cmd_run('/usr/bin/remcli system listvoters --json')
+    o = cmd_run('/usr/bin/remcli system listvoters --json -l 100')
     j = False
     if o:
         try:
@@ -75,7 +75,7 @@ def listvoters():
 
 
 def listproducers():
-    o = cmd_run('/usr/bin/remcli system listproducers --json')
+    o = cmd_run('/usr/bin/remcli system listproducers --json -l 100')
     j = False
     if o:
         try:
