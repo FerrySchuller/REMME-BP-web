@@ -171,14 +171,18 @@ def _listvoters():
     
                 try:
                     dt = parse(g['stake_lock_time'])
-                    i['stake_lock_time'] = '{:%Y-%m-%d - %H:%M:%S}'.format(dt)
+                    days = dt - datetime.now()
+                    i['stake_lock_time'] = '{} days'.format(days.days)
+                    #i['stake_lock_time'] = '{:%Y-%m-%d - %H:%M:%S}'.format(dt)
                 except: 
                     i['stake_lock_time'] = ''
                 try:
                     remme = (g['pending_perstake_reward'] / 10000)
                     if price:
                         rem_usd = remme * price
-                        i['pending_perstake_reward'] = '{:.2f} <small class="text-muted">${:.2f}</small>'.format(remme, rem_usd)
+                        i['pending_perstake_reward_usd'] = '${:.2f}'.format(rem_usd)
+                        i['pending_perstake_reward'] = '{:.2f}'.format(remme)
+                        #i['pending_perstake_reward'] = '{:.2f} <small class="text-muted">${:.2f}</small>'.format(remme, rem_usd)
                     else:
                         i['pending_perstake_reward'] = "REM: {:.2f}".format(remme)
                 except: 

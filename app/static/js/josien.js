@@ -25,13 +25,13 @@ $(document).ready(function(owner) {
         "ajax": "/_listvoters",
          "createdRow": function(row, data, index) {
             if(data.klass) { $(row).addClass(data.klass); } },
-         "columnDefs": [ { "targets": [ 0 ],
-                           "visible": true } ],
+         "columnDefs": [ { "targets": 4, "type": "num-fmt" } ],
         "columns": [ { "data": "owner" },
                      { "data": "staked" },
                      { "data": "last_vote_weight" },
                      { "data": "stake_lock_time" },
                      { "data": "pending_perstake_reward" },
+                     { "data": "pending_perstake_reward_usd" },
                      { "data": "producers" } 
                    ],
         "order": [ [1, "desc"] ],
