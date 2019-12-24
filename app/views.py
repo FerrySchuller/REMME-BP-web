@@ -327,7 +327,7 @@ def bp():
                     "longitude": 4.8945
                   },
                   "node_type": "producer",
-                  "p2p_endpoint": "",
+                  "p2p_endpoint": "p2p.remchain.josien.net:9876",
                   "bnet_endpoint": "",
                   "api_endpoint": "",
                   "ssl_endpoint": ""

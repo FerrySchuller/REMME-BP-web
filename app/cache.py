@@ -27,7 +27,7 @@ def cache_owner():
                     try:
                         d['bp.json'] = r.json()
                     except:
-                        print(sys.exc_info())
+                        print(row['owner'],sys.exc_info())
     
             with open(feil, 'w') as outfile:
                 json.dump(d, outfile)
