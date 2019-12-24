@@ -1,3 +1,7 @@
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
 $(document).ready(function(owner) {
     var owner = 'josiendotnet';
     $('#josiendotnet').DataTable( {
