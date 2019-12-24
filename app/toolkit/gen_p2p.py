@@ -1,5 +1,5 @@
 import requests
-import socket;
+import socket
 import sys
 
 
