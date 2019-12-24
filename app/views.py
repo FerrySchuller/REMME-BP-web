@@ -8,7 +8,7 @@ from time import sleep
 import pymongo
 import requests
 from pprint import pprint
-from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_remswap, get_account, remcli_get_info, human_readable, db, listvoters
+from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_account, remcli_get_info, human_readable, db, listvoters
 from app.app import app
 
 log_file = os.getenv('LOG_FILE', False)

@@ -86,7 +86,7 @@ def listproducers():
     return j
 
 def get_remswap():
-    o = cmd_run('/usr/bin/remcli --url https://testchain.remme.io get actions rem.swap --json')
+    o = cmd_run('/usr/bin/remcli get actions rem.swap --json')
     j = False
     if o:
         try:
