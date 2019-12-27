@@ -8,8 +8,8 @@ assets = Environment(app)
 
 
 js = Bundle( 'js/jquery-3.4.1.min.js',
-             'js/highstock.js',
              'js/popper.min.js',
+             'js/highstock.js',
              'js/bootstrap.js',
              'js/bootstrap-notify.js',
              'js/datatables.js',
