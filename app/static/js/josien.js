@@ -58,7 +58,7 @@ $(document).ready(function() {
             if(data.klass) { $(row).addClass(data.klass); }
             // $(row).find('td').attr('data-sort', data.total_votes)
             },
-         "columnDefs": [ { "target": 3, "type": "html" } ],
+         "columnDefs": [ { "targets": 3, "orderable": false } ],
          "columns": [ { "data": "position" },
                       { "data": "owner" },
                       { "data": "total_votes" },
