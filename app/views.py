@@ -228,7 +228,7 @@ def _listproducers():
                     i['bp_json'] = ''
     
                     if 'voters' in owner_cached['data'] and isinstance(owner_cached['data']['voters'], list):                     
-                        i['voters'] = '<text data-toggle="tooltip" data-placement="top" data-html="true" title="{0}">{1}</text>'.format('<br />'.join(owner_cached['data']['voters']), len(owner_cached['data']['voters']))
+                        i['voters'] = '<text data-toggle="tooltip" data-placement="top" data-html="true" title="{0}">{1}</text>'.format('  '.join(owner_cached['data']['voters']), len(owner_cached['data']['voters']))
 
                     i['position'] = '{}'.format(r)
                     r += 1

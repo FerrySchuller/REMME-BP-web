@@ -84,9 +84,11 @@ $(document).ready(function() {
   }, 6000);
 });
 
+/*
 $('#listproducers').on('draw.dt', function () {
   $('[data-toggle="tooltip"]').tooltip({
      "html": true,
      "delay": {"show": 0, "hide": 100},
      });
 });
+*/
