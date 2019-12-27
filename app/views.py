@@ -23,7 +23,7 @@ db = db()
 
 
 def gen_social(j):
-    if j['data']['bp_json']:
+    if j['data']['bp_json'] and 'org' in j['data']['bp_json'] and 'social' in j['data']['bp_json']['org']:
         o = '<div><ul class="social-network">'
         for k,v in j['data']['bp_json']['org']['social'].items():
             if v:
