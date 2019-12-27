@@ -24,23 +24,24 @@ db = db()
 
 def gen_social(j):
     if j['data']['bp_json'] and 'org' in j['data']['bp_json'] and 'social' in j['data']['bp_json']['org']:
-        o = '<div><ul class="social-network">'
-        for k,v in j['data']['bp_json']['org']['social'].items():
-            if v:
-                if k == 'facebook':
-                    o += '<li><a target="_blank" href="https://facebook.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                if k == 'twitter':
-                    o += '<li><a target="_blank" href="https://twitter.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                if k == 'telegram':
-                    o += '<li><a target="_blank" href="https://t.me/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                if k == 'reddit':
-                    o += '<li><a target="_blank" href="https://reddit.com/user/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                if k == 'github':
-                    o += '<li><a target="_blank" href="https://github.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                if k == 'linkedin':
-                    o += '<li><a target="_blank" href="https://linkedin.com/in/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-        o += '</ul></div>'
-        return(o)
+        if isinstance(j['data']['bp_json']['org']['social'], dict):
+            o = '<div><ul class="social-network">'
+            for k,v in j['data']['bp_json']['org']['social'].items():
+                if v:
+                    if k == 'facebook':
+                        o += '<li><a target="_blank" href="https://facebook.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                    if k == 'twitter':
+                        o += '<li><a target="_blank" href="https://twitter.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                    if k == 'telegram':
+                        o += '<li><a target="_blank" href="https://t.me/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                    if k == 'reddit':
+                        o += '<li><a target="_blank" href="https://reddit.com/user/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                    if k == 'github':
+                        o += '<li><a target="_blank" href="https://github.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                    if k == 'linkedin':
+                        o += '<li><a target="_blank" href="https://linkedin.com/in/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+            o += '</ul></div>'
+            return(o)
     return('')
 
 
