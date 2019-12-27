@@ -42,7 +42,7 @@ def add_db(col, slug=False, tag=False, data=False):
     try:
         ref = db[col].insert_one(d)
     except:
-        jlog.critical("{}".format(sys.exc_info()))
+        jlog.critical("{} {}".format(tag, sys.exc_info()))
 
     jlog.info( "col:{}".format(col))
 
@@ -109,6 +109,8 @@ def last_work_done(slaap=2):
 
 def status(slaap=600):
     while True:
+        # temporary for remmonsterbp
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
         url = "https://min-api.cryptocompare.com/data/price?fsym=REM&tsyms=USD&api_key={}".format(os.getenv('cryptocompare_key', False))
         r = requests.get(url)
@@ -140,15 +142,15 @@ def status(slaap=600):
                 d['voters'] = False
                 d['locked_stake_total'] = locked_stake
                 if row['url']:
-                    url = '{}/bp.json'.format(row['url'])
+                    url = '{}/bp.json'.format(row['url'].rstrip('//'))
     
-                    r = requests.get(url)
+
+                    r = requests.get(url, headers=headers)
                     if r.ok and r.json:
                         try:
                             d['bp_json'] = r.json()
                         except:
-                            print(sys.exc_info())
-                            jlog.critical("{}".format(sys.exc_info()))
+                            jlog.critical("bp.json error: {}".format(sys.exc_info()))
 
 
                 if lv and 'rows' in lv and isinstance(lv['rows'], list):
@@ -170,15 +172,11 @@ def status(slaap=600):
 
 def dev():
     print('dev')
-    owner = 'josiendotnet'
-    lv = listvoters()
-    voters = []
-    if lv and 'rows' in lv and isinstance(lv['rows'], list):
-        for row in lv['rows']:
-            if isinstance(row, dict) and 'error' not in row.keys():
-                if owner in row['producers']:
-                    voters.append(row['owner'])
-    pprint(voters)
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+    url = "https://www.remmonster.com/bp.json"
+    r = requests.get(url, headers=headers)
+    print(r.ok)
+
 
 def main():
     if not is_running():
