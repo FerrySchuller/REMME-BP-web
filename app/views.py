@@ -71,7 +71,7 @@ def gen_locked_stake(feil):
 
 @app.route('/')
 def index():
-    track_event( category='index', action='test index')
+    track_event( category='index', action='index')
     return render_template( 'index.html' )
 
 @app.route('/guardians')
@@ -219,6 +219,7 @@ def _listproducers():
                 if owner_cached:
                     ''' INIT table '''
                     i = {}
+                    i['voters'] = False
                     i['position'] = False
                     i['total_votes'] = False
                     i['social'] = False
@@ -226,7 +227,9 @@ def _listproducers():
                     i['last_work_done'] = False
                     i['bp_json'] = ''
     
-    
+                    if 'voters' in owner_cached['data'] and isinstance(owner_cached['data']['voters'], list):                     
+                        i['voters'] = '<text data-toggle="tooltip" data-placement="top" data-html="true" title="{0}">{1}</text>'.format('  '.join(owner_cached['data']['voters']), len(owner_cached['data']['voters']))
+
                     i['position'] = '{}'.format(r)
                     r += 1
     

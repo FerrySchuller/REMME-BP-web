@@ -137,6 +137,7 @@ def status(slaap=600):
                 locked_stake += int(owner['voter_info']['locked_stake'])
                 d['owner'] = owner
                 d['bp_json'] = False
+                d['voters'] = False
                 d['locked_stake_total'] = locked_stake
                 if row['url']:
                     url = '{}/bp.json'.format(row['url'])
@@ -149,6 +150,16 @@ def status(slaap=600):
                             print(sys.exc_info())
                             jlog.critical("{}".format(sys.exc_info()))
 
+
+                if lv and 'rows' in lv and isinstance(lv['rows'], list):
+                    voters = []
+                    for voter in lv['rows']:
+                        if isinstance(voter, dict) and 'error' not in voter.keys():
+                            if row['owner'] in voter['producers']:
+                                voters.append(voter['owner'])
+                    d['voters'] = voters
+
+
                 add_db(col='owners', tag='owners', slug='owners', data=d)
 
     
@@ -156,10 +167,18 @@ def status(slaap=600):
         sleep(slaap)
 
 
-def dev():
-    #print(add_db('col', 'slug', 'tag', 'data'))
-    print('dev')
 
+def dev():
+    print('dev')
+    owner = 'josiendotnet'
+    lv = listvoters()
+    voters = []
+    if lv and 'rows' in lv and isinstance(lv['rows'], list):
+        for row in lv['rows']:
+            if isinstance(row, dict) and 'error' not in row.keys():
+                if owner in row['producers']:
+                    voters.append(row['owner'])
+    pprint(voters)
 
 def main():
     if not is_running():

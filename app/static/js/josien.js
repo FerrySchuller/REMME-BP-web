@@ -58,11 +58,11 @@ $(document).ready(function() {
             if(data.klass) { $(row).addClass(data.klass); }
             // $(row).find('td').attr('data-sort', data.total_votes)
             },
-         "columnDefs": [ { "targets": [ 3 ],
-                           "visible": true } ],
+         "columnDefs": [ { "target": 3, "type": "html" } ],
          "columns": [ { "data": "position" },
                       { "data": "owner" },
                       { "data": "total_votes" },
+                      { "data": "voters" },
                       { "data": "social" },
                       { "data": "url" },
                       { "data": "last_work_done" },
