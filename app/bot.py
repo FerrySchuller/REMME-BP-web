@@ -14,7 +14,7 @@ from time import sleep
 from datetime import datetime, timedelta, timezone
 from pprint import pprint
 import requests
-from josien import jlog, db, listproducers, get_account, remcli_get_info, remcli_get_action_swap
+from josien import jlog, db, listproducers, get_account, remcli_get_info, remcli_get_action_swap, listvoters
 
 
 def init(stdout=True):
@@ -115,6 +115,10 @@ def status(slaap=600):
         if r and r.ok and r.json:
             add_db(col='cache', tag='usd_rem', slug='usd_rem', data=r.json())
 
+        lv = listvoters()
+        if lv:
+            add_db(col='cache', tag='guardians', slug='guardians', data=lv)
+
         get_info = remcli_get_info()
         if get_info:
             add_db(col='cache', tag='get_info', slug='get_info', data=get_info)
@@ -146,6 +150,7 @@ def status(slaap=600):
                             jlog.critical("{}".format(sys.exc_info()))
 
                 add_db(col='owners', tag='owners', slug='owners', data=d)
+
     
         jlog.info('Sleeping for: {} seconds'.format(slaap))
         sleep(slaap)

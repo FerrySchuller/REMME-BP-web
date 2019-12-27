@@ -64,7 +64,6 @@ def cmd_run(cmd):
 
 def listvoters():
     o = cmd_run('/usr/bin/remcli system listvoters --json -l 1000')
-    print(o)
     j = False
     if o:
         try:
