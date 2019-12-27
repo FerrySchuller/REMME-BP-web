@@ -1,6 +1,10 @@
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
+$( document ).ready(function() {
+  $('[data-toggle="tooltip"]').tooltip({
+     "html": true,
+     "delay": {"show": 0, "hide": 100},
+     });
+});
+
 
 $(document).ready(function(owner) {
     var owner = 'josiendotnet';
@@ -78,4 +82,11 @@ $(document).ready(function() {
     setInterval(function() {
       $('#listproducers').DataTable().ajax.reload(null, false);
   }, 6000);
+});
+
+$('#listproducers').on('draw.dt', function () {
+  $('[data-toggle="tooltip"]').tooltip({
+     "html": true,
+     "delay": {"show": 0, "hide": 100},
+     });
 });
