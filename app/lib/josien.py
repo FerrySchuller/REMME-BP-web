@@ -53,7 +53,7 @@ def jlog(feil=False, stdout=False):
 
 def cmd_run(cmd):
     process = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE)
-    process.wait()
+    #process.wait()
     data, err = process.communicate()
     if process.returncode is 0:
         return data.decode('utf-8')
@@ -63,7 +63,8 @@ def cmd_run(cmd):
 
 
 def listvoters():
-    o = cmd_run('/usr/bin/remcli system listvoters --json -l 100')
+    o = cmd_run('/usr/bin/remcli system listvoters --json -l 1000')
+    print(o)
     j = False
     if o:
         try:

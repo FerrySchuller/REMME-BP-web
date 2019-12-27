@@ -149,52 +149,52 @@ def _listvoters():
     lv = listvoters()
     if lv and 'rows' in lv:
 
-        usd_rem = db.cache.find_one( {"tag": "usd_rem"}, 
-                                   sort=[('created_at', pymongo.DESCENDING)])
+        usd_rem = db.cache.find_one( {"tag": "usd_rem"}, sort=[('created_at', pymongo.DESCENDING)])
         if usd_rem and 'data' in usd_rem and 'USD' in usd_rem['data']:
             price = usd_rem['data']['USD']
         for g in lv['rows']:
-            if (float(g['staked']) > 2500000000):
-                i = {}
-                i['owner'] = g['owner']
-                try:
-                    i['staked'] = "{:0,.0f}".format((float(g['staked']) / 10000))
-                except:
-                    i['staked'] = ''
-                    jlog.critical('STAKED FLOAT ERROR: {}'.format(sys.exc_info()))
-    
-    
-                try:
-                    i['last_vote_weight'] = "{:0,.0f}".format((float(g['last_vote_weight'])/ 10000))
-                except: 
-                    i['last_vote_weight'] = ''
-                    jlog.critical('LAST_VOTE_WEIGHT FLOAT ERROR: {}'.format(sys.exc_info()))
-    
-                try:
-                    dt = parse(g['stake_lock_time'])
-                    days = dt - datetime.now()
-                    i['stake_lock_time'] = '{} days'.format(days.days)
-                    #i['stake_lock_time'] = '{:%Y-%m-%d - %H:%M:%S}'.format(dt)
-                except: 
-                    i['stake_lock_time'] = ''
-                try:
-                    remme = (g['pending_perstake_reward'] / 10000)
-                    if price:
-                        rem_usd = remme * price
-                        i['pending_perstake_reward_usd'] = '${:.2f}'.format(rem_usd)
-                        i['pending_perstake_reward'] = '{:.2f}'.format(remme)
-                        #i['pending_perstake_reward'] = '{:.2f} <small class="text-muted">${:.2f}</small>'.format(remme, rem_usd)
-                    else:
-                        i['pending_perstake_reward'] = "REM: {:.2f}".format(remme)
-                except: 
-                    i['pending_perstake_reward'] = ''
-    
-                try:
-                    i['producers'] = ' '.join(g['producers'])
-                except: 
-                    i['producers'] = ''
-            
-                d['data'].append(i)
+            if not 'error' in g.keys():
+                if (float(g['staked']) > 2500000000):
+                    i = {}
+                    i['owner'] = g['owner']
+                    try:
+                        i['staked'] = "{:0,.0f}".format((float(g['staked']) / 10000))
+                    except:
+                        i['staked'] = ''
+                        jlog.critical('STAKED FLOAT ERROR: {}'.format(sys.exc_info()))
+        
+        
+                    try:
+                        i['last_vote_weight'] = "{:0,.0f}".format((float(g['last_vote_weight'])/ 10000))
+                    except: 
+                        i['last_vote_weight'] = ''
+                        jlog.critical('LAST_VOTE_WEIGHT FLOAT ERROR: {}'.format(sys.exc_info()))
+        
+                    try:
+                        dt = parse(g['stake_lock_time'])
+                        days = dt - datetime.now()
+                        i['stake_lock_time'] = '{} days'.format(days.days)
+                        #i['stake_lock_time'] = '{:%Y-%m-%d - %H:%M:%S}'.format(dt)
+                    except: 
+                        i['stake_lock_time'] = ''
+                    try:
+                        remme = (g['pending_perstake_reward'] / 10000)
+                        if price:
+                            rem_usd = remme * price
+                            i['pending_perstake_reward_usd'] = '${:.2f}'.format(rem_usd)
+                            i['pending_perstake_reward'] = '{:.2f}'.format(remme)
+                            #i['pending_perstake_reward'] = '{:.2f} <small class="text-muted">${:.2f}</small>'.format(remme, rem_usd)
+                        else:
+                            i['pending_perstake_reward'] = "REM: {:.2f}".format(remme)
+                    except: 
+                        i['pending_perstake_reward'] = ''
+        
+                    try:
+                        i['producers'] = ' '.join(g['producers'])
+                    except: 
+                        i['producers'] = ''
+                
+                    d['data'].append(i)
     return jsonify(d)
 
 
