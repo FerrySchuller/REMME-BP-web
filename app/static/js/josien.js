@@ -51,7 +51,7 @@ $(document).ready(function(owner) {
     $("div.toolbarguardians").html('<h4>Guardians</h4>');
     setInterval(function() {
       $('#listvoters').DataTable().ajax.reload(null, false);
-  }, 3000);
+  }, 10000);
 });
 
 

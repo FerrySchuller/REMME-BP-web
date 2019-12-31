@@ -147,15 +147,20 @@ def _listvoters():
     d = {}
     d['data'] = []
     lv = listvoters()
-    if lv and 'rows' in lv:
+    #print(sorted(lv['rows'], key=lambda k: (float(k['last_vote_weight'])), reverse=True))
+    if lv and 'rows' in lv and isinstance(lv['rows'], list):
 
         usd_rem = db.cache.find_one( {"tag": "usd_rem"}, sort=[('created_at', pymongo.DESCENDING)])
         if usd_rem and 'data' in usd_rem and 'USD' in usd_rem['data']:
             price = usd_rem['data']['USD']
+        r = 1
         for g in lv['rows']:
             if not 'error' in g.keys():
                 if (float(g['staked']) > 2500000000):
                     i = {}
+
+                    i['position'] = r
+                    r += 1
                     i['owner'] = g['owner']
                     try:
                         i['staked'] = "{:0,.0f}".format((float(g['staked']) / 10000))
