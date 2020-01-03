@@ -206,6 +206,7 @@ def _listvoters():
 @app.route('/_listproducers')
 def _listproducers():
     i = remcli_get_info()
+    producing = False
     if i:
         producing = i['head_block_producer']
 
