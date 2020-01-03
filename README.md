@@ -86,6 +86,7 @@ server {
     }
 }
 
+
 # ln -s /etc/nginx/sites-available/josien.net /etc/nginx/sites-enabled/josien.net
 # systemctl status nginx
 # systemctl restart nginx
