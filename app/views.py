@@ -241,13 +241,19 @@ def _listproducers():
                     i['url'] = False
                     i['last_work_done'] = False
                     i['health'] = ''
+                    i['ram'] = '{:.2f}'.format(owner_cached['data']['owner']['ram_usage'] / 10000 ) 
+                    i['cpu'] = '{:.2f}'.format(owner_cached['data']['owner']['cpu_limit']['used'] / 1000000 )
                     i['bp_json'] = ''
     
                     if 'voters' in owner_cached['data'] and isinstance(owner_cached['data']['voters'], list):                     
                         i['voters'] = '<text data-toggle="tooltip" data-placement="top" data-html="true" title="{0}">{1}</text>'.format('  '.join(owner_cached['data']['voters']), len(owner_cached['data']['voters']))
 
+                    health = ''
                     if row['owner'] in swaps:
-                        i['health'] = '<i class="fa fa-check"></i>'
+                        health += '<i class="fa fa-check"></i>&nbsp;'
+                    i['health'] = health
+
+    
                     
                     i['position'] = '{}'.format(r)
                     r += 1
@@ -266,6 +272,7 @@ def _listproducers():
                         i['last_work_done'] = '<i class="fas fa-sync fa-spin fa-1x"></i>'
                     else:
                         i['last_work_done'] = lwd(row['owner'])
+
 
                     if owner_cached['data']['bp_json']:
                         i['bp_json'] = '<a target="_blank" href="{}/bp.json"><i class="fa fa-check"></i></a>'.format(row['url'])

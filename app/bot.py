@@ -14,6 +14,9 @@ from time import sleep
 from datetime import datetime, timedelta, timezone
 from pprint import pprint
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
 from josien import jlog, db, listproducers, get_account, remcli_get_info, remcli_get_action_swap, listvoters
 
 
@@ -145,7 +148,7 @@ def status(slaap=600):
                     url = '{}/bp.json'.format(row['url'].rstrip('//'))
     
 
-                    r = requests.get(url, headers=headers)
+                    r = requests.get(url, headers=headers, verify=False)
                     if r.ok and r.json:
                         try:
                             d['bp_json'] = r.json()
