@@ -68,7 +68,7 @@ $(document).ready(function() {
                       { "data": "total_votes" },
                       { "data": "voters" },
                       { "data": "social" },
-                      { "data": "url" },
+                      { "data": "health" },
                       { "data": "last_work_done" },
                       { "data": "bp_json" },
                     ],

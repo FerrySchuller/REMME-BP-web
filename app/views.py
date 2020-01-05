@@ -22,10 +22,12 @@ db = db()
 #    return "<key>.<xo>"
 
 
-def gen_social(j):
+def gen_social(j, url):
+    o = '<div><ul class="social-network">'
+    if url:
+        o += '<li><a target="_blank" href="{0}" title="{0}"><i class="fas fa-link"></i></a></li>'.format(url)
     if j['data']['bp_json'] and 'org' in j['data']['bp_json'] and 'social' in j['data']['bp_json']['org']:
         if isinstance(j['data']['bp_json']['org']['social'], dict):
-            o = '<div><ul class="social-network">'
             for k,v in j['data']['bp_json']['org']['social'].items():
                 if v:
                     if k == 'facebook':
@@ -41,8 +43,8 @@ def gen_social(j):
                     if k == 'linkedin':
                         o += '<li><a target="_blank" href="https://linkedin.com/in/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
             o += '</ul></div>'
-            return(o)
-    return('')
+    return(o)
+    #return('')
 
 
 
@@ -103,7 +105,8 @@ def owner(owner):
 
 @app.route('/dev')
 def dev():
-    return render_template( 'dev.html', d=data )
+    d = {}
+    return render_template( 'dev.html', d=d )
 
 
 @app.route('/_get_account/<owner>')
@@ -137,7 +140,6 @@ def lwd(owner):
                 return("<medium class='text-success'>{}</medium>".format(divv.seconds))
 
     return(False)
-
 
 
 
@@ -210,6 +212,13 @@ def _listproducers():
     if i:
         producing = i['head_block_producer']
 
+    get_swap = db.cache.find_one({ "tag": "get_swap"}, sort=[('created_at', pymongo.DESCENDING)])
+    swaps = []
+    if get_swap and 'data' in get_swap and isinstance(get_swap['data'], dict) and 'rows' in get_swap['data']:
+        for swap in get_swap['data']['rows']:
+            for s in swap['provided_approvals']:
+                swaps.append(s)
+
     d = False
     lp = listproducers()
 
@@ -231,11 +240,15 @@ def _listproducers():
                     i['social'] = False
                     i['url'] = False
                     i['last_work_done'] = False
+                    i['health'] = ''
                     i['bp_json'] = ''
     
                     if 'voters' in owner_cached['data'] and isinstance(owner_cached['data']['voters'], list):                     
                         i['voters'] = '<text data-toggle="tooltip" data-placement="top" data-html="true" title="{0}">{1}</text>'.format('  '.join(owner_cached['data']['voters']), len(owner_cached['data']['voters']))
 
+                    if row['owner'] in swaps:
+                        i['health'] = '<i class="fa fa-check"></i>'
+                    
                     i['position'] = '{}'.format(r)
                     r += 1
     
@@ -247,8 +260,7 @@ def _listproducers():
                     except:
                         jlog.critical('TOTAL VOTES ERROR: {}'.format(sys.exc_info()))
     
-                    i['social'] = gen_social(owner_cached)
-                    i['url'] = '<a href="{0}" target="_blank" >{0}<!-- <i class="fas fa-globe"></i> --></a>'.format(row['url'])
+                    i['social'] = gen_social(owner_cached, url=row['url'])
 
                     if row['owner'] == producing:
                         i['last_work_done'] = '<i class="fas fa-sync fa-spin fa-1x"></i>'
@@ -257,6 +269,7 @@ def _listproducers():
 
                     if owner_cached['data']['bp_json']:
                         i['bp_json'] = '<a target="_blank" href="{}/bp.json"><i class="fa fa-check"></i></a>'.format(row['url'])
+
                     d['data'].append(i)
     
     return jsonify(d)
