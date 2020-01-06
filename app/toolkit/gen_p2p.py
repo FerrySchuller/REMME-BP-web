@@ -32,7 +32,14 @@ def main():
         if o and 'rows' in o:
             for row in o['rows']:
                 url = '{}/bp.json'.format(row['url'])
-                bp_json = requests.get(url)
+
+                bp_json = False
+                try:
+                    bp_json = requests.get(url)
+                except:
+                    pass
+                    #print(sys.exc_info())
+
                 bp = False
                 if bp_json and bp_json.ok and bp_json.json:
                     try:
