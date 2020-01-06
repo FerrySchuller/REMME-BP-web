@@ -110,7 +110,7 @@ def last_work_done(slaap=2):
         sleep(slaap)
 
 
-def status(slaap=600):
+def status(slaap=300):
     while True:
         # temporary for remmonsterbp
         headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
