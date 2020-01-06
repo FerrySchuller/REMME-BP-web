@@ -98,8 +98,9 @@ def ownership_disclosure():
 def owner(owner):
     track_event( category='index', action='owner')
     data = get_account(owner)
-    feil = get_feil('app/cache/{}.json'.format(owner))
-    return render_template( 'owner.html', data=data, feil=feil )
+    owner_cached = db.owners.find_one( {"tag": "owners", "data.owner.account_name": "{}".format(owner)}, 
+                                       sort=[('created_at', pymongo.DESCENDING)])
+    return render_template( 'owner.html', data=data, owner=owner_cached )
 
 
 
