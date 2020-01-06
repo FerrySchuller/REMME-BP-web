@@ -79,7 +79,7 @@ $(document).ready(function() {
          "info": false,
          "dom": '<"toolbarbps">frtip'
     });
-    $("div.toolbarbps").html('<h4>Block Producers</h4>');
+    $("div.toolbarbps").html('<h4>Block Producers health dashboard by josiendotnet</h4>');
     setInterval(function() {
       $('#listproducers').DataTable().ajax.reload(null, false);
   }, 6000);
