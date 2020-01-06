@@ -49,17 +49,6 @@ def gen_social(j, url):
 
 
 
-def get_feil(feil):
-    if os.path.exists(feil):
-        with open(feil) as json_file:
-            try:
-                return(json.load(json_file))
-            except:
-                print(sys.exc_info())
-    return False
-
-
-
 def gen_locked_stake(feil):
     if os.path.exists(feil):
         with open(feil) as json_file:
