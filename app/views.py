@@ -232,12 +232,12 @@ def _listproducers():
                     i['last_work_done'] = False
                     i['health'] = ''
                     #i['ram'] = '{:.2f}'.format(owner_cached['data']['owner']['ram_usage'] / 10000 ) 
-                    i['cpu'] = ''
+                    #i['cpu'] = ''
                     i['bp_json'] = ''
     
 
-                    cpu_ms = owner_cached['data']['owner']['cpu_limit']['used'] / 1000
-                    i['cpu'] = '{:.2f} ms'.format(cpu_ms)
+                    #cpu_ms = owner_cached['data']['owner']['cpu_limit']['used'] / 1000
+                    #i['cpu'] = '{:.2f} ms'.format(cpu_ms)
                     #if cpu_ms < 30:
                     #    i['cpu'] = '<medium class="text-success">{:.2f} ms</medium>'.format(cpu_ms)
                     #if cpu_ms > 30:
