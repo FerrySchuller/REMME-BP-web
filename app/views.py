@@ -241,10 +241,19 @@ def _listproducers():
                     i['url'] = False
                     i['last_work_done'] = False
                     i['health'] = ''
-                    i['ram'] = '{:.2f}'.format(owner_cached['data']['owner']['ram_usage'] / 10000 ) 
-                    i['cpu'] = '{:.2f}'.format(owner_cached['data']['owner']['cpu_limit']['used'] / 1000000 )
+                    #i['ram'] = '{:.2f}'.format(owner_cached['data']['owner']['ram_usage'] / 10000 ) 
+                    i['cpu'] = ''
                     i['bp_json'] = ''
     
+
+                    cpu_ms = owner_cached['data']['owner']['cpu_limit']['used'] / 1000
+                    if cpu_ms < 30:
+                        i['cpu'] = '<medium class="text-success">{:.2f} ms</medium>'.format(cpu_ms)
+                    if cpu_ms > 30:
+                        i['cpu'] = '<medium class="text-warning">{:.2f} ms</medium>'.format(cpu_ms)
+                    if cpu_ms > 100:
+                        i['cpu'] = '<medium class="text-danger">{:.2f} ms</medium>'.format(cpu_ms)
+
                     if 'voters' in owner_cached['data'] and isinstance(owner_cached['data']['voters'], list):                     
                         i['voters'] = '<text data-toggle="tooltip" data-placement="top" data-html="true" title="{0}">{1}</text>'.format('  '.join(owner_cached['data']['voters']), len(owner_cached['data']['voters']))
 

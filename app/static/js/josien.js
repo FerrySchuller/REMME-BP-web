@@ -70,7 +70,7 @@ $(document).ready(function() {
                       { "data": "social" },
                       { "data": "health" },
                       // { "data": "ram" },
-                      // { "data": "cpu" },
+                      { "data": "cpu" },
                       { "data": "last_work_done" },
                       { "data": "bp_json" },
                     ],
