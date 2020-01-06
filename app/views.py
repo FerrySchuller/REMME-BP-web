@@ -237,12 +237,13 @@ def _listproducers():
     
 
                     cpu_ms = owner_cached['data']['owner']['cpu_limit']['used'] / 1000
-                    if cpu_ms < 30:
-                        i['cpu'] = '<medium class="text-success">{:.2f} ms</medium>'.format(cpu_ms)
-                    if cpu_ms > 30:
-                        i['cpu'] = '<medium class="text-warning">{:.2f} ms</medium>'.format(cpu_ms)
-                    if cpu_ms > 100:
-                        i['cpu'] = '<medium class="text-danger">{:.2f} ms</medium>'.format(cpu_ms)
+                    i['cpu'] = '{:.2f} ms'.format(cpu_ms)
+                    #if cpu_ms < 30:
+                    #    i['cpu'] = '<medium class="text-success">{:.2f} ms</medium>'.format(cpu_ms)
+                    #if cpu_ms > 30:
+                    #    i['cpu'] = '<medium class="text-warning">{:.2f} ms</medium>'.format(cpu_ms)
+                    #if cpu_ms > 100:
+                    #    i['cpu'] = '<medium class="text-danger">{:.2f} ms</medium>'.format(cpu_ms)
 
                     if 'voters' in owner_cached['data'] and isinstance(owner_cached['data']['voters'], list):                     
                         i['voters'] = '<text data-toggle="tooltip" data-placement="top" data-html="true" title="{0}">{1}</text>'.format('  '.join(owner_cached['data']['voters']), len(owner_cached['data']['voters']))
