@@ -152,15 +152,15 @@ def _listvoters():
                     i = {}
 
                     try:
-                        dt = parse(g['last_claim_time'])
+                        dt = parse(g['last_reassertion_time'])
                         days = datetime.now() - dt
-                        i['last_claim_time'] = '{}'.format(days.days)
+                        i['last_reassertion_time'] = '{}'.format(days.days)
                         if days.days > 25:
-                            i['last_claim_time'] = '<medium class="text-danger">{}</medium>'.format(days.days)
+                            i['last_reassertion_time'] = '<medium class="text-danger">{}</medium>'.format(days.days)
                         if days.days == 18267:
-                            i['last_claim_time'] = ''
+                            i['last_reassertion_time'] = ''
                     except:
-                        i['last_claim_time'] = ''
+                        i['last_reassertion_time'] = ''
 
                     i['position'] = r
                     r += 1

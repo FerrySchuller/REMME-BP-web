@@ -37,7 +37,7 @@ $(document).ready(function(owner) {
         "columns": [ { "data": "owner" },
                      { "data": "staked" },
                      { "data": "last_vote_weight" },
-                     { "data": "last_claim_time" },
+                     { "data": "last_reassertion_time" },
                      { "data": "stake_lock_time" },
                      { "data": "pending_perstake_reward" },
                      { "data": "pending_perstake_reward_usd" },
