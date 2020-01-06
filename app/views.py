@@ -151,6 +151,17 @@ def _listvoters():
                 if (float(g['staked']) > 2500000000):
                     i = {}
 
+                    try:
+                        dt = parse(g['last_claim_time'])
+                        days = datetime.now() - dt
+                        i['last_claim_time'] = '{}'.format(days.days)
+                        if days.days > 25:
+                            i['last_claim_time'] = '<medium class="text-danger">{}</medium>'.format(days.days)
+                        if days.days == 18267:
+                            i['last_claim_time'] = ''
+                    except:
+                        i['last_claim_time'] = ''
+
                     i['position'] = r
                     r += 1
                     i['owner'] = g['owner']
@@ -174,6 +185,7 @@ def _listvoters():
                         #i['stake_lock_time'] = '{:%Y-%m-%d - %H:%M:%S}'.format(dt)
                     except: 
                         i['stake_lock_time'] = ''
+
                     try:
                         remme = (g['pending_perstake_reward'] / 10000)
                         if price:
