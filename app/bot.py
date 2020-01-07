@@ -179,7 +179,7 @@ def dev():
     for a in adp:
         if len(a['data']['voters']) != l:
             l = len(a['data']['voters'])
-            print('{} {} {}'.format(l, a['created_at'], ' '.join(a['data']['voters'])))
+            print('{:<3} {} {}'.format(l, a['created_at'], ' '.join(a['data']['voters'])))
      
     '''
     days = 1
