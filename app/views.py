@@ -287,12 +287,9 @@ def _listproducers():
                         health += '<a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not swapping"><i class="fa fa-times"></i></text></span></a>&nbsp;'
 
 
-
                     if not owner_cached['data']['bp_json']:
                         health += '<a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not bp.json"><i class="fa fa-times"></i></text></span></a>&nbsp;'
 
-
-    
                     
                     if row['is_active']:
                         i['position'] = '{}'.format(r)
@@ -322,6 +319,14 @@ def _listproducers():
 
                     if owner_cached['data']['bp_json']:
                         i['bp_json'] = '<a target="_blank" href="{}/bp.json"><i class="fa fa-check"></i></a>'.format(row['url'])
+
+                    try:
+                        dt = parse(row['punished_until'])
+                        days = dt - datetime.now()
+                        if days.days > 0:
+                            health += '<span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="punished_until in days"><i class="fa fa-times">{}</i></text></span>&nbsp;'.format(days.days)
+                    except:
+                        jlog.critical('punished_until ERROR: {}'.format(sys.exc_info()))
 
                     i['health'] = health
                     d['data'].append(i)
