@@ -39,6 +39,7 @@ $(document).ready(function(owner) {
                      { "data": "last_vote_weight" },
                      { "data": "last_reassertion_time" },
                      { "data": "stake_lock_time" },
+                     { "data": "last_claim_time" },
                      { "data": "pending_perstake_reward" },
                      { "data": "pending_perstake_reward_usd" },
                      { "data": "producers" } 
@@ -91,7 +92,7 @@ $(document).ready(function() {
     });
     $("div.toolbarbps").html('<h4>Block Producers health dashboard by josiendotnet</h4>');
     setInterval(function() {
-      $('[data-toggle="tooltip"]').tooltip('dispose');
+      // $('[data-toggle="tooltip"]').tooltip('dispose');
       $('#listproducers').DataTable().ajax.reload(null, false);
   }, 6000);
 });

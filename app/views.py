@@ -178,11 +178,22 @@ def _listvoters():
                     except: 
                         i['last_vote_weight'] = ''
                         jlog.critical('LAST_VOTE_WEIGHT FLOAT ERROR: {}'.format(sys.exc_info()))
-        
+
+                    try:
+                        dt = parse(g['last_claim_time'])
+                        days = datetime.now() - dt
+                        if not days.days == 18268:
+                            i['last_claim_time'] = '{}'.format(days.days)
+                        else:
+                            i['last_claim_time'] = '{}'.format('-')
+                    except: 
+                        i['last_claim_time'] = ''
+
+       
                     try:
                         dt = parse(g['stake_lock_time'])
                         days = dt - datetime.now()
-                        i['stake_lock_time'] = '{} days'.format(days.days)
+                        i['stake_lock_time'] = '{}'.format(days.days)
                         #i['stake_lock_time'] = '{:%Y-%m-%d - %H:%M:%S}'.format(dt)
                     except: 
                         i['stake_lock_time'] = ''
