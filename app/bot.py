@@ -174,9 +174,16 @@ def status(slaap=300):
 
 
 def dev():
+    adp = db.owners.find({"data.owner.account_name": "remamsterdam"}, {"data.voters":1, "created_at": 1}).limit(500)
+    l = 0
+    for a in adp:
+        if len(a['data']['voters']) != l:
+            l = len(a['data']['voters'])
+            print('{} {} {}'.format(l, a['created_at'], ' '.join(a['data']['voters'])))
+     
+    '''
     days = 1
     dt = (datetime.now() - timedelta(days=days))
-    #cpus = db.owners.find( { "tag": "owners", "data.owner.account_name": "{}".format('josiendotnet'), "created_at": {"$gt": dt } }, 
     cpus = db.owners.find( { "tag": "owners", "created_at": {"$gt": dt } }, 
                            { "data.owner.cpu_limit.used": 1, 
                              "created_at":1, 
@@ -205,6 +212,7 @@ def main():
 
     else:
         jlog.info("allready running".format())
+    '''
 
 
 if __name__ == '__main__':
