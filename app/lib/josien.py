@@ -122,7 +122,7 @@ def remcli_get_info():
 
 
 def remcli_get_action_swap():
-    o = cmd_run('/usr/bin/remcli get table rem.swap rem.swap swaps -r -l 1')
+    o = cmd_run('/usr/bin/remcli get table rem.swap rem.swap swaps -r -l 3')
     j = False
     if o:
         try:

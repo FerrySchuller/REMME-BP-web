@@ -57,6 +57,16 @@ $(document).ready(function(owner) {
 
 
 $(document).ready(function() {
+
+    $('#listproducers').on('draw.dt', function () {
+      $('[data-toggle="tooltip"]').tooltip({
+         "html": true,
+         "delay": {"show": 0, "hide": 200},
+         "animation": false,
+         "trigger": "hover",
+         });
+    });
+
     $('#listproducers').DataTable( {
         "ajax": "./_listproducers",
          "createdRow": function(row, data, index) {
@@ -81,15 +91,7 @@ $(document).ready(function() {
     });
     $("div.toolbarbps").html('<h4>Block Producers health dashboard by josiendotnet</h4>');
     setInterval(function() {
+      $('[data-toggle="tooltip"]').tooltip('dispose');
       $('#listproducers').DataTable().ajax.reload(null, false);
   }, 6000);
 });
-
-/*
-$('#listproducers').on('draw.dt', function () {
-  $('[data-toggle="tooltip"]').tooltip({
-     "html": true,
-     "delay": {"show": 0, "hide": 100},
-     });
-});
-*/

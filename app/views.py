@@ -25,23 +25,23 @@ db = db()
 def gen_social(j, url):
     o = '<div><ul class="social-network">'
     if url:
-        o += '<li><a target="_blank" href="{0}" title="{0}"><i class="fas fa-link"></i></a></li>'.format(url)
+        o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="{0}" title="{0}"><i class="fas fa-link"></i></a></li>'.format(url)
     if j['data']['bp_json'] and 'org' in j['data']['bp_json'] and 'social' in j['data']['bp_json']['org']:
         if isinstance(j['data']['bp_json']['org']['social'], dict):
             for k,v in j['data']['bp_json']['org']['social'].items():
                 if v:
                     if k == 'facebook':
-                        o += '<li><a target="_blank" href="https://facebook.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                        o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" title="{0}" target="_blank" href="https://facebook.com/{1}""><i class="fab fa-{0}"></i></a></li>'.format(k,v)
                     if k == 'twitter':
-                        o += '<li><a target="_blank" href="https://twitter.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                        o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="https://twitter.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
                     if k == 'telegram':
-                        o += '<li><a target="_blank" href="https://t.me/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                        o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="https://t.me/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
                     if k == 'reddit':
-                        o += '<li><a target="_blank" href="https://reddit.com/user/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                        o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="https://reddit.com/user/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
                     if k == 'github':
-                        o += '<li><a target="_blank" href="https://github.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                        o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="https://github.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
                     if k == 'linkedin':
-                        o += '<li><a target="_blank" href="https://linkedin.com/in/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                        o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="https://linkedin.com/in/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
             o += '</ul></div>'
     return(o)
     #return('')
@@ -123,13 +123,13 @@ def lwd(owner):
         if lwd and 'data' in lwd and owner in lwd['data'] and isinstance(lwd['data'][owner], datetime):
             divv = datetime.now() - lwd['data'][owner]
             if divv.seconds and divv.seconds > 86400:
-                return("<medium class='text-danger'>{:.0f} Days</medium>".format(divv.seconds / 86400))
+                return("<medium class='text-danger'>{:.0f} Days</medium>".format(divv.seconds / 86400), True)
             if divv.seconds and divv.seconds > 3600:
-                return("<medium class='text-warning'>{:.0f} Hours</medium>".format(divv.seconds / 3600))
+                return("<medium class='text-warning'>{:.0f} Hours</medium>".format(divv.seconds / 3600), True)
             if divv.seconds:
-                return("<medium class='text-success'>{}</medium>".format(divv.seconds))
+                return("<medium class='text-success'>{}</medium>".format(divv.seconds), False)
 
-    return(False)
+    return(False, True)
 
 
 
@@ -211,6 +211,7 @@ def _listvoters():
 def _listproducers():
     i = remcli_get_info()
     producing = False
+
     if i:
         producing = i['head_block_producer']
 
@@ -235,6 +236,7 @@ def _listproducers():
                                                    sort=[('created_at', pymongo.DESCENDING)])
                 if owner_cached:
                     ''' INIT table '''
+                    health = ''
                     i = {}
                     i['voters'] = False
                     i['position'] = False
@@ -243,27 +245,29 @@ def _listproducers():
                     i['url'] = False
                     i['last_work_done'] = False
                     i['health'] = ''
-                    #i['ram'] = '{:.2f}'.format(owner_cached['data']['owner']['ram_usage'] / 10000 ) 
-                    #i['cpu'] = ''
                     i['bp_json'] = ''
     
+                    if 'owner' in owner_cached['data'] and isinstance(owner_cached['data']['owner'], dict):                     
+                        try:
+                            dt = parse(owner_cached['data']['owner']['voter_info']['last_claim_time'])
+                            days = datetime.now() - dt
+                            if days.days != 18268 and days.days > 7:
+                                health += '<a href="https://remme.io/blog/customizing-eosio-for-remme-protocol-and-remchain-consensus-and-governance" target="_blank"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Need to claimrewards">{}</text></a>&nbsp;'.format(days.days)
+                        except:
+                            jlog.critical('last_reassertion_time ERROR: {}'.format(sys.exc_info()))
 
-                    #cpu_ms = owner_cached['data']['owner']['cpu_limit']['used'] / 1000
-                    #i['cpu'] = '{:.2f} ms'.format(cpu_ms)
-                    #if cpu_ms < 30:
-                    #    i['cpu'] = '<medium class="text-success">{:.2f} ms</medium>'.format(cpu_ms)
-                    #if cpu_ms > 30:
-                    #    i['cpu'] = '<medium class="text-warning">{:.2f} ms</medium>'.format(cpu_ms)
-                    #if cpu_ms > 100:
-                    #    i['cpu'] = '<medium class="text-danger">{:.2f} ms</medium>'.format(cpu_ms)
 
                     if 'voters' in owner_cached['data'] and isinstance(owner_cached['data']['voters'], list):                     
-                        i['voters'] = '<text data-toggle="tooltip" data-placement="top" data-html="true" title="{0}">{1}</text>'.format('  '.join(owner_cached['data']['voters']), len(owner_cached['data']['voters']))
+                        i['voters'] = '<text data-toggle="tooltip" data-placement="top" data-html="true" title="{0}">{1}</text>'.format('<br />'.join(owner_cached['data']['voters']), len(owner_cached['data']['voters']))
 
-                    health = ''
-                    if row['owner'] in swaps:
-                        health += '<i class="fa fa-check"></i>&nbsp;'
-                    i['health'] = health
+                    if row['owner'] not in swaps:
+                        health += '<a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not swapping"><i class="fa fa-times"></i></text></span></a>&nbsp;'
+
+
+
+                    if not owner_cached['data']['bp_json']:
+                        health += '<a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not bp.json"><i class="fa fa-times"></i></text></span></a>&nbsp;'
+
 
     
                     
@@ -283,12 +287,17 @@ def _listproducers():
                     if row['owner'] == producing:
                         i['last_work_done'] = '<i class="fas fa-sync fa-spin fa-1x"></i>'
                     else:
-                        i['last_work_done'] = lwd(row['owner'])
+                        last_work_done = lwd(row['owner'])
+                        if last_work_done[1]:
+                            health += '<a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not producing blocks for at least one hour."><i class="fa fa-times"></i></text></span></a>&nbsp;'
+                        
+                        i['last_work_done'] = last_work_done[0]
 
 
                     if owner_cached['data']['bp_json']:
                         i['bp_json'] = '<a target="_blank" href="{}/bp.json"><i class="fa fa-check"></i></a>'.format(row['url'])
 
+                    i['health'] = health
                     d['data'].append(i)
     
     return jsonify(d)
