@@ -196,7 +196,7 @@ def dev():
         used = cpu['data']['owner']['cpu_limit']['used']
         created_at = int(cpu['created_at'].strftime('%s')) * 1000
         print("{} {} {}".format(account_name, used, created_at))
-
+    '''
 
 def main():
     if not is_running():
