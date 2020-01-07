@@ -124,8 +124,10 @@ def lwd(owner):
             divv = datetime.now() - lwd['data'][owner]
             if divv.seconds and divv.seconds > 86400:
                 return("<medium class='text-danger'>{:.0f} Days</medium>".format(divv.seconds / 86400), True)
-            if divv.seconds and divv.seconds > 3600:
+            if divv.seconds and divv.seconds > 7200:
                 return("<medium class='text-warning'>{:.0f} Hours</medium>".format(divv.seconds / 3600), True)
+            if divv.seconds and divv.seconds > 3600:
+                return("<medium class='text-warning'>{:.0f} Hour</medium>".format(divv.seconds / 3600), True)
             if divv.seconds:
                 return("<medium class='text-success'>{}</medium>".format(divv.seconds), False)
 
