@@ -247,6 +247,7 @@ def _listproducers():
                     i['health'] = ''
                     i['bp_json'] = ''
     
+                    '''
                     if 'owner' in owner_cached['data'] and isinstance(owner_cached['data']['owner'], dict):                     
                         try:
                             dt = parse(owner_cached['data']['owner']['voter_info']['last_claim_time'])
@@ -255,6 +256,7 @@ def _listproducers():
                                 health += '<a href="https://remme.io/blog/customizing-eosio-for-remme-protocol-and-remchain-consensus-and-governance" target="_blank"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Need to claimrewards">{}</text></a>&nbsp;'.format(days.days)
                         except:
                             jlog.critical('last_reassertion_time ERROR: {}'.format(sys.exc_info()))
+                    '''
 
 
                     if 'voters' in owner_cached['data'] and isinstance(owner_cached['data']['voters'], list):                     
