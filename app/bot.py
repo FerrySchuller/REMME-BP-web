@@ -181,22 +181,6 @@ def dev():
             l = len(a['data']['voters'])
             print('{:<3} {} {}'.format(l, a['created_at'], ' '.join(a['data']['voters'])))
      
-    '''
-    days = 1
-    dt = (datetime.now() - timedelta(days=days))
-    cpus = db.owners.find( { "tag": "owners", "created_at": {"$gt": dt } }, 
-                           { "data.owner.cpu_limit.used": 1, 
-                             "created_at":1, 
-                             "data.owner.account_name":1, 
-                             "_id": 0 }, 
-                             sort=[('created_at', pymongo.DESCENDING)] )
-    for cpu in cpus:
-        
-        account_name = cpu['data']['owner']['account_name']
-        used = cpu['data']['owner']['cpu_limit']['used']
-        created_at = int(cpu['created_at'].strftime('%s')) * 1000
-        print("{} {} {}".format(account_name, used, created_at))
-    '''
 
 def main():
     if not is_running():
@@ -212,7 +196,6 @@ def main():
 
     else:
         jlog.info("allready running".format())
-    '''
 
 
 if __name__ == '__main__':
