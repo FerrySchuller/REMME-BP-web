@@ -77,6 +77,7 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_redirect off;
         include uwsgi_params;
+        uwsgi_ignore_client_abort on;
         uwsgi_pass unix:/prod/REMME-BP-web/web.sock;
         add_header X-Frame-Options "SAMEORIGIN" always;
         add_header X-Content-Type-Options "nosniff" always;

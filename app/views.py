@@ -259,6 +259,7 @@ def _listproducers():
                     i['url'] = False
                     i['last_work_done'] = False
                     i['health'] = ''
+                    i['is_active'] = row['is_active']
                     i['bp_json'] = ''
     
                     '''
