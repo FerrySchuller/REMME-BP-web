@@ -10,7 +10,7 @@
 {% if owner and owner['data'] and owner['data']['voters']  %}
 <h4>Guardians voted for: {{ data.account_name }}</h4>
 {% for v in owner.data.voters %}
-{{ v }}<br />
+  <a style="color: grey;" href="{{ url_for('owner', owner=v) }}">{{ v }}</a><br />
 {% endfor %}
 {% endif %}
 
