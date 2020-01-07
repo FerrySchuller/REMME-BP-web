@@ -259,9 +259,15 @@ def _listproducers():
                     i['url'] = False
                     i['last_work_done'] = False
                     i['health'] = ''
-                    i['is_active'] = row['is_active']
+                    i['is_active'] = ''
                     i['bp_json'] = ''
     
+
+                    if row['is_active']:
+                        i['is_active'] = '<i class="fa fa-check"></i>'
+                    if not row['is_active']:
+                        i['is_active'] = '<span style="color: Tomato;"><i class="fa fa-times"></i></text></span>'
+ 
                     '''
                     if 'owner' in owner_cached['data'] and isinstance(owner_cached['data']['owner'], dict):                     
                         try:
