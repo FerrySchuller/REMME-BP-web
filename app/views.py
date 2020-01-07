@@ -294,8 +294,11 @@ def _listproducers():
 
     
                     
-                    i['position'] = '{}'.format(r)
-                    r += 1
+                    if row['is_active']:
+                        i['position'] = '{}'.format(r)
+                        r += 1
+                    else:
+                        i['position'] = 99
     
                     i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=row['owner']), row['owner'])
     
