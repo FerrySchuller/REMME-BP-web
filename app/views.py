@@ -164,7 +164,8 @@ def _listvoters():
 
                     i['position'] = r
                     r += 1
-                    i['owner'] = g['owner']
+                    i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=g['owner']), g['owner'])
+
                     try:
                         i['staked'] = "{:0,.0f}".format((float(g['staked']) / 10000))
                     except:
