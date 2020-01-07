@@ -174,7 +174,7 @@ def status(slaap=300):
 
 
 def dev():
-    adp = db.owners.find({"data.owner.account_name": "remamsterdam"}, {"data.voters":1, "created_at": 1}).limit(500)
+    adp = db.owners.find({"data.owner.account_name": "reyskywalker"}, {"data.voters":1, "created_at": 1}).limit(500)
     l = 0
     for a in adp:
         if len(a['data']['voters']) != l:
