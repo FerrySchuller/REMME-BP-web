@@ -73,43 +73,6 @@ def is_running():
 
 
 
-def last_work_done(slaap=2):
-    while True:
-
-        get_info = remcli_get_info()
-        lwd = db.cache.find_one({"tag": "last_work_done"})
-        if get_info and lwd and 'data' in lwd:
-            data = lwd['data']
-            d = {}
-            d['created_at'] = datetime.now(timezone.utc)
-            d['slug'] = 'last_work_done'
-            d['tag'] = 'last_work_done'
-            data = lwd['data']
-            data[get_info['head_block_producer']] = datetime.now(timezone.utc)
-
-            d['data'] = data
-            
-            try:
-                db.cache.update_one({'tag': 'last_work_done'}, {'$set': d}, upsert=True)
-            except:
-                print(sys.exc_info())
-                jlog.critical("last_work_done {}".format(sys.exc_info()))
-
-        if not lwd and get_info:
-            jlog.info("last_work_done INIT".format())
-            d = {}
-            d['created_at'] = datetime.now(timezone.utc)
-            d['data'] = {}
-            try:
-                db.cache.update_one({'tag': 'last_work_done'}, {'$set': d}, upsert=True)
-            except:
-                print(sys.exc_info())
-                jlog.critical("last_work_done {}".format(sys.exc_info()))
-
-        jlog.info('Last work done sleeping for: {} seconds'.format(slaap))
-        sleep(slaap)
-
-
 def status(slaap=300):
     while True:
         # temporary for remmonsterbp
@@ -193,9 +156,6 @@ def main():
 
         status_thread = threading.Thread(target=status, args=(), name='status')
         status_thread.start()
-
-        last_work_thread = threading.Thread(target=last_work_done, args=(), name='last_work_done')
-        last_work_thread.start()
 
     else:
         jlog.info("allready running".format())
