@@ -147,9 +147,12 @@ def status(slaap=300):
                 if row['url']:
                     url = '{}/bp.json'.format(row['url'].rstrip('//'))
     
-
-                    r = requests.get(url, headers=headers, verify=False)
-                    if r.ok and r.json:
+                    try:
+                        r = requests.get(url, headers=headers, verify=False)
+                    except:
+                        jlog.critical("bp.json error: {}".format(sys.exc_info()))
+                        r = False
+                    if r and r.ok and r.json:
                         try:
                             d['bp_json'] = r.json()
                         except:
