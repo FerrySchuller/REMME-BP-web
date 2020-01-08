@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, flash, url_for
+from flask import render_template, jsonify, flash, url_for, redirect, abort
 import os, sys
 import json
 from datetime import datetime, timedelta, timezone
@@ -20,6 +20,16 @@ db = db()
 #@app.route("/.well-known/acme-challenge/<key>")
 #def letsencrypt():
 #    return "<key>.<xo>"
+
+
+#@app.before_request
+#def before_request():
+#    i = remcli_get_info()
+#    if i and 'head_block_time' in i:
+#        dt = parse(i['head_block_time'])
+#        d = datetime.now() - dt
+#        if d.seconds > 30:
+#            abort(400)
 
 
 def gen_social(j, url):
@@ -64,6 +74,13 @@ def gen_locked_stake(feil):
 def index():
     track_event( category='index', action='index')
     return render_template( 'index.html' )
+
+
+@app.route('/offline')
+def offline():
+    track_event( category='offline', action='offline')
+    return render_template( 'offline.html' )
+
 
 @app.route('/guardians')
 def guardians():
@@ -152,6 +169,7 @@ def _listvoters():
             if not 'error' in g.keys():
                 if (float(g['staked']) > 2500000000):
                     i = {}
+                    i['pending_perstake_reward_usd'] = ''
 
                     try:
                         dt = parse(g['last_reassertion_time'])
