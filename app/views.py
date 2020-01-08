@@ -134,24 +134,6 @@ def _get_account(owner):
     return jsonify(d)
 
 
-def lwd(owner):
-    if owner:
-        lwd = db.cache.find_one({"tag": "last_work_done", "data.{}".format(owner): {"$exists": "True"}})
-        if lwd and 'data' in lwd and owner in lwd['data'] and isinstance(lwd['data'][owner], datetime):
-            divv = datetime.now() - lwd['data'][owner]
-            if divv.seconds and divv.seconds > 86400:
-                return("<medium class='text-danger'>{:.0f} Days</medium>".format(divv.seconds / 86400), True)
-            if divv.seconds and divv.seconds > 3700:
-                return("<medium class='text-warning'>{:.0f} Hours</medium>".format(divv.seconds / 3600), True)
-            if divv.seconds and divv.seconds > 3600:
-                return("<medium class='text-warning'>{:.0f} Hour</medium>".format(divv.seconds / 3600), True)
-            if divv.seconds:
-                return("<medium class='text-success'>{}</medium>".format(divv.seconds), False)
-
-    return(False, True)
-
-
-
 @app.route('/_listvoters')
 def _listvoters():
     price = False
@@ -328,11 +310,22 @@ def _listproducers():
                     if row['owner'] == producing:
                         i['last_work_done'] = '<i class="fas fa-sync fa-spin fa-1x"></i>'
                     else:
-                        last_work_done = lwd(row['owner'])
-                        if last_work_done[1]:
-                            health += '<a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not producing blocks for at least one hour."><i class="fa fa-times"></i></text></span></a>&nbsp;'
-                        
-                        i['last_work_done'] = last_work_done[0]
+                        try:
+                            ldt = parse(row['last_block_time'])
+                            ld = datetime.now() - ldt
+                            if ld.seconds < 1800:
+                                i['last_work_done'] = ("<medium class='text-success'>{:.0f}</medium>".format(ld.seconds))
+                            if ld.seconds > 1801:
+                                i['last_work_done'] = ("<medium class='text-warning'>{:.0f} Minutes</medium>".format(ld.seconds / 60))
+                                health += '<a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not producing blocks for at least an half hour."><i class="fa fa-times"></i></text></span></a>&nbsp;'
+                            if ld.seconds > 3600:
+                                health += '<a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not producing blocks for at least one hour."><i class="fa fa-times"></i></text></span></a>&nbsp;'
+                                i['last_work_done'] = ("<medium class='text-danger'>{:.0f} Hours</medium>".format(ld.seconds / 3600))
+
+                        except:
+                            i['last_work_done'] = ''
+                            jlog.critical('last_block_time ERROR: {}'.format(sys.exc_info()))
+
 
 
                     if owner_cached['data']['bp_json']:
