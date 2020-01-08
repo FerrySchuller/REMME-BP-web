@@ -97,6 +97,17 @@ def get_remswap():
 
     return j
 
+def get_block(block):
+    o = cmd_run('/usr/bin/remcli get block {}'.format(block))
+    j = False
+    if o:
+        try:
+            j = json.loads(o)
+        except:
+            print(sys.exc_info())
+
+    return j
+
 
 def get_account(account):
     o = cmd_run('/usr/bin/remcli get account {0} --json'.format(account))

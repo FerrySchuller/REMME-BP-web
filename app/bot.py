@@ -12,12 +12,13 @@ import psutil
 import pymongo
 from time import sleep
 from datetime import datetime, timedelta, timezone
+from dateutil.parser import parse
 from pprint import pprint
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-from josien import jlog, db, listproducers, get_account, remcli_get_info, remcli_get_action_swap, listvoters, po
+from josien import jlog, db, listproducers, get_account, remcli_get_info, remcli_get_action_swap, listvoters, po, get_block
 
 
 def init(stdout=True):
@@ -36,9 +37,9 @@ def init(stdout=True):
         sys.exit(1)
 
 
-def add_db(col, slug=False, tag=False, data=False):
+def add_db(col, slug=False, tag=False, data=False, created_at=datetime.now(timezone.utc)):
     d = {}
-    d['created_at'] = datetime.now(timezone.utc)
+    d['created_at'] = created_at
     d['slug'] = slug
     d['tag'] = tag
     d['data'] = data
@@ -141,17 +142,47 @@ def status(slaap=300):
 
 def notify(slaap=300):
     while True:
+
+        ''' unreg not seeing blocks fo 5 minutes '''
+        m = ['josiendotnet', 'josientester']
+        lp = listproducers()
+        if lp and isinstance(lp, dict):
+            if 'rows' in lp:
+                for row in lp['rows']:
+                    if row['is_active'] and row['owner'] in m:
+                        ldt = parse(row['last_block_time'])
+                        ld = datetime.now() - ldt
+                        if ld.seconds > 300:
+                            msg = '{} {} Go unreg'.format(row['owner'], ld.seconds)
+                            jlog.info('GO GO GO GO unreg: {}'.format(msg))
+                            po(msg)
+
+
+        ''' find rembencmark cpu usages '''
+        i = remcli_get_info()
+        if i and 'head_block_num' in i:
+            start = i['head_block_num'] - 1000
+            stop = i['head_block_num']
+            r = range(start, stop)
+            for block in r:
+                b = get_block(block)
+                if b and b['transactions']:
+                    producer = b['producer']
+                    for transaction in b['transactions']:
+                        if 'cpu_usage_us' in transaction:
+                            dt = parse(b['timestamp'])
+                            data = {}
+                            data['cpu_usage_us'] = transaction['cpu_usage_us']
+                            data['producer'] = producer
+                            add_db(col='cache', tag='rembenchmark', slug='rembenchmark', created_at=dt, data=data)
+
+
         jlog.info('Sleeping for: {} seconds'.format(slaap))
         sleep(slaap)
 
 
 def dev():
-    lp = listproducers()
-    if lp and isinstance(lp, dict):
-        if 'rows' in lp:
-            for row in lp['rows']:
-                if row['is_active']:
-                    pprint(row)
+    pass
 
     #adp = db.owners.find({"data.owner.account_name": "reyskywalker"}, {"data.voters":1, "created_at": 1}).limit(500)
     #l = 0
