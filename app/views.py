@@ -289,7 +289,7 @@ def _listproducers():
 
 
                     if not owner_cached['data']['bp_json']:
-                        health += '<a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not bp.json"><i class="fa fa-times"></i></text></span></a>&nbsp;'
+                        health += '<a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="No bp.json"><i class="fa fa-times"></i></text></span></a>&nbsp;'
 
                     
                     if row['is_active']:
