@@ -3,6 +3,7 @@ import subprocess
 import logging
 import logging.handlers
 import requests
+from chump import Application as Pushover
 from pymongo import MongoClient
 
 
@@ -131,6 +132,18 @@ def remcli_get_action_swap():
             print(sys.exc_info())
 
     return j
+
+
+def po(msg):
+    app = Pushover(os.getenv('PUSHOVER_APP', False))
+    if app.is_authenticated == True:
+        user = app.get_user(os.getenv('PUSHOVER_USER', False))
+        if user.is_authenticated == True:
+            message = user.send_message(msg)
+            return True
+
+    return False
+
 
 
 def human_readable(v):

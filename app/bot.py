@@ -17,7 +17,7 @@ import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-from josien import jlog, db, listproducers, get_account, remcli_get_info, remcli_get_action_swap, listvoters
+from josien import jlog, db, listproducers, get_account, remcli_get_info, remcli_get_action_swap, listvoters, po
 
 
 def init(stdout=True):
@@ -139,13 +139,26 @@ def status(slaap=300):
 
 
 
+def notify(slaap=300):
+    while True:
+        jlog.info('Sleeping for: {} seconds'.format(slaap))
+        sleep(slaap)
+
+
 def dev():
-    adp = db.owners.find({"data.owner.account_name": "reyskywalker"}, {"data.voters":1, "created_at": 1}).limit(500)
-    l = 0
-    for a in adp:
-        if len(a['data']['voters']) != l:
-            l = len(a['data']['voters'])
-            print('{:<3} {} {}'.format(l, a['created_at'], ' '.join(a['data']['voters'])))
+    lp = listproducers()
+    if lp and isinstance(lp, dict):
+        if 'rows' in lp:
+            for row in lp['rows']:
+                if row['is_active']:
+                    pprint(row)
+
+    #adp = db.owners.find({"data.owner.account_name": "reyskywalker"}, {"data.voters":1, "created_at": 1}).limit(500)
+    #l = 0
+    #for a in adp:
+    #    if len(a['data']['voters']) != l:
+    #        l = len(a['data']['voters'])
+    #        print('{:<3} {} {}'.format(l, a['created_at'], ' '.join(a['data']['voters'])))
      
 
 def main():
@@ -156,6 +169,9 @@ def main():
 
         status_thread = threading.Thread(target=status, args=(), name='status')
         status_thread.start()
+
+        notify_thread = threading.Thread(target=notify, args=(), name='notify')
+        notify_thread.start()
 
     else:
         jlog.info("allready running".format())
