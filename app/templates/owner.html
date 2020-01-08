@@ -3,7 +3,7 @@
 {% block content -%}
 <div class="container-fluid">
 
-{% if owner and owner['data'] and owner['data']['bp_json'] and owner['data']['bp_json'].org.branding.logo_256  %}
+{% if owner and owner['data'] and owner['data']['bp_json'] and 'org' in owner['data']['bp_json'] and 'branding' in owner['data']['bp_json']['org']  %}
 <img src="{{ owner['data']['bp_json'].org.branding.logo_256 }}" class="img-fluid">
 {% endif %}
 
