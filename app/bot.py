@@ -102,6 +102,17 @@ def status(slaap=300):
         if lp and 'rows' in lp:
             j = False
             for row in lp['rows']:
+
+                d['cpu_usage_us'] = False
+                cpu_usage_us = db.cache.find_one( { "tag": "rembenchmark",
+                                                    "data.producer": "{}".format(row['owner'])},
+                                                  { "data.cpu_usage_us": 1,
+                                                    "_id": 0 },
+                                                  sort=[('created_at', pymongo.DESCENDING)])
+                if cpu_usage_us and 'data' in cpu_usage_us and 'cpu_usage_us' in cpu_usage_us['data']:
+                    d['cpu_usage_us'] = cpu_usage_us['data']['cpu_usage_us']
+                
+
                 owner = get_account(row['owner'])
                 locked_stake += int(owner['voter_info']['locked_stake'])
                 d['owner'] = owner
@@ -182,8 +193,13 @@ def notify(slaap=300):
 
 
 def dev():
-    pass
-
+    cpu_usage_us = db.cache.find_one( { "tag": "rembenchmark", 
+                                        "data.producer": "{}".format('josiendotnet')},
+                                      { "data.cpu_usage_us": 1,
+                                        "_id": 0 },
+                                      sort=[('created_at', pymongo.DESCENDING)])
+    if cpu_usage_us and 'data' in cpu_usage_us and 'cpu_usage_us' in cpu_usage_us['data']:
+        pprint(cpu_usage_us['data']['cpu_usage_us'])
     #adp = db.owners.find({"data.owner.account_name": "reyskywalker"}, {"data.voters":1, "created_at": 1}).limit(500)
     #l = 0
     #for a in adp:

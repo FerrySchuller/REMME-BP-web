@@ -82,6 +82,7 @@ $(document).ready(function() {
                       { "data": "social" },
                       { "data": "health" },
                       { "data": "is_active" },
+                      { "data": "cpu_usage_us" },
                       { "data": "last_work_done" },
                       { "data": "bp_json" },
                     ],

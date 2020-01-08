@@ -248,7 +248,7 @@ def _listproducers():
             for row in rows:
                 owner_cached = db.owners.find_one( {"tag": "owners", "data.owner.account_name": "{}".format(row['owner'])}, 
                                                    sort=[('created_at', pymongo.DESCENDING)])
-                if owner_cached:
+                if owner_cached and 'data' in owner_cached:
                     ''' INIT table '''
                     health = ''
                     i = {}
@@ -261,6 +261,18 @@ def _listproducers():
                     i['health'] = ''
                     i['is_active'] = ''
                     i['bp_json'] = ''
+                    i['cpu_usage_us'] = ''
+
+                    if 'cpu_usage_us' in owner_cached['data'] and owner_cached['data']['cpu_usage_us']:
+                        cpu_usage_ms = owner_cached['data']['cpu_usage_us'] / 1000
+                        if cpu_usage_ms > 1:
+                            i['cpu_usage_us'] = "<medium class='text-warning'>{:.2f} ms</medium>".format(cpu_usage_ms)
+                        if cpu_usage_ms < 1:
+                            i['cpu_usage_us'] = "<medium class='text-success'>{:.2f} ms</medium>".format(cpu_usage_ms)
+                        if cpu_usage_ms > 2:
+                            i['cpu_usage_us'] = "<medium class='text-danger'>{:.2f} ms</medium>".format(cpu_usage_ms)
+                            health += '<span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Slow CPU"><i class="fa fa-times"></i></text></span>&nbsp;'
+ 
     
 
                     if row['is_active']:
@@ -268,17 +280,6 @@ def _listproducers():
                     if not row['is_active']:
                         i['is_active'] = '<span style="color: Tomato;"><i class="fa fa-times"></i></text></span>'
  
-                    '''
-                    if 'owner' in owner_cached['data'] and isinstance(owner_cached['data']['owner'], dict):                     
-                        try:
-                            dt = parse(owner_cached['data']['owner']['voter_info']['last_claim_time'])
-                            days = datetime.now() - dt
-                            if days.days != 18268 and days.days > 7:
-                                health += '<a href="https://remme.io/blog/customizing-eosio-for-remme-protocol-and-remchain-consensus-and-governance" target="_blank"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Need to claimrewards">{}</text></a>&nbsp;'.format(days.days)
-                        except:
-                            jlog.critical('last_reassertion_time ERROR: {}'.format(sys.exc_info()))
-                    '''
-
 
                     if 'voters' in owner_cached['data'] and isinstance(owner_cached['data']['voters'], list):                     
                         i['voters'] = '<text data-toggle="tooltip" data-placement="top" data-html="true" title="{0}">{1}</text>'.format('<br />'.join(owner_cached['data']['voters']), len(owner_cached['data']['voters']))
@@ -325,7 +326,6 @@ def _listproducers():
                         except:
                             i['last_work_done'] = ''
                             jlog.critical('last_block_time ERROR: {}'.format(sys.exc_info()))
-
 
 
                     if owner_cached['data']['bp_json']:
