@@ -161,12 +161,17 @@ def notify(slaap=300):
             if 'rows' in lp:
                 for row in lp['rows']:
                     if row['is_active'] and row['owner'] in m:
-                        ldt = parse(row['last_block_time'])
-                        ld = datetime.now() - ldt
-                        if ld.seconds > 300:
-                            msg = '{} {} Go unreg'.format(row['owner'], ld.seconds)
-                            jlog.info('GO GO GO GO unreg: {}'.format(msg))
-                            po(msg)
+                        try:
+                            ldt = parse(row['last_block_time'])
+                            ld = datetime.now() - ldt
+                            if ld.seconds > 300:
+                                msg = '{} {} Go unreg'.format(row['owner'], ld.seconds)
+                                jlog.info('GO GO GO GO unreg: {}'.format(msg))
+                                po(msg)
+                        except:
+                            print(sys.exc_info())
+                            jlog.critical("unreg {}".format(sys.exc_info()))
+
 
 
         ''' find rembencmark cpu usages '''
@@ -181,11 +186,15 @@ def notify(slaap=300):
                     producer = b['producer']
                     for transaction in b['transactions']:
                         if 'cpu_usage_us' in transaction:
-                            dt = parse(b['timestamp'])
-                            data = {}
-                            data['cpu_usage_us'] = transaction['cpu_usage_us']
-                            data['producer'] = producer
-                            add_db(col='cache', tag='rembenchmark', slug='rembenchmark', created_at=dt, data=data)
+                            try:
+                                dt = parse(b['timestamp'])
+                                data = {}
+                                data['cpu_usage_us'] = transaction['cpu_usage_us']
+                                data['producer'] = producer
+                                add_db(col='cache', tag='rembenchmark', slug='rembenchmark', created_at=dt, data=data)
+                            except:
+                                print(sys.exc_info())
+                                jlog.critical("cpu_usage_us {}".format(sys.exc_info()))
 
 
         jlog.info('Sleeping for: {} seconds'.format(slaap))
@@ -194,7 +203,7 @@ def notify(slaap=300):
 
 def dev():
     cpu_usage_us = db.cache.find_one( { "tag": "rembenchmark", 
-                                        "data.producer": "{}".format('josiendotnet')},
+                                        "data.producer": "{}".format('remmonsterbp')},
                                       { "data.cpu_usage_us": 1,
                                         "_id": 0 },
                                       sort=[('created_at', pymongo.DESCENDING)])
