@@ -92,7 +92,7 @@ $(document).ready(function() {
          "info": false,
          "dom": '<"toolbarbps">frtip'
     });
-    $("div.toolbarbps").html('<h4>Block Producers health dashboard by josiendotnet</h4>');
+    $("div.toolbarbps").html('<h4>Block Producers health dashboard by josiendotnet (beta version)</h4>');
     setInterval(function() {
       // $('[data-toggle="tooltip"]').tooltip('dispose');
       $('#listproducers').DataTable().ajax.reload(null, false);
