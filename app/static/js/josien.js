@@ -33,7 +33,7 @@ $(document).ready(function(owner) {
         "ajax": "/_listvoters",
          "createdRow": function(row, data, index) {
             if(data.klass) { $(row).addClass(data.klass); } },
-         "columnDefs": [ { "targets": 4, "type": "num-fmt" } ],
+         "columnDefs": [ { "targets": [0,1,2,4,7,8], "orderable": false } ],
         "columns": [ { "data": "owner" },
                      { "data": "staked" },
                      { "data": "last_vote_weight" },
@@ -44,7 +44,7 @@ $(document).ready(function(owner) {
                      { "data": "pending_perstake_reward_usd" },
                      { "data": "producers" } 
                    ],
-        "order": [ [1, "desc"] ],
+        "order": [ [3, "desc"] ],
         "searching": true,
         "paging": false,
         "info": false,
