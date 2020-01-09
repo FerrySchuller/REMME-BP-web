@@ -59,14 +59,14 @@ $(document).ready(function(owner) {
 
 $(document).ready(function() {
 
-    $('#listproducers').on('draw.dt', function () {
+    $('#listproducers').on('mousemove', function () {
       $('[data-toggle="tooltip"]').tooltip({
          "html": true,
          "delay": {"show": 0, "hide": 200},
          "animation": false,
-         "trigger": "hover",
          });
     });
+
 
     $('#listproducers').DataTable( {
         "ajax": "./_listproducers",
@@ -74,7 +74,7 @@ $(document).ready(function() {
             if(data.klass) { $(row).addClass(data.klass); }
             // $(row).find('td').attr('data-sort', data.total_votes)
             },
-         "columnDefs": [ { "targets": [1,2,3,4,5,6,7], "orderable": false } ],
+         "columnDefs": [ { "targets": [1,2,3,4,5,6,7,8,9], "orderable": false } ],
          "columns": [ { "data": "position" },
                       { "data": "owner" },
                       { "data": "total_votes" },
@@ -96,5 +96,5 @@ $(document).ready(function() {
     setInterval(function() {
       // $('[data-toggle="tooltip"]').tooltip('dispose');
       $('#listproducers').DataTable().ajax.reload(null, false);
-  }, 6000);
+  }, 10000);
 });
