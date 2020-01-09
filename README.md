@@ -15,6 +15,12 @@ root@remme0:/prod/REMME-BP-web# . env/bin/activate
 (env) root@remme0:/prod/REMME-BP-web# pip install -r requirements.txt
 ```
 
+mongo pruning settints:
+
+```
+db.cache.createIndex( { "created_at": 1 }, { expireAfterSeconds: 172800 } )
+```
+
 systemd config:
 
 ```

@@ -266,8 +266,8 @@ def _listproducers():
                     if 'setprice' in owner_cached['data'] and owner_cached['data']['setprice']:
                         try:
                             setprice_dt = datetime.now() - owner_cached['data']['setprice']
-                            if setprice_dt.seconds > 3600:
-                                health += '<li><span style="color: tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="No setprice for an hour."><i class="fa fa-times"></i></text></span></li>'
+                            if setprice_dt.seconds > 43200:
+                                health += '<li><span style="color: tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="No setprice for 12 hours."><i class="fa fa-times"></i></text></span></li>'
                             
                         except:
                             jlog.critical('setprice ERROR: {}'.format(sys.exc_info()))
