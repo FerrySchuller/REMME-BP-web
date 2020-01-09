@@ -188,7 +188,7 @@ def notify(slaap=300):
         ''' find rembencmark cpu usages  and setprice'''
         i = remcli_get_info()
         if i and 'head_block_num' in i:
-            start = i['head_block_num'] - 2000
+            start = i['head_block_num'] - 3000
             stop = i['head_block_num']
             r = range(start, stop)
             for block in r:  
