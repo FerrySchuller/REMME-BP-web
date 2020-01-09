@@ -111,6 +111,17 @@ def status(slaap=300):
                                                   sort=[('created_at', pymongo.DESCENDING)])
                 if cpu_usage_us and 'data' in cpu_usage_us and 'cpu_usage_us' in cpu_usage_us['data']:
                     d['cpu_usage_us'] = cpu_usage_us['data']['cpu_usage_us']
+
+
+                d['setprice'] = False
+                setprice = db.cache.find_one( { "tag": "setprice",
+                                                "data.producer": "{}".format(row['owner'])},
+                                                { "data.setprice": 1,
+                                                "_id": 0 },
+                                                sort=[('created_at', pymongo.DESCENDING)])
+                if setprice and 'data' in setprice and 'setprice' in setprice['data']:
+                    d['setprice'] = setprice['data']['setprice']
+
                 
 
                 owner = get_account(row['owner'])
@@ -174,41 +185,58 @@ def notify(slaap=300):
 
 
 
-        ''' find rembencmark cpu usages '''
+        ''' find rembencmark cpu usages  and setprice'''
         i = remcli_get_info()
         if i and 'head_block_num' in i:
-            start = i['head_block_num'] - 1000
+            start = i['head_block_num'] - 2000
             stop = i['head_block_num']
             r = range(start, stop)
-            for block in r:
+            for block in r:  
                 b = get_block(block)
                 if b and b['transactions']:
                     producer = b['producer']
                     for transaction in b['transactions']:
-                        if 'cpu_usage_us' in transaction:
-                            try:
-                                dt = parse(b['timestamp'])
-                                data = {}
-                                data['cpu_usage_us'] = transaction['cpu_usage_us']
-                                data['producer'] = producer
-                                add_db(col='cache', tag='rembenchmark', slug='rembenchmark', created_at=dt, data=data)
-                            except:
-                                print(sys.exc_info())
-                                jlog.critical("cpu_usage_us {}".format(sys.exc_info()))
+                        if 'cpu_usage_us' in transaction and 'trx' in transaction and 'transaction' in transaction['trx'] and 'actions' in transaction['trx']['transaction'] and isinstance(transaction['trx']['transaction']['actions'], list):
+                            for action in transaction['trx']['transaction']['actions']:
+                                if action['account'] == 'rembenchmark' and action['name'] == 'cpu':
+                                    try:
+                                        dt = parse(b['timestamp'])
+                                        data = {}
+                                        data['cpu_usage_us'] = transaction['cpu_usage_us']
+                                        data['producer'] = producer
+                                        add_db(col='cache', tag='rembenchmark', slug='rembenchmark', created_at=dt, data=data)
+                                    except:
+                                        print(sys.exc_info())
+                                        jlog.critical("cpu_usage_us {}".format(sys.exc_info()))
+                                if action['account'] == 'rem.oracle' and action['name'] == 'setprice':
+                                    try:
+                                        dt = parse(b['timestamp'])
+                                        data = {}
+                                        data['setprice'] = dt
+                                        data['producer'] = action['data']['producer']
+                                        add_db(col='cache', tag='setprice', slug='setprice', created_at=dt, data=data)
+                                    except:
+                                        print(sys.exc_info())
+                                        jlog.critical("cpu_usage_us {}".format(sys.exc_info()))
+
 
 
         jlog.info('Sleeping for: {} seconds'.format(slaap))
         sleep(slaap)
 
 
+
 def dev():
-    cpu_usage_us = db.cache.find_one( { "tag": "rembenchmark", 
-                                        "data.producer": "{}".format('remmonsterbp')},
-                                      { "data.cpu_usage_us": 1,
-                                        "_id": 0 },
-                                      sort=[('created_at', pymongo.DESCENDING)])
-    if cpu_usage_us and 'data' in cpu_usage_us and 'cpu_usage_us' in cpu_usage_us['data']:
-        pprint(cpu_usage_us['data']['cpu_usage_us'])
+    setprice = db.cache.find_one( { "tag": "setprice",
+                                    "data.producer": "{}".format('josiendotnet')},
+                                    { "data.setprice": 1,
+                                    "_id": 0 },
+                                    sort=[('created_at', pymongo.DESCENDING)])
+    if setprice and 'data' in setprice and 'setprice' in setprice['data']:
+        pprint(setprice['data']['setprice'])
+
+
+
     #adp = db.owners.find({"data.owner.account_name": "reyskywalker"}, {"data.voters":1, "created_at": 1}).limit(500)
     #l = 0
     #for a in adp:
