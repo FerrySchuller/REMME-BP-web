@@ -263,6 +263,18 @@ def _listproducers():
                     i['bp_json'] = ''
                     i['cpu_usage_us'] = ''
 
+                    if 'setprice' in owner_cached['data'] and owner_cached['data']['setprice']:
+                        try:
+                            setprice_dt = datetime.now() - owner_cached['data']['setprice']
+                            if setprice_dt.seconds > 3600:
+                                health += '<li><span style="color: tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="No setprice for an hour."><i class="fa fa-times"></i></text></span></li>'
+                            
+                        except:
+                            jlog.critical('setprice ERROR: {}'.format(sys.exc_info()))
+
+                    else:
+                        health += '<li><span style="color: tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="No setprice"><i class="fa fa-times"></i></text></span></li>'
+
                     if 'cpu_usage_us' in owner_cached['data'] and owner_cached['data']['cpu_usage_us']:
                         cpu_usage_ms = owner_cached['data']['cpu_usage_us'] / 1000
                         if cpu_usage_ms > 1:
