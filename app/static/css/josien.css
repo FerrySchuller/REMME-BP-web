@@ -38,3 +38,16 @@ ul.social-network li {
 	display: inline;
 	margin: 0 5px;
 }
+
+
+ul.health {
+        list-style: none;
+        display: inline;
+        margin-left:0 !important;
+        padding: 0;
+}
+ul.health li {
+        display: inline;
+        margin: 0 5px;
+}
+

@@ -250,7 +250,7 @@ def _listproducers():
                                                    sort=[('created_at', pymongo.DESCENDING)])
                 if owner_cached and 'data' in owner_cached:
                     ''' INIT table '''
-                    health = ''
+                    health = '<div><ul class="health">'
                     i = {}
                     i['voters'] = False
                     i['position'] = False
@@ -271,7 +271,7 @@ def _listproducers():
                             i['cpu_usage_us'] = "<medium class='text-success'>{:.2f} ms</medium>".format(cpu_usage_ms)
                         if cpu_usage_ms > 2:
                             i['cpu_usage_us'] = "<medium class='text-danger'>{:.2f} ms</medium>".format(cpu_usage_ms)
-                            health += '<span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Slow CPU"><i class="fa fa-times"></i></text></span>&nbsp;'
+                            health += '<li><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Slow CPU"><i class="fa fa-times"></i></text></span></li>'
  
     
 
@@ -285,11 +285,11 @@ def _listproducers():
                         i['voters'] = '<text data-toggle="tooltip" data-placement="top" data-html="true" title="{0}">{1}</text>'.format('<br />'.join(owner_cached['data']['voters']), len(owner_cached['data']['voters']))
 
                     if row['owner'] not in swaps:
-                        health += '<a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not swapping"><i class="fa fa-times"></i></text></span></a>&nbsp;'
+                        health += '<li><a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not swapping"><i class="fa fa-times"></i></text></span></a></li>'
 
 
                     if not owner_cached['data']['bp_json']:
-                        health += '<a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="No bp.json"><i class="fa fa-times"></i></text></span></a>&nbsp;'
+                        health += '<li><a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="No bp.json"><i class="fa fa-times"></i></text></span></a></li>'
 
                     
                     if row['is_active']:
@@ -318,9 +318,9 @@ def _listproducers():
                                 i['last_work_done'] = ("<medium class='text-success'>{:.0f}</medium>".format(ld.seconds))
                             if ld.seconds > 1801:
                                 i['last_work_done'] = ("<medium class='text-warning'>{:.0f} Minutes</medium>".format(ld.seconds / 60))
-                                health += '<a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not producing blocks for at least an half hour."><i class="fa fa-times"></i></text></span></a>&nbsp;'
+                                health += '<li><a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not producing blocks for at least an half hour."><i class="fa fa-times"></i></text></span></a></li>'
                             if ld.seconds > 3600:
-                                health += '<a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not producing blocks for at least one hour."><i class="fa fa-times"></i></text></span></a>&nbsp;'
+                                health += '<li><a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not producing blocks for at least one hour."><i class="fa fa-times"></i></text></span></a></li>'
                                 i['last_work_done'] = ("<medium class='text-danger'>{:.0f} Hours</medium>".format(ld.seconds / 3600))
 
                         except:
@@ -335,10 +335,11 @@ def _listproducers():
                         dt = parse(row['punished_until'])
                         days = dt - datetime.now()
                         if days.days > 0:
-                            health += '<span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="punished_until in days"><i class="fa fa-times">{}</i></text></span>&nbsp;'.format(days.days)
+                            health += '<li><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="punished_until in days"><i class="fa fa-times">{}</i></text></span></li>'.format(days.days)
                     except:
                         jlog.critical('punished_until ERROR: {}'.format(sys.exc_info()))
 
+                    health += '</ul></div>'
                     i['health'] = health
                     d['data'].append(i)
     

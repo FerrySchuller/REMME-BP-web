@@ -154,7 +154,7 @@ def status(slaap=300):
 def notify(slaap=300):
     while True:
 
-        ''' unreg not seeing blocks fo 5 minutes '''
+        ''' unreg not seeing blocks for 5 minutes '''
         m = ['josiendotnet', 'josientester']
         lp = listproducers()
         if lp and isinstance(lp, dict):
