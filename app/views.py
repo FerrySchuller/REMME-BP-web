@@ -390,6 +390,28 @@ def graph_status(days=1, coin='rem'):
     return jsonify(l)
 
 
+
+@app.route('/_cpu_benchmark/<int:days>')
+@app.route('/_cpu_benchmark')
+def cpu_benchmark(days=1):
+    data = {}
+    data['title'] = 'rem'
+
+    cpu_usage_us = [ [ 1578490398000, 2352 ], [ 1578490431000, 3352 ], 
+                     [ 1578490466000, 2352 ], [ 1578490498000, 5352 ], 
+                     [ 1578490531000, 1352 ], [ 1578490564000, 7352 ] ]
+
+    josiendotnet = [ [ 1578490398000, 8350 ], [ 1578490431000, 8152 ],                                                                                                                                  [ 1578490466000, 8552 ], [ 1578490498000, 8352 ],
+                     [ 1578490531000, 8350 ], [ 1578490564000, 8952 ] ]
+
+
+    data['josiendotnet'] = josiendotnet
+    data['cpu_usage_us'] = cpu_usage_us
+    data['owners'] = { 'josiendotnet': josiendotnet, 'josientester': josiendotnet }
+
+    return jsonify(data)
+
+
 @app.route('/bp.json')
 def bp():
     data =  { "producer_account_name": "josiendotnet",
