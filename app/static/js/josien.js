@@ -83,7 +83,7 @@ $(document).ready(function() {
                       { "data": "health" },
                       { "data": "cpu_usage_us" },
                       { "data": "last_work_done" },
-                      { "data": "is_active" },
+                      { "data": "is_active", className: "is_active" },
                       { "data": "bp_json" },
                     ],
          "order": [ [0, "asc"] ],

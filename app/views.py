@@ -276,7 +276,11 @@ def _listproducers():
     
 
                     if row['is_active']:
-                        i['is_active'] = '<i class="fa fa-check"></i>'
+                        i['is_active'] = '<span style="display:inline-block; width:60px" class="badge badge-success">Active</span>'
+                    if row['is_active'] and r > 21:
+                        i['is_active'] = '<span style="display:inline-block; width:60px" class="badge badge-warning">Rotated</span>'
+                    if row['is_active'] and r > 25:
+                        i['is_active'] = '<span style="display:inline-block; width:60px" class="badge badge-danger">Standy</span>'
                     if not row['is_active']:
                         i['is_active'] = '<span style="color: Tomato;"><i class="fa fa-times"></i></text></span>'
  
@@ -335,7 +339,7 @@ def _listproducers():
                         dt = parse(row['punished_until'])
                         days = dt - datetime.now()
                         if days.days > 0:
-                            health += '<li><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="punished_until in days"><i class="fa fa-times">{}</i></text></span></li>'.format(days.days)
+                            health += '<li><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="punished_until in days"><i class="fa fa-times">&nbsp;{}</i></span></li>'.format(days.days)
                     except:
                         jlog.critical('punished_until ERROR: {}'.format(sys.exc_info()))
 

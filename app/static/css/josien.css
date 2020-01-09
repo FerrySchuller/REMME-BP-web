@@ -51,3 +51,7 @@ ul.health li {
         margin: 0 5px;
 }
 
+
+.is_active {
+    text-align: center;
+}
