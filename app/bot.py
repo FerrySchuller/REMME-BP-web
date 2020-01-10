@@ -13,6 +13,7 @@ import pymongo
 from time import sleep
 from datetime import datetime, timedelta, timezone
 from dateutil.parser import parse
+from re import search
 from pprint import pprint
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -48,7 +49,7 @@ def add_db(col, slug=False, tag=False, data=False, created_at=datetime.now(timez
     except:
         jlog.critical("{} {}".format(tag, sys.exc_info()))
 
-    jlog.info( "col:{}".format(col))
+    jlog.info( "col:{} tag:{}".format(col,tag))
 
 
 
@@ -161,11 +162,47 @@ def status(slaap=300):
         sleep(slaap)
 
 
+def loop_transactions(seconds=300):
+    with open(os.getenv('REMME_LOG', False)) as fp:
+        for line in fp:
+            if not search('trxs: 0', line) and search('signed by', line):
+                l = line.split()
+                dt = datetime.now() - parse(l[11])
+                if dt.seconds < seconds:
+                    block = l[9][1:]
+                    b = get_block(block)
 
-def notify(slaap=300):
+                    if b and b['transactions']:
+                        producer = b['producer']
+                        for transaction in b['transactions']:
+                            if 'cpu_usage_us' in transaction and 'trx' in transaction and 'transaction' in transaction['trx'] and 'actions' in transaction['trx']['transaction'] and isinstance(transaction['trx']['transaction']['actions'], list):
+                                for action in transaction['trx']['transaction']['actions']:
+                                    if action['account'] == 'rembenchmark' and action['name'] == 'cpu':
+                                        try:
+                                            dt = parse(b['timestamp'])
+                                            data = {}
+                                            data['cpu_usage_us'] = transaction['cpu_usage_us']
+                                            data['producer'] = producer
+                                            add_db(col='cache', tag='rembenchmark', slug='rembenchmark', created_at=dt, data=data)
+                                        except:
+                                            print(sys.exc_info())
+                                            jlog.critical("cpu_usage_us {}".format(sys.exc_info()))
+                                    if action['account'] == 'rem.oracle' and action['name'] == 'setprice':
+                                        try:
+                                            dt = parse(b['timestamp'])
+                                            data = {}
+                                            data['setprice'] = dt
+                                            data['producer'] = action['data']['producer']
+                                            add_db(col='cache', tag='setprice', slug='setprice', created_at=dt, data=data)
+                                        except:
+                                            print(sys.exc_info())
+                                            jlog.critical("cpu_usage_us {}".format(sys.exc_info()))
+
+
+
+def notify(slaap=120):
     while True:
-
-        ''' unreg not seeing blocks for 5 minutes '''
+        ''' unreg not seeing blocks for slaap seconds '''
         m = ['josiendotnet', 'josientester']
         lp = listproducers()
         if lp and isinstance(lp, dict):
@@ -186,39 +223,7 @@ def notify(slaap=300):
 
 
         ''' find rembencmark cpu usages  and setprice'''
-        i = remcli_get_info()
-        if i and 'head_block_num' in i:
-            start = i['head_block_num'] - 3000
-            stop = i['head_block_num']
-            r = range(start, stop)
-            for block in r:  
-                b = get_block(block)
-                if b and b['transactions']:
-                    producer = b['producer']
-                    for transaction in b['transactions']:
-                        if 'cpu_usage_us' in transaction and 'trx' in transaction and 'transaction' in transaction['trx'] and 'actions' in transaction['trx']['transaction'] and isinstance(transaction['trx']['transaction']['actions'], list):
-                            for action in transaction['trx']['transaction']['actions']:
-                                if action['account'] == 'rembenchmark' and action['name'] == 'cpu':
-                                    try:
-                                        dt = parse(b['timestamp'])
-                                        data = {}
-                                        data['cpu_usage_us'] = transaction['cpu_usage_us']
-                                        data['producer'] = producer
-                                        add_db(col='cache', tag='rembenchmark', slug='rembenchmark', created_at=dt, data=data)
-                                    except:
-                                        print(sys.exc_info())
-                                        jlog.critical("cpu_usage_us {}".format(sys.exc_info()))
-                                if action['account'] == 'rem.oracle' and action['name'] == 'setprice':
-                                    try:
-                                        dt = parse(b['timestamp'])
-                                        data = {}
-                                        data['setprice'] = dt
-                                        data['producer'] = action['data']['producer']
-                                        add_db(col='cache', tag='setprice', slug='setprice', created_at=dt, data=data)
-                                    except:
-                                        print(sys.exc_info())
-                                        jlog.critical("cpu_usage_us {}".format(sys.exc_info()))
-
+        loop_transactions(seconds=slaap)
 
 
         jlog.info('Sleeping for: {} seconds'.format(slaap))
@@ -232,17 +237,7 @@ def dev():
                                     { "data.setprice": 1,
                                     "_id": 0 },
                                     sort=[('created_at', pymongo.DESCENDING)])
-    if setprice and 'data' in setprice and 'setprice' in setprice['data']:
-        pprint(setprice['data']['setprice'])
-
-
-
-    #adp = db.owners.find({"data.owner.account_name": "reyskywalker"}, {"data.voters":1, "created_at": 1}).limit(500)
-    #l = 0
-    #for a in adp:
-    #    if len(a['data']['voters']) != l:
-    #        l = len(a['data']['voters'])
-    #        print('{:<3} {} {}'.format(l, a['created_at'], ' '.join(a['data']['voters'])))
+    pprint(setprice)
      
 
 def main():
@@ -270,6 +265,10 @@ if __name__ == '__main__':
     if 'monit' in args:
         init(stdout=False)
         main()
+
+    if 'fill_cache' in args:
+        init()
+        loop_transactions(seconds=86400)
 
 
     if 'dev' in args:
