@@ -166,8 +166,14 @@ def loop_transactions(seconds=300):
         for line in fp:
             if not search('trxs: 0', line) and search('signed by', line):
                 l = line.split()
-                dt = datetime.now() - parse(l[11])
-                if dt.seconds < seconds:
+                try:
+                    dt = datetime.now() - parse(l[11])
+                except:
+                    dt = False
+                    print(sys.exc_info())
+                    jlog.critical("trxs dt {}".format(sys.exc_info()))
+
+                if dt and dt.seconds < seconds:
                     block = l[9][1:]
                     b = get_block(block)
 
@@ -199,7 +205,7 @@ def loop_transactions(seconds=300):
 
 
 
-def notify(slaap=120):
+def notify(slaap=60):
     while True:
         ''' unreg not seeing blocks for slaap seconds '''
         m = ['josiendotnet', 'josientester']
