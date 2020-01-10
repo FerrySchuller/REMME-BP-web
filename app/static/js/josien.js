@@ -33,7 +33,7 @@ $(document).ready(function(owner) {
         "ajax": "/_listvoters",
          "createdRow": function(row, data, index) {
             if(data.klass) { $(row).addClass(data.klass); } },
-         "columnDefs": [ { "targets": [0,1,2,4,7,8], "orderable": false } ],
+         "columnDefs": [ { "targets": [0,2,7,8], "orderable": false } ],
         "columns": [ { "data": "owner" },
                      { "data": "staked" },
                      { "data": "last_vote_weight" },
