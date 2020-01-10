@@ -113,7 +113,7 @@ def owner(owner):
 @app.route('/dev')
 def dev():
     d = {}
-    return render_template( 'dev.html', d=d )
+    return render_template( 'index.html', d=d )
 
 
 @app.route('/_get_account/<owner>')

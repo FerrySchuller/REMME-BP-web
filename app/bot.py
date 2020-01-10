@@ -162,6 +162,9 @@ def status(slaap=300):
 
 
 def loop_transactions(seconds=300):
+    info = remcli_get_info()
+    if info and 'last_irreversible_block_num' in info:
+        last_irreversible_block_num = info['last_irreversible_block_num']
     with open(os.getenv('REMME_LOG', False)) as fp:
         for line in fp:
             if not search('trxs: 0', line) and search('signed by', line) and not search('Block not applied to head', line):
@@ -175,34 +178,34 @@ def loop_transactions(seconds=300):
 
                 if dt and dt.seconds < seconds:
                     block = l[9][1:]
-                    b = get_block(block)
-
-                    if b and b['transactions']:
-                        producer = b['producer']
-                        for transaction in b['transactions']:
-                            if 'cpu_usage_us' in transaction and 'trx' in transaction and 'transaction' in transaction['trx'] and 'actions' in transaction['trx']['transaction'] and isinstance(transaction['trx']['transaction']['actions'], list):
-                                for action in transaction['trx']['transaction']['actions']:
-                                    if action['account'] == 'rembenchmark' and action['name'] == 'cpu':
-                                        try:
-                                            dt = parse(b['timestamp'])
-                                            data = {}
-                                            data['cpu_usage_us'] = transaction['cpu_usage_us']
-                                            data['producer'] = producer
-                                            add_db(col='cache', tag='rembenchmark', slug='rembenchmark', created_at=dt, data=data)
-                                        except:
-                                            print(sys.exc_info())
-                                            jlog.critical("cpu_usage_us {}".format(sys.exc_info()))
-                                    if action['account'] == 'rem.oracle' and action['name'] == 'setprice':
-                                        try:
-                                            dt = parse(b['timestamp'])
-                                            data = {}
-                                            data['setprice'] = dt
-                                            data['producer'] = action['data']['producer']
-                                            add_db(col='cache', tag='setprice', slug='setprice', created_at=dt, data=data)
-                                        except:
-                                            print(sys.exc_info())
-                                            jlog.critical("cpu_usage_us {}".format(sys.exc_info()))
-
+                    if int(block) < info['last_irreversible_block_num']:
+                        b = get_block(block)
+    
+                        if b and b['transactions']:
+                            producer = b['producer']
+                            for transaction in b['transactions']:
+                                if 'cpu_usage_us' in transaction and 'trx' in transaction and 'transaction' in transaction['trx'] and 'actions' in transaction['trx']['transaction'] and isinstance(transaction['trx']['transaction']['actions'], list):
+                                    for action in transaction['trx']['transaction']['actions']:
+                                        if action['account'] == 'rembenchmark' and action['name'] == 'cpu':
+                                            try:
+                                                dt = parse(b['timestamp'])
+                                                data = {}
+                                                data['cpu_usage_us'] = transaction['cpu_usage_us']
+                                                data['producer'] = producer
+                                                add_db(col='cache', tag='rembenchmark', slug='rembenchmark', created_at=dt, data=data)
+                                            except:
+                                                print(sys.exc_info())
+                                                jlog.critical("cpu_usage_us {}".format(sys.exc_info()))
+                                        if action['account'] == 'rem.oracle' and action['name'] == 'setprice':
+                                            try:
+                                                dt = parse(b['timestamp'])
+                                                data = {}
+                                                data['setprice'] = dt
+                                                data['producer'] = action['data']['producer']
+                                                add_db(col='cache', tag='setprice', slug='setprice', created_at=dt, data=data)
+                                            except:
+                                                print(sys.exc_info())
+                                                jlog.critical("cpu_usage_us {}".format(sys.exc_info()))
 
 
 def notify(slaap=60):
@@ -237,12 +240,14 @@ def notify(slaap=60):
 
 
 def dev():
+    info = remcli_get_info()
+    if info and 'last_irreversible_block_num' in info:
+        pprint(info['last_irreversible_block_num'])
     setprice = db.cache.find_one( { "tag": "setprice",
                                     "data.producer": "{}".format('josiendotnet')},
                                     { "data.setprice": 1,
                                     "_id": 0 },
                                     sort=[('created_at', pymongo.DESCENDING)])
-    pprint(setprice)
      
 
 def main():
@@ -273,7 +278,7 @@ if __name__ == '__main__':
 
     if 'fill_cache' in args:
         init()
-        loop_transactions(seconds=7200)
+        loop_transactions(seconds=200)
 
 
     if 'dev' in args:
