@@ -164,7 +164,7 @@ def status(slaap=300):
 def loop_transactions(seconds=300):
     with open(os.getenv('REMME_LOG', False)) as fp:
         for line in fp:
-            if not search('trxs: 0', line) and search('signed by', line):
+            if not search('trxs: 0', line) and search('signed by', line) and not search('Block not applied to head', line):
                 l = line.split()
                 try:
                     dt = datetime.now() - parse(l[11])
