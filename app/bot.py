@@ -52,7 +52,6 @@ def add_db(col, slug=False, tag=False, data=False, created_at=datetime.now(timez
     jlog.info( "col:{} tag:{}".format(col,tag))
 
 
-
 def writePidFile():
     pid = str(os.getpid())
     f = open(pid_file, 'w')
