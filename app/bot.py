@@ -268,7 +268,7 @@ if __name__ == '__main__':
 
     if 'fill_cache' in args:
         init()
-        loop_transactions(seconds=86400)
+        loop_transactions(seconds=7200)
 
 
     if 'dev' in args:
