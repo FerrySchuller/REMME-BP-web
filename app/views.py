@@ -73,7 +73,7 @@ def gen_locked_stake(feil):
 @app.route('/')
 def index():
     track_event( category='index', action='index')
-    return render_template( 'index.html' )
+    return render_template( 'offline.html' )
 
 
 @app.route('/offline')
