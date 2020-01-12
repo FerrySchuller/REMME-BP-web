@@ -6,7 +6,6 @@ lib_dir = os.getenv('LIB_DIR')
 if not lib_dir:
     sys.exit('no lib_dir in .env')
 sys.path.append(os.getenv('LIB_DIR'))
-
 import threading
 import psutil
 import pymongo
@@ -74,141 +73,38 @@ def is_running():
 
 
 
-def status(slaap=300):
-    while True:
-        # temporary for remmonsterbp
-        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
-
-        url = "https://min-api.cryptocompare.com/data/price?fsym=REM&tsyms=USD&api_key={}".format(os.getenv('cryptocompare_key', False))
-        r = requests.get(url)
-        if r and r.ok and r.json:
-            add_db(col='cache', tag='usd_rem', slug='usd_rem', data=r.json())
-
-        lv = listvoters()
-        if lv:
-            add_db(col='cache', tag='guardians', slug='guardians', data=lv)
-
-        get_info = remcli_get_info()
-        if get_info:
-            add_db(col='cache', tag='get_info', slug='get_info', data=get_info)
-        
-        swap = remcli_get_action_swap()
-        if swap:
-            add_db(col='cache', tag='get_swap', slug='get_swap', data=swap)
-
-        lp = listproducers()
-        d = {}
-        locked_stake = 0
-        if lp and 'rows' in lp:
-            j = False
-            for row in lp['rows']:
-
-                d['cpu_usage_us'] = False
-                cpu_usage_us = db.cache.find_one( { "tag": "rembenchmark",
-                                                    "data.producer": "{}".format(row['owner'])},
-                                                  { "data.cpu_usage_us": 1,
-                                                    "_id": 0 },
-                                                  sort=[('created_at', pymongo.DESCENDING)])
-                if cpu_usage_us and 'data' in cpu_usage_us and 'cpu_usage_us' in cpu_usage_us['data']:
-                    d['cpu_usage_us'] = cpu_usage_us['data']['cpu_usage_us']
+def get_actions(seconds=60):
+    dt = (datetime.now() - timedelta(seconds=seconds))
+    logs = db.logs.find({"time": {"$gt": dt}}).sort([("time", pymongo.ASCENDING)])
+    for log in logs:
+        msg = log['msg'].split()
+        if len(msg) == 24:
+            d = {}
+            block = msg[9].replace('#', '')
+            produced_on = parse(msg[11])
+            block_owner = msg[14]
+            #d['trxs'] = msg[16].replace(',', '')
+            b = get_block(block)
+            if b and b['transactions'] and isinstance(b['transactions'], list):
+                for transaction in b['transactions']:
+                    for action in transaction['trx']['transaction']['actions']:
+                        if action['account'] == 'rembenchmark' and action['name'] == 'cpu':
+                            o = db.producers.find_one( { "name": "{}".format(block_owner) })
+                            if o:
+                                data = o
+                                data['cpu_usage_us'] = transaction['cpu_usage_us']
+                                data['cpu_usage_us_dt'] = produced_on
+                                ref = db.producers.update({"name": '{}'.format(block_owner)}, {"$set": data}, upsert=True)
+                        if action['account'] == 'rem.oracle' and action['name'] == 'setprice':
+                            o = db.producers.find_one( { "name": "{}".format(action['data']['producer']) })
+                            if o:
+                                data = o
+                                data['updated_at'] = datetime.now(timezone.utc)
+                                data['setprice'] = produced_on
+                                ref = db.producers.update({"name": '{}'.format(action['data']['producer'])}, {"$set": data}, upsert=True)
 
 
-                d['setprice'] = False
-                setprice = db.cache.find_one( { "tag": "setprice",
-                                                "data.producer": "{}".format(row['owner'])},
-                                                { "data.setprice": 1,
-                                                "_id": 0 },
-                                                sort=[('created_at', pymongo.DESCENDING)])
-                if setprice and 'data' in setprice and 'setprice' in setprice['data']:
-                    d['setprice'] = setprice['data']['setprice']
-
-                
-
-                owner = get_account(row['owner'])
-                locked_stake += int(owner['voter_info']['locked_stake'])
-                d['owner'] = owner
-                d['bp_json'] = False
-                d['voters'] = False
-                d['locked_stake_total'] = locked_stake
-                if row['url']:
-                    url = '{}/bp.json'.format(row['url'].rstrip('//'))
-    
-                    try:
-                        r = requests.get(url, headers=headers, verify=False)
-                    except:
-                        jlog.critical("bp.json error: {}".format(sys.exc_info()))
-                        r = False
-                    if r and r.ok and r.json:
-                        try:
-                            d['bp_json'] = r.json()
-                        except:
-                            jlog.critical("bp.json error: {}".format(sys.exc_info()))
-
-
-                if lv and 'rows' in lv and isinstance(lv['rows'], list):
-                    voters = []
-                    for voter in lv['rows']:
-                        if isinstance(voter, dict) and 'error' not in voter.keys():
-                            if row['owner'] in voter['producers']:
-                                voters.append(voter['owner'])
-                    d['voters'] = voters
-
-
-                add_db(col='owners', tag='owners', slug='owners', data=d)
-
-    
-        jlog.info('Sleeping for: {} seconds'.format(slaap))
-        sleep(slaap)
-
-
-def loop_transactions(seconds=300):
-    info = remcli_get_info()
-    if info and 'last_irreversible_block_num' in info:
-        last_irreversible_block_num = info['last_irreversible_block_num']
-    with open(os.getenv('REMME_LOG', False)) as fp:
-        for line in fp:
-            if not search('trxs: 0', line) and search('signed by', line) and not search('Block not applied to head', line):
-                l = line.split()
-                try:
-                    dt = datetime.now() - parse(l[11])
-                except:
-                    dt = False
-                    print(sys.exc_info())
-                    jlog.critical("trxs dt {}".format(sys.exc_info()))
-
-                if dt and dt.seconds < seconds:
-                    block = l[9][1:]
-                    if int(block) < info['last_irreversible_block_num']:
-                        b = get_block(block)
-    
-                        if b and b['transactions']:
-                            producer = b['producer']
-                            for transaction in b['transactions']:
-                                if 'cpu_usage_us' in transaction and 'trx' in transaction and 'transaction' in transaction['trx'] and 'actions' in transaction['trx']['transaction'] and isinstance(transaction['trx']['transaction']['actions'], list):
-                                    for action in transaction['trx']['transaction']['actions']:
-                                        if action['account'] == 'rembenchmark' and action['name'] == 'cpu':
-                                            try:
-                                                dt = parse(b['timestamp'])
-                                                data = {}
-                                                data['cpu_usage_us'] = transaction['cpu_usage_us']
-                                                data['producer'] = producer
-                                                add_db(col='cache', tag='rembenchmark', slug='rembenchmark', created_at=dt, data=data)
-                                            except:
-                                                print(sys.exc_info())
-                                                jlog.critical("cpu_usage_us {}".format(sys.exc_info()))
-                                        if action['account'] == 'rem.oracle' and action['name'] == 'setprice':
-                                            try:
-                                                dt = parse(b['timestamp'])
-                                                data = {}
-                                                data['setprice'] = dt
-                                                data['producer'] = action['data']['producer']
-                                                add_db(col='cache', tag='setprice', slug='setprice', created_at=dt, data=data)
-                                            except:
-                                                print(sys.exc_info())
-                                                jlog.critical("cpu_usage_us {}".format(sys.exc_info()))
-
-
-def notify(slaap=60):
+def notify(slaap=300):
     while True:
         ''' unreg not seeing blocks for slaap seconds '''
         m = ['josiendotnet', 'josientester']
@@ -229,26 +125,155 @@ def notify(slaap=60):
                             jlog.critical("unreg {}".format(sys.exc_info()))
 
 
-
-        ''' find rembencmark cpu usages  and setprice'''
-        loop_transactions(seconds=slaap)
-
-
         jlog.info('Sleeping for: {} seconds'.format(slaap))
         sleep(slaap)
 
 
 
-def dev():
-    info = remcli_get_info()
-    if info and 'last_irreversible_block_num' in info:
-        pprint(info['last_irreversible_block_num'])
-    setprice = db.cache.find_one( { "tag": "setprice",
-                                    "data.producer": "{}".format('josiendotnet')},
-                                    { "data.setprice": 1,
-                                    "_id": 0 },
-                                    sort=[('created_at', pymongo.DESCENDING)])
+def producers_fast(slaap=20):
+    while True:
+        actions_seconds = slaap + 60
+        get_actions(actions_seconds)
+        lv = listvoters()
+        lp = listproducers()
+        position = 0
+
+        if lp and 'rows' in lp:
+            swaps = remcli_get_action_swap()
+            swap_it = []
+            if swaps and 'rows' in swaps:
+                for swap in swaps['rows']:
+                    swap_it = swap_it + swap['provided_approvals']
+        
+            rows = sorted(lp['rows'], key=lambda k: (float(k['total_votes'])), reverse=True)
+            for p in rows:
+                health = []
+
+                o = db.producers.find_one( { "name": "{}".format(p['owner']) })
+                if o:
+                    data = o
+                    data['updated_at'] = datetime.now(timezone.utc)
+                    data['health'] = []
+                else:
+                    data = {}
+                    data['name'] = p['owner']
+                    data['position'] = 99
+                    data['producer'] = p
+                    data['slug'] = 'producers'
+                    data['tag'] = 'producers'
+                    data['cpu_usage_us'] = ''
+                    data['social'] = ''
+                    data['bp_json'] = ''
+                    data['bp_json_url'] = ''
+                    data['health'] = []
+                    data['created_at'] = datetime.now(timezone.utc)
+    
+                data['producer'] = p
+
+                if p['is_active'] == 1:
+                    position += 1
+                    data['position'] = position
+                else:
+                    health.append({'title':'Not Active'})
+                    data['position'] = 99
+
+    
+                if p['owner'] in swap_it:
+                    data['swaps'] = True
+                else:
+                    data['swaps'] = False
+                    health.append({'title':'Not swapping'})
+
+                owner = get_account(p['owner'])
+                data['owner'] = owner
+    
+                voters = []
+                data['voters'] = []
+                if lv and 'rows' in lv and isinstance(lv['rows'], list):
+                    for voter in lv['rows']:
+                        if isinstance(voter, dict) and 'error' not in voter.keys():
+                            if p['owner'] in voter['producers']:
+                                voters.append(voter['owner'])
+                                data['voters'] = voters
+    
+                data['voters_count'] = len(voters)
+
+                data['health'] = health
+                ref = db.producers.update({"name": '{}'.format(p['owner'])}, {"$set": data}, upsert=True)
+
+        jlog.info('Sleeping for: {} seconds'.format(slaap))
+        sleep(slaap)
+
+
+def producers_slow(slaap=300):
+    while True:
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+        #producers = db.producers.find({"name":"josiendotnet"}).limit(100)
+        producers = db.producers.find().limit(100)
+        if producers:
+            for p in producers:
+                if 'producer' in p and 'url' in p['producer']:
+                    if p['producer']['url']:
+                        url = '{}/bp.json'.format(p['producer']['url'].rstrip('//'))
+                        data = p
+                        data['updated_at'] = datetime.now(timezone.utc)
+                        data['bp_json'] = False
+                        data['bp_json_url'] = ''
+                        health = data['health']
+                 
+    
+                        r = False
+                        try:
+                            r = requests.get(url, headers=headers, verify=False)
+                        except:
+                            jlog.critical("bp.json error: {} {}".format(sys.exc_info(), p['name']))
+
+                        if r and r.ok and r.json:
+                            try:
+                                data['bp_json'] = r.json()
+                                data['bp_json_url'] = url
+                            except:
+                                jlog.critical("bp.json error: {} {}".format(p['name'], sys.exc_info()))
+
+                        if not data['bp_json']:
+                            health.append({'title':'No bp.json'})
+
+                        if data['bp_json']:
+                            bp_json = r.json()
+                            if 'org' in bp_json and 'social' in bp_json['org'] and isinstance(bp_json['org']['social'], dict):
+                                o = '<div><ul class="social-network">'
+                                for k,v in bp_json['org']['social'].items():
+                                    if v:
+                                        if k == 'facebook':
+                                            o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" title="{0}" target="_blank" href="https://facebook.com/{1}""><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                                        if k == 'twitter':
+                                            o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="https://twitter.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                                        if k == 'telegram':
+                                            o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="https://t.me/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                                        if k == 'reddit':
+                                            o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="https://reddit.com/user/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                                        if k == 'github':
+                                            o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="https://github.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+                                        if k == 'linkedin':
+                                            o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="https://linkedin.com/in/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
+
+                
+                                o += '</ul></div>'
+                                data['social'] = o
+                         
+    
+                        data['health'] = health
+                        ref = db.producers.update({"name": '{}'.format(p['name'])}, {"$set": data}, upsert=True)
+
+        jlog.info('Sleeping for: {} seconds'.format(slaap))
+        sleep(slaap)
+
      
+def dev():
+    pass
+
+def dev1():
+    pass
 
 def main():
     if not is_running():
@@ -256,11 +281,15 @@ def main():
         writePidFile()
         main()
 
-        status_thread = threading.Thread(target=status, args=(), name='status')
-        status_thread.start()
+        producers_fast_thread = threading.Thread(target=producers_fast, args=(), name='producers_fast')
+        producers_fast_thread.start()
 
-        notify_thread = threading.Thread(target=notify, args=(), name='notify')
-        notify_thread.start()
+        producers_slow_thread = threading.Thread(target=producers_slow, args=(), name='producers_slow')
+        producers_slow_thread.start()
+
+        #notify_thread = threading.Thread(target=notify, args=(), name='notify')
+        #notify_thread.start()
+
 
     else:
         jlog.info("allready running".format())
@@ -276,11 +305,10 @@ if __name__ == '__main__':
         init(stdout=False)
         main()
 
-    if 'fill_cache' in args:
-        init()
-        loop_transactions(seconds=200)
-
-
     if 'dev' in args:
         init()
         dev()
+
+    if 'dev1' in args:
+        init()
+        dev1()

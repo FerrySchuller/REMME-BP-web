@@ -15,10 +15,39 @@ root@remme0:/prod/REMME-BP-web# . env/bin/activate
 (env) root@remme0:/prod/REMME-BP-web# pip install -r requirements.txt
 ```
 
+
+remnode startup script with rsyslog logging enabled:
+```
+# cat start_remnode.sh
+#!/bin/sh
+SERVICE="remnode"
+
+if ! pgrep -x "$SERVICE" >/dev/null
+then
+        echo "$SERVICE stopped, starting"
+        cd /prod/bp
+        remnode --config-dir ./config/ --data-dir ./data/ 2>&1 | logger -p local0.info &
+fi
+```
+
+rsyslog config for caching blocks with transactions:
+```
+$:/etc/rsyslog.d# cat /etc/rsyslog.d/remme.conf
+module(load="ommongodb")
+
+if (not re_match($msg, ".*trxs: 0.*")) and (re_match($msg, ".*signed by.*")) then {
+    local0.info action( type="ommongodb"
+                        server="localhost"
+                        db="josien_remme"
+                        collection="logs" )
+}
+```
+
+
 mongo pruning settings:
 
 ```
-db.cache.createIndex( { "created_at": 1 }, { expireAfterSeconds: 172800 } )
+mongo josien_remme --eval "printjson(db.logs.createIndex( { "time": 1 }, { expireAfterSeconds: 43200 } ))"
 ```
 
 systemd config:

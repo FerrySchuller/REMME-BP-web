@@ -32,6 +32,10 @@ db = db()
 #            abort(400)
 
 
+def gen_health(title, fa_class='fa-times', color='tomato', text=''):
+    msg = '<li><span style="color: {2};"><text data-toggle="tooltip" data-placement="top" data-html="true" title="{0}"><i class="fa {1}">{3}</i></text></span></li>'.format(title, fa_class, color, text)
+    return(msg)
+
 def gen_social(j, url):
     o = '<div><ul class="social-network">'
     if url:
@@ -72,37 +76,37 @@ def gen_locked_stake(feil):
 
 @app.route('/')
 def index():
-    track_event( category='index', action='index')
-    return render_template( 'offline.html' )
+    #track_event( category='index', action='index')
+    return render_template( 'index.html' )
 
 
 @app.route('/offline')
 def offline():
-    track_event( category='offline', action='offline')
+    #track_event( category='offline', action='offline')
     return render_template( 'offline.html' )
 
 
 @app.route('/guardians')
 def guardians():
-    track_event( category='guardians', action='guardians')
+    #track_event( category='guardians', action='guardians')
     return render_template( 'guardians.html' )
 
 
 @app.route('/code_of_conduct')
 def code_of_conduct():
-    track_event( category='index', action='code_of_conduct')
+    #track_event( category='index', action='code_of_conduct')
     return render_template( 'code_of_conduct.html' )
 
 
 @app.route('/ownership_disclosure')
 def ownership_disclosure():
-    track_event( category='index', action='ownership_disclosure')
+    #track_event( category='index', action='ownership_disclosure')
     return render_template( 'ownership_disclosure.html' )
 
 
 @app.route('/owner/<owner>')
 def owner(owner):
-    track_event( category='index', action='owner')
+    #track_event( category='index', action='owner')
     data = get_account(owner)
     owner_cached = db.owners.find_one( {"tag": "owners", "data.owner.account_name": "{}".format(owner)}, 
                                        sort=[('created_at', pymongo.DESCENDING)])
@@ -223,146 +227,139 @@ def _listvoters():
     return jsonify(d)
 
 
+
 @app.route('/_listproducers')
 def _listproducers():
-    i = remcli_get_info()
+
+    get_info = remcli_get_info()
     producing = False
+    if get_info:
+        producing = get_info['head_block_producer']
 
-    if i:
-        producing = i['head_block_producer']
+    owners = db.producers.find()
 
-    get_swap = db.cache.find_one({ "tag": "get_swap"}, sort=[('created_at', pymongo.DESCENDING)])
-    swaps = []
-    if get_swap and 'data' in get_swap and isinstance(get_swap['data'], dict) and 'rows' in get_swap['data']:
-        for swap in get_swap['data']['rows']:
-            for s in swap['provided_approvals']:
-                swaps.append(s)
-
-    d = False
     lp = listproducers()
-
+    producers = []
     if lp and isinstance(lp, dict):
+        for row in lp['rows']:
+            d = {}
+            d['owner'] = row['owner']
+            d['last_block_time'] = row['last_block_time']
+            d['is_active'] = row['is_active']
+            d['punished_until'] = False
+
+            try:
+                dt = parse(row['punished_until'])
+                days = dt - datetime.now()
+                if days.days > 0:
+                    d['punished_until'] = days.days
+            except:
+                jlog.critical('punished_until ERROR: {}'.format(sys.exc_info()))
+
+            producers.append(d)
+
+    if owners:
         d = {}
         d['data'] = []
-        if 'rows' in lp:
-            r = 1
-            rows = sorted(lp['rows'], key=lambda k: (float(k['total_votes'])), reverse=True)
-            for row in rows:
-                owner_cached = db.owners.find_one( {"tag": "owners", "data.owner.account_name": "{}".format(row['owner'])}, 
-                                                   sort=[('created_at', pymongo.DESCENDING)])
-                if owner_cached and 'data' in owner_cached:
-                    ''' INIT table '''
-                    health = '<div><ul class="health">'
-                    i = {}
-                    i['voters'] = False
-                    i['position'] = False
-                    i['total_votes'] = False
-                    i['social'] = False
-                    i['url'] = False
-                    i['last_work_done'] = False
-                    i['health'] = ''
-                    i['is_active'] = ''
-                    i['bp_json'] = ''
-                    i['cpu_usage_us'] = ''
+        for owner in owners:
 
-                    if 'setprice' in owner_cached['data'] and owner_cached['data']['setprice']:
-                        try:
-                            setprice_dt = datetime.now() - owner_cached['data']['setprice']
-                            if setprice_dt.seconds > 43200:
-                                health += '<li><span style="color: tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="No setprice for 12 hours."><i class="fa fa-times"></i></text></span></li>'
-                            
-                        except:
-                            jlog.critical('setprice ERROR: {}'.format(sys.exc_info()))
+            health = '<div><ul class="health">'
+            if owner['health']:
+                for issue in owner['health']:
+                    health += gen_health(issue['title'])
 
-                    else:
-                        health += '<li><span style="color: tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="No setprice"><i class="fa fa-times"></i></text></span></li>'
+            i = {}
+            i['position'] = owner['position']
 
-                    if 'cpu_usage_us' in owner_cached['data'] and owner_cached['data']['cpu_usage_us']:
-                        cpu_usage_ms = owner_cached['data']['cpu_usage_us'] / 1000
-                        if cpu_usage_ms > 1:
-                            i['cpu_usage_us'] = "<medium class='text-warning'>{:.2f} ms</medium>".format(cpu_usage_ms)
-                        if cpu_usage_ms < 1:
-                            i['cpu_usage_us'] = "<medium class='text-success'>{:.2f} ms</medium>".format(cpu_usage_ms)
-                        if cpu_usage_ms > 2:
-                            i['cpu_usage_us'] = "<medium class='text-danger'>{:.2f} ms</medium>".format(cpu_usage_ms)
-                            health += '<li><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Slow CPU"><i class="fa fa-times"></i></text></span></li>'
- 
-    
+            i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=owner['name']), owner['name'])
 
-                    if row['is_active']:
-                        i['is_active'] = '<span style="display:inline-block; width:60px" class="badge badge-success">Active</span>'
-                    if row['is_active'] and r > 21:
-                        i['is_active'] = '<span style="display:inline-block; width:60px" class="badge badge-warning">Rotated</span>'
-                    if row['is_active'] and r > 25:
-                        i['is_active'] = '<span style="display:inline-block; width:60px" class="badge badge-danger">Standy</span>'
-                    if not row['is_active']:
-                        i['is_active'] = '<span style="color: Tomato;"><i class="fa fa-times"></i></text></span>'
- 
-
-                    if 'voters' in owner_cached['data'] and isinstance(owner_cached['data']['voters'], list):                     
-                        i['voters'] = '<text data-toggle="tooltip" data-placement="top" data-html="true" title="{0}">{1}</text>'.format('<br />'.join(owner_cached['data']['voters']), len(owner_cached['data']['voters']))
-
-                    if row['owner'] not in swaps:
-                        health += '<li><a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not swapping"><i class="fa fa-times"></i></text></span></a></li>'
-
-
-                    if not owner_cached['data']['bp_json']:
-                        health += '<li><a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="No bp.json"><i class="fa fa-times"></i></text></span></a></li>'
-
+            if producers and isinstance(producers, list):
+                for producer in producers:
+                    if owner['name'] == producer['owner'] and producer['punished_until']:
+                        health += gen_health(title='punished_until {}'.format(producer['punished_until']), text=' {}'.format(producer['punished_until']))
                     
-                    if row['is_active']:
-                        i['position'] = '{}'.format(r)
-                        r += 1
-                    else:
-                        i['position'] = 99
-    
-                    i['owner'] = '<a href={0}>{1}</a>'.format(url_for('owner', owner=row['owner']), row['owner'])
-    
-                    try:
-                        total_votes = (float(row['total_votes']) / 10000)
-                        i['total_votes'] = '{:0,.0f}'.format(total_votes)
-                    except:
-                        jlog.critical('TOTAL VOTES ERROR: {}'.format(sys.exc_info()))
-    
-                    i['social'] = gen_social(owner_cached, url=row['url'])
+              
 
-                    if row['owner'] == producing:
-                        i['last_work_done'] = '<i class="fas fa-sync fa-spin fa-1x"></i>'
-                    else:
-                        try:
-                            ldt = parse(row['last_block_time'])
-                            ld = datetime.now() - ldt
-                            if ld.seconds < 1800:
-                                i['last_work_done'] = ("<medium class='text-success'>{:.0f}</medium>".format(ld.seconds))
-                            if ld.seconds > 1801:
-                                i['last_work_done'] = ("<medium class='text-warning'>{:.0f} Minutes</medium>".format(ld.seconds / 60))
-                                health += '<li><a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not producing blocks for at least an half hour."><i class="fa fa-times"></i></text></span></a></li>'
-                            if ld.seconds > 3600:
-                                health += '<li><a target="_blank" href="https://support.remme.io/hc/en-us/articles/360010895940-Become-a-Block-Producer-get-voted-in-run-a-node"><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="Not producing blocks for at least one hour."><i class="fa fa-times"></i></text></span></a></li>'
-                                i['last_work_done'] = ("<medium class='text-danger'>{:.0f} Hours</medium>".format(ld.seconds / 3600))
-
-                        except:
-                            i['last_work_done'] = ''
-                            jlog.critical('last_block_time ERROR: {}'.format(sys.exc_info()))
+            try:
+                total_votes = (float(owner['producer']['total_votes']) / 10000)
+                i['total_votes'] = '{:0,.0f}'.format(total_votes)
+            except:
+                i['total_votes'] = False
+                jlog.critical('total_votes ERROR: {}'.format(sys.exc_info()))
 
 
-                    if owner_cached['data']['bp_json']:
-                        i['bp_json'] = '<a target="_blank" href="{}/bp.json"><i class="fa fa-check"></i></a>'.format(row['url'])
+            i['voters'] = owner['voters_count']
 
-                    try:
-                        dt = parse(row['punished_until'])
-                        days = dt - datetime.now()
-                        if days.days > 0:
-                            health += '<li><span style="color: Tomato;"><text data-toggle="tooltip" data-placement="top" data-html="true" title="punished_until in days"><i class="fa fa-times">&nbsp;{}</i></span></li>'.format(days.days)
-                    except:
-                        jlog.critical('punished_until ERROR: {}'.format(sys.exc_info()))
 
-                    health += '</ul></div>'
-                    i['health'] = health
-                    d['data'].append(i)
+            i['social'] = owner['social']
+
+
+            i['cpu_usage_us'] = False
+            try:
+                if owner['cpu_usage_us']:
+                    cpu_usage_ms = owner['cpu_usage_us'] / 1000
+                    if cpu_usage_ms > 1:
+                        i['cpu_usage_us'] = "<medium class='text-warning'>{:.2f} ms</medium>".format(cpu_usage_ms)
+                    if cpu_usage_ms < 1:
+                        i['cpu_usage_us'] = "<medium class='text-success'>{:.2f} ms</medium>".format(cpu_usage_ms)
+                    if cpu_usage_ms > 2:
+                        health += gen_health(title='Slow CPU')
+                        i['cpu_usage_us'] = "<medium class='text-danger'>{:.2f} ms</medium>".format(cpu_usage_ms)
+            except:
+                jlog.critical('cpu_usage_us ERROR: {}'.format(sys.exc_info()))
+
+            i['last_work_done'] = False
+
+            if owner['name'] == producing:
+                i['last_work_done'] = '<i class="fas fa-sync fa-spin fa-1x"></i>'
+            else:
+                try:
+                    if producers and isinstance(producers, list):
+                        for lbt in producers:
+                            if owner['name'] == lbt['owner']:
+                                ldt = parse(lbt['last_block_time'])
+                                ld = datetime.now() - ldt
+
+                                if ld.seconds < 1800:
+                                    i['last_work_done'] = ("<medium class='text-success'>{:.0f}</medium>".format(ld.seconds))
+                                if ld.seconds > 1801:
+                                    i['last_work_done'] = ("<medium class='text-warning'>{:.0f} Minutes</medium>".format(ld.seconds / 60))
+                                    health += gen_health(title='Not producing blocks for at least 30 minutes')
+                                #if ld.seconds > 3600:
+                                #    i['last_work_done'] = ("<medium class='text-danger'>{:.0f} Hours</medium>".format(ld.seconds / 60 / 60))
+
+                except:
+                    jlog.critical('last_work_done ERROR: {}'.format(sys.exc_info()))
+
+
+
+            i['is_active'] = ''
+            if producers and isinstance(producers, list):
+                for producer in producers:
+                    if owner['name'] == producer['owner']:
+                        i['is_active'] = producer['is_active']
+                        if producer['is_active']:
+                            i['is_active'] = '<span style="display:inline-block; width:60px" class="badge badge-success">Active</span>'
+                        if producer['is_active'] and owner['position'] > 21:
+                            i['is_active'] = '<span style="display:inline-block; width:60px" class="badge badge-warning">Rotated</span>'
+                        if producer['is_active'] and owner['position'] > 25:
+                            i['is_active'] = '<span style="display:inline-block; width:60px" class="badge badge-danger">Standy</span>'
+                        if not producer['is_active']:
+                            i['is_active'] = '<span style="color: Tomato;"><i class="fa fa-times"></i></text></span>'
+
+
+            if owner['bp_json_url']:
+                i['bp_json'] = '<a target="_blank" href="{}"><i class="fa fa-check"></i></a>'.format(owner['bp_json_url'])
+            else:
+                health += gen_health(title='bp.json is missing')
+                i['bp_json'] = ''
+
+         
+            health += '</div></ul>'
+            i['health'] = health
+            d['data'].append(i)
     
     return jsonify(d)
-
 
 
 @app.route('/_ohlc/<int:days>')
