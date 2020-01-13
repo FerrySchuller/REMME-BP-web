@@ -2,23 +2,23 @@
 {% block title %}EU Block Producer by Josien.net{% endblock %}
 {% block content -%}
 <div class="container-fluid">
+{% if owner %}
 
-{% if owner and owner['data'] and owner['data']['bp_json'] and 'org' in owner['data']['bp_json'] and 'branding' in owner['data']['bp_json']['org']  %}
-<img src="{{ owner['data']['bp_json'].org.branding.logo_256 }}" class="img-fluid">
+<h4>{{ owner.name }}</h4>
+{% if owner.bp_json and 'org' in owner.bp_json and owner.bp_json.org.branding.logo_256 %}
+<img src="{{ owner.bp_json.org.branding.logo_256 }}" class="img-fluid">
+<br />
 {% endif %}
 
-{% if owner and owner['data'] and owner['data']['voters']  %}
-<h4>Guardians voted for: {{ data.account_name }}</h4>
-{% for v in owner.data.voters %}
+{% if owner.voters %}
+{% for v in owner.voters %}
   <a style="color: grey;" href="{{ url_for('owner', owner=v) }}">{{ v }}</a><br />
 {% endfor %}
 {% endif %}
 
-{% if data %}
-<h4>Detailed information owner: {{ data.account_name }}</h4>
-<br />
 <dl class="row">
-{% for k,v in data.items() %}
+{% for k,v in owner.owner.items() %}
+
 {% if k == 'permissions' %}
 <dt class="col-sm-2">{{ k }}</dt>
 <dd class="col-sm-10">
@@ -80,6 +80,7 @@ cpu_weight: {{ v.cpu_weight }}<br />
 {% endif %}
 {% endfor %}
 </dl>
+
 {% endif %}
 </div> <!-- end container-fluid -->
 {%- endblock content %}

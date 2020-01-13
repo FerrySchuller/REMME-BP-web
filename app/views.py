@@ -36,43 +36,6 @@ def gen_health(title, fa_class='fa-times', color='tomato', text=''):
     msg = '<li><span style="color: {2};"><text data-toggle="tooltip" data-placement="top" data-html="true" title="{0}"><i class="fa {1}">{3}</i></text></span></li>'.format(title, fa_class, color, text)
     return(msg)
 
-def gen_social(j, url):
-    o = '<div><ul class="social-network">'
-    if url:
-        o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="{0}" title="{0}"><i class="fas fa-link"></i></a></li>'.format(url)
-    if j['data']['bp_json'] and 'org' in j['data']['bp_json'] and 'social' in j['data']['bp_json']['org']:
-        if isinstance(j['data']['bp_json']['org']['social'], dict):
-            for k,v in j['data']['bp_json']['org']['social'].items():
-                if v:
-                    if k == 'facebook':
-                        o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" title="{0}" target="_blank" href="https://facebook.com/{1}""><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                    if k == 'twitter':
-                        o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="https://twitter.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                    if k == 'telegram':
-                        o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="https://t.me/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                    if k == 'reddit':
-                        o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="https://reddit.com/user/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                    if k == 'github':
-                        o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="https://github.com/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-                    if k == 'linkedin':
-                        o += '<li><a data-toggle="tooltip" data-placement="top" data-html="true" target="_blank" href="https://linkedin.com/in/{1}" title="{0}"><i class="fab fa-{0}"></i></a></li>'.format(k,v)
-            o += '</ul></div>'
-    return(o)
-    #return('')
-
-
-
-
-def gen_locked_stake(feil):
-    if os.path.exists(feil):
-        with open(feil) as json_file:
-            f = json.load(json_file)
-            if 'owner' in f and f['owner']:
-                o = f['owner']['voter_info']['locked_stake']
-                return(o)
-    return(False)
-
-
 
 @app.route('/')
 def index():
@@ -107,10 +70,8 @@ def ownership_disclosure():
 @app.route('/owner/<owner>')
 def owner(owner):
     #track_event( category='index', action='owner')
-    data = get_account(owner)
-    owner_cached = db.owners.find_one( {"tag": "owners", "data.owner.account_name": "{}".format(owner)}, 
-                                       sort=[('created_at', pymongo.DESCENDING)])
-    return render_template( 'owner.html', data=data, owner=owner_cached )
+    owner = db.producers.find_one( {"name": "{}".format(owner)} )
+    return render_template( 'owner.html', owner=owner )
 
 
 

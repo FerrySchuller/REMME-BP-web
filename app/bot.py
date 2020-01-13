@@ -287,8 +287,8 @@ def main():
         producers_slow_thread = threading.Thread(target=producers_slow, args=(), name='producers_slow')
         producers_slow_thread.start()
 
-        #notify_thread = threading.Thread(target=notify, args=(), name='notify')
-        #notify_thread.start()
+        notify_thread = threading.Thread(target=notify, args=(), name='notify')
+        notify_thread.start()
 
 
     else:
