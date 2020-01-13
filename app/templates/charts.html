@@ -8,6 +8,7 @@
 <script>
 new Chart(document.getElementById("line-chart"), {
 
+  type: 'line',
   scaleOverride: true,
   scaleStartValue: 0,
   scaleShowVerticalLines: true,
@@ -15,7 +16,6 @@ new Chart(document.getElementById("line-chart"), {
   barShowStroke : true,
   scaleShowLabels: true,
   bezierCurve: false,
-  type: 'line',
   data: {
     datasets: [ 
                 {% for data in graph['values'] %} {
@@ -37,7 +37,8 @@ new Chart(document.getElementById("line-chart"), {
   options: {
     title: { display: true, text: "{{ graph.title }}" },
     // legend: false
-    scales: { xAxes: [{ type: 'time', ticks: { autoSkip: true, maxTicksLimit: 20 }  }]} ,
+    scales: { xAxes: [ { type: 'time', 
+                         ticks: { autoSkip: true, maxTicksLimit: 20 } }] },
     legend: { display: true, labels: { fontColor: "#000000", "boxWidth": 8 }, position: 'bottom' },
     tooltips: { enabled: true, intersect: true, mode: 'index' },
   }
