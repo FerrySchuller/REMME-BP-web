@@ -115,9 +115,9 @@ def gen_graph():
     graph['values'] = values
     return(graph)
 
-@app.route('/line')
-def line():
-    return render_template('line_chart.html', graph=gen_graph() )
+@app.route('/charts')
+def charts():
+    return render_template('charts.html', graph=gen_graph() )
 
 
 @app.route('/dev')
