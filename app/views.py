@@ -75,11 +75,8 @@ def owner(owner):
     return render_template( 'owner.html', owner=owner )
 
 
-
-
 def random_color():
-        rand = lambda: random.randint(100, 255)
-        return '#%02X%02X%02X' % (rand(), rand(), rand())
+    return("#{:06x}".format(random.randint(0, 0xFFFFFF)))
 
 
 def gen_graph():

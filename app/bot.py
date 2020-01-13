@@ -311,6 +311,7 @@ def dev():
 def dev1():
     pass
 
+
 def main():
     if not is_running():
         jlog.info('{}'.format('Starting bot'))
