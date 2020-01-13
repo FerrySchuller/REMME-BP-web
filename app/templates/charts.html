@@ -3,7 +3,7 @@
 {% block content -%}
 <div class="container-fluid">
 
-<canvas id="line-chart" width="300" height="90"></canvas>
+<canvas id="line-chart" width="300" height="100"></canvas>
 
 <script>
 new Chart(document.getElementById("line-chart"), {
@@ -38,7 +38,7 @@ new Chart(document.getElementById("line-chart"), {
     title: { display: true, text: "{{ graph.title }}" },
     // legend: false
     scales: { xAxes: [{ type: 'time', ticks: { autoSkip: true, maxTicksLimit: 20 }  }]} ,
-    legend: { display: true, labels: { fontColor: "#000000" }, position: 'bottom' },
+    legend: { display: true, labels: { fontColor: "#000000", "boxWidth": 8 }, position: 'bottom' },
     tooltips: { enabled: true, intersect: true, mode: 'index' },
   }
 });

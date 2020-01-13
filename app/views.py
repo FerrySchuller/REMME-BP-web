@@ -89,19 +89,22 @@ def gen_graph():
         for p in producers:
             if p['position'] < 22:
                 usages = db.cache.find({"owner": "{}".format(p['name'])}).limit(1000)
+                color = random_color()
                 l = []
                 d = {}  
                 d['label'] = p['name']
                 d['fill'] = "false"
                 d['borderWidth'] = 1.5 
                 d['pointRadius'] = 0
+                d['backgroundColor'] = color
+                d['borderColor'] = color
+
                 for use in usages:
                     t = use['data']['cpu_usage_us_dt'].timestamp() * 1000
                     y = use['data']['cpu_usage_us'] / 1000
                     if y > 2:
                         d['borderColor'] = '#de4040'
-                    else:
-                        d['borderColor'] = random_color()
+                        d['backgroundColor'] = '#de4040'
                     l.append({"t": t, "y": y})
                     
                 if l:
