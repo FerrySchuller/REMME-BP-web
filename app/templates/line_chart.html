@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}EU Block Producer by josiendotnet{% endblock %}
+{% block content -%}
+<div class="container-fluid">
+
+<canvas id="line-chart" width="300" height="100"></canvas>
+
+<script>
+new Chart(document.getElementById("line-chart"), {
+
+  scaleOverride: true,
+  scaleShowVerticalLines: true,
+  scaleShowGridLines : true,
+  barShowStroke : true,
+  scaleShowLabels: true,
+  bezierCurve: false,
+
+  type: 'line',
+
+  data: {
+    datasets: [ 
+{% for data in graph['values'] %} {
+{% for k,v in data.items() %}
+{% if k == 'data' %}
+{{ k }}: [
+{% for i in v %}
+{t: new Date({{ i.t }}), y: {{ i.y }}},
+{% endfor %}
+],
+{% else %}
+{{ k }}: "{{ v }}",
+{% endif %}
+{% endfor %}
+},
+{% endfor %}
+   ] 
+  },
+
+
+
+  options: {
+    title: { display: true, text: "{{ graph.title }}" },
+    // legend: false
+    scales: { xAxes: [{ type: 'time', ticks: { autoSkip: true, maxTicksLimit: 20 }  }]} ,
+    legend: { display: true, labels: { fontColor: "#000080" } }
+  }
+});
+
+
+</script>
+
+</div>
+{%- endblock content %}
+{% block scripts %}
+    {{ super() }}
+<script type=text/javascript>
+  var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+
+{%- endblock scripts %}

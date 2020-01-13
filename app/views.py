@@ -1,11 +1,12 @@
 from flask import render_template, jsonify, flash, url_for, redirect, abort
 import os, sys
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, time
 from dateutil.parser import parse
 from pathlib import Path
 from time import sleep
 import pymongo
+import random
 import requests
 from pprint import pprint
 from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_account, remcli_get_info, human_readable, db, listvoters
@@ -73,6 +74,47 @@ def owner(owner):
     owner = db.producers.find_one( {"name": "{}".format(owner)} )
     return render_template( 'owner.html', owner=owner )
 
+
+
+
+def random_color():
+        rand = lambda: random.randint(100, 255)
+        return '#%02X%02X%02X' % (rand(), rand(), rand())
+
+
+def gen_graph():
+    graph = {}
+    graph['title'] = 'CPU in ms'
+    values = []
+
+    producers = db.producers.find()
+    if producers:
+        for p in producers:
+            usages = db.cache.find({"owner": "{}".format(p['name'])}).limit(1000)
+            l = []
+            d = {}  
+            d['label'] = p['name']
+            d['fill'] = "false"
+            for use in usages:
+                t = use['data']['cpu_usage_us_dt'].timestamp() * 1000
+                y = use['data']['cpu_usage_us'] / 1000
+                if y > 2:
+                    d['borderColor'] = '#de4040'
+                else:
+                    d['borderColor'] = random_color()
+                l.append({"t": t, "y": y})
+                
+            if l:
+                d['data'] = l
+                values.append(d) 
+
+
+    graph['values'] = values
+    return(graph)
+
+@app.route('/line')
+def line():
+    return render_template('line_chart.html', graph=gen_graph() )
 
 
 @app.route('/dev')

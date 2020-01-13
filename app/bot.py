@@ -37,11 +37,12 @@ def init(stdout=True):
         sys.exit(1)
 
 
-def add_db(col, slug=False, tag=False, data=False, created_at=datetime.now(timezone.utc)):
+def add_db(col, slug=False, tag=False, data=False, owner=False):
     d = {}
-    d['created_at'] = created_at
+    d['created_at'] = datetime.now()
     d['slug'] = slug
     d['tag'] = tag
+    d['owner'] = owner
     d['data'] = data
     try:
         ref = db[col].insert_one(d)
@@ -94,6 +95,12 @@ def get_actions(seconds=60):
                                 data = o
                                 data['cpu_usage_us'] = transaction['cpu_usage_us']
                                 data['cpu_usage_us_dt'] = produced_on
+
+                                db_info = {}
+                                db_info['cpu_usage_us'] = transaction['cpu_usage_us']
+                                db_info['cpu_usage_us_dt'] = produced_on
+
+                                add_db(col='cache', tag='cpu_usage_us', slug='cpu_usage_us', owner=block_owner, data=db_info)
                                 ref = db.producers.update({"name": '{}'.format(block_owner)}, {"$set": data}, upsert=True)
                         if action['account'] == 'rem.oracle' and action['name'] == 'setprice':
                             o = db.producers.find_one( { "name": "{}".format(action['data']['producer']) })
@@ -207,6 +214,13 @@ def producers_fast(slaap=20):
 
 def producers_slow(slaap=300):
     while True:
+
+        url = "https://min-api.cryptocompare.com/data/price?fsym=REM&tsyms=USD&api_key={}".format(os.getenv('cryptocompare_key', False))
+        r = requests.get(url)
+        if r and r.ok and r.json:
+            add_db(col='cache', tag='usd_rem', slug='usd_rem', data=r.json())
+
+
         headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
         #producers = db.producers.find({"name":"josiendotnet"}).limit(100)
         producers = db.producers.find().limit(100)

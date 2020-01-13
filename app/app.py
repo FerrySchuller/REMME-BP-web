@@ -20,6 +20,7 @@ js = Bundle( 'js/jquery-3.4.1.min.js',
 
 css = Bundle( 'css/bootstrap.css',
               'css/navbar-top-fixed.css',
+              'css/Chart.css',
               'css/animate.css',
               'css/fontawesome.css',
               'css/datatables.css',
