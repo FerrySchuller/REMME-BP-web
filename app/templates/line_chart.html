@@ -15,34 +15,31 @@ new Chart(document.getElementById("line-chart"), {
   barShowStroke : true,
   scaleShowLabels: true,
   bezierCurve: false,
-
   type: 'line',
-
   data: {
     datasets: [ 
-{% for data in graph['values'] %} {
-{% for k,v in data.items() %}
-{% if k == 'data' %}
-{{ k }}: [
-{% for i in v %}
-{t: new Date({{ i.t }}), y: {{ i.y }}},
-{% endfor %}
-],
-{% else %}
-{{ k }}: "{{ v }}",
-{% endif %}
-{% endfor %}
-},
-{% endfor %}
+                {% for data in graph['values'] %} {
+                {% for k,v in data.items() %}
+                {% if k == 'data' %}
+                {{ k }}: [
+                {% for i in v %}
+                {t: new Date({{ i.t }}), y: {{ i.y }}},
+                {% endfor %}
+                ],
+                {% else %}
+                {{ k }}: "{{ v }}",
+                {% endif %}
+                {% endfor %}
+                },
+                {% endfor %}
    ] 
   },
-
   options: {
     title: { display: true, text: "{{ graph.title }}" },
     // legend: false
     scales: { xAxes: [{ type: 'time', ticks: { autoSkip: true, maxTicksLimit: 20 }  }]} ,
-    legend: { display: true, labels: { fontColor: "#000000" } },
-    tooltips: { enabled: false },
+    legend: { display: true, labels: { fontColor: "#000000" }, position: 'bottom' },
+    tooltips: { enabled: true, intersect: true, mode: 'index' },
   }
 });
 
