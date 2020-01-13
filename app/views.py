@@ -95,6 +95,8 @@ def gen_graph():
             d = {}  
             d['label'] = p['name']
             d['fill'] = "false"
+            d['borderWidth'] = 1.5 
+            d['pointRadius'] = 0
             for use in usages:
                 t = use['data']['cpu_usage_us_dt'].timestamp() * 1000
                 y = use['data']['cpu_usage_us'] / 1000

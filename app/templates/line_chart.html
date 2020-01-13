@@ -9,6 +9,7 @@
 new Chart(document.getElementById("line-chart"), {
 
   scaleOverride: true,
+  scaleStartValue: 0,
   scaleShowVerticalLines: true,
   scaleShowGridLines : true,
   barShowStroke : true,
@@ -36,13 +37,12 @@ new Chart(document.getElementById("line-chart"), {
    ] 
   },
 
-
-
   options: {
     title: { display: true, text: "{{ graph.title }}" },
     // legend: false
     scales: { xAxes: [{ type: 'time', ticks: { autoSkip: true, maxTicksLimit: 20 }  }]} ,
-    legend: { display: true, labels: { fontColor: "#000080" } }
+    legend: { display: true, labels: { fontColor: "#000000" } },
+    tooltips: { enabled: false },
   }
 });
 
