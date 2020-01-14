@@ -285,32 +285,45 @@ def producers_slow(slaap=300):
      
 def dev():
     # 168517 first benchmark block
+
+    i = db.cpu_usage_us.find().limit(400)
+    blocks = []
+    for row in i:
+        for cpu in row['data'] :
+            blocks.append(cpu['block'])
+    print(max(blocks))
+
     for block in range(168516, 4596251):
-        b = get_block(block)
-        timestamp = parse(b['timestamp'])
-        d = db.cpu_usage_us.find_one( { "producer": "{}".format(b['producer']) })
-        #if d and not list(filter(lambda xo: xo['block'] == block, d['data'])) and b['transactions']:
-        if b['transactions']:
-            for transaction in b['transactions']:
-                if isinstance(transaction['trx'], dict):
-                    for action in transaction['trx']['transaction']['actions']:
-                        if 'account' in action and 'name' in action and action['account'] == 'rembenchmark' and action['name'] == 'cpu':
-                            cpu_usage_us = transaction['cpu_usage_us']
-                            #if d and not list(filter(lambda xo: xo['timestamp'] == timestamp, d['data'])):
-                            if d and not list(filter(lambda xo: xo['block'] == block, d['data'])):
-                                d['data'].append( {"timestamp": timestamp, "cpu_usage_us": cpu_usage_us, "block": block})
-                            else:
-                                d = {}
-                                d['producer'] = b['producer']
-                                d['data'] = []
-                                d['data'].append( {"timestamp": timestamp, "cpu_usage_us": cpu_usage_us, "block": block})
-    
-                            ref = db.cpu_usage_us.update({"producer": '{}'.format(b['producer'])}, {"$set": d}, upsert=True)
-                            print(block, timestamp, ref)
+        if block not in blocks:
+            b = get_block(block)
+            timestamp = parse(b['timestamp'])
+            d = db.cpu_usage_us.find_one( { "producer": "{}".format(b['producer']) })
+            #if d and not list(filter(lambda xo: xo['block'] == block, d['data'])) and b['transactions']:
+            if b['transactions']:
+                for transaction in b['transactions']:
+                    if isinstance(transaction['trx'], dict):
+                        for action in transaction['trx']['transaction']['actions']:
+                            if 'account' in action and 'name' in action and action['account'] == 'rembenchmark' and action['name'] == 'cpu':
+                                cpu_usage_us = transaction['cpu_usage_us']
+                                #if d and not list(filter(lambda xo: xo['timestamp'] == timestamp, d['data'])):
+                                if d and not list(filter(lambda xo: xo['block'] == block, d['data'])):
+                                    d['data'].append( {"timestamp": timestamp, "cpu_usage_us": cpu_usage_us, "block": block})
+                                else:
+                                    d = {}
+                                    d['producer'] = b['producer']
+                                    d['data'] = []
+                                    d['data'].append( {"timestamp": timestamp, "cpu_usage_us": cpu_usage_us, "block": block})
+        
+                                ref = db.cpu_usage_us.update({"producer": '{}'.format(b['producer'])}, {"$set": d}, upsert=True)
+                                print(block, timestamp, ref)
 
 def dev1():
-    pass
-
+    i = db.cpu_usage_us.find().limit(400)
+    blocks = []
+    for row in i:
+        for cpu in row['data'] :
+            blocks.append(cpu['block'])
+    pprint(blocks)
 
 def main():
     if not is_running():
