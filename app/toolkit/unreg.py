@@ -10,11 +10,18 @@ import subprocess
 import requests
 
 '''
-dependencies:
-pip install chump requests python-dotenv
+Create venv and install packages:
+
+$/var/tmp/auto_unreg$ python3 -m venv env
+#/var/tmp/auto_unreg$ python3 -m venv env
+$/var/tmp/auto_unreg$ . env/bin/activate
+$/var/tmp/auto_unreg$ pip install chump requests python-dotenv python-dateutil
+
+Cron example
+*/5 * * * * /var/tmp/auto_unreg/env/bin/python /var/tmp/auto_unreg/unreg.py >> /var/tmp/unreg 2>&1
 
 dotenv example, needed for push notification to https://pushover.net:
-.env
+vi $/var/tmp/auto_unreg/.env
 PUSHOVER_APP="xo"
 PUSHOVER_USER="xoxoxoxo"
 '''
