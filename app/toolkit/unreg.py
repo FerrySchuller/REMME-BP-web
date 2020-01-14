@@ -12,7 +12,6 @@ import requests
 '''
 Create venv and install packages:
 
-
 # cd /var/tmp
 # mkdir auto_unreg
 # wget https://raw.githubusercontent.com/FerrySchuller/REMME-BP-web/master/app/toolkit/unreg.py
@@ -58,6 +57,7 @@ def po(msg):
                 return True
 
     return False
+
 
 def get_producer(producer):
     url = "{}/v1/chain/get_producers".format(host)
