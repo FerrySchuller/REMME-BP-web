@@ -3,6 +3,7 @@
 {% block content -%}
 <div class="container-fluid">
 
+
 <canvas id="line-chart" width="300" height="100"></canvas>
 
 <script>
@@ -16,6 +17,7 @@ new Chart(document.getElementById("line-chart"), {
   barShowStroke : true,
   scaleShowLabels: true,
   bezierCurve: false,
+
   data: {
     datasets: [ 
                 {% for data in graph['values'] %} {

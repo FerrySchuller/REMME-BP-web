@@ -28,7 +28,16 @@
     {% assets "css_all" %}
         <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
     {% endassets %}
-        <script type="text/javascript" src="static/js/Chart.bundle.js"></script>
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/moment.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/Chart.js') }}"></script>
+<!--
+<script type="text/javascript" src="{{ url_for('static', filename='js/chartjs-plugin-datalabels.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/chartjs-plugin-streaming.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/chartjs-chart-financial.js') }}"></script>
+-->
+
+
   </head>
 
   <body>

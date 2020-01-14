@@ -4,24 +4,54 @@
 <div class="container-fluid">
 
 
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/chartjs-plugin-streaming.js') }}"></script>
+
+
+<canvas id="myChart" width="200" height="50"></canvas>
+
+
+<script>
+
+var ctx = document.getElementById('myChart').getContext('2d');
+var chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    datasets: [{
+      data: []
+    }, {
+      data: []
+    }]
+  },
+  options: {
+    scales: {
+      xAxes: [ { type: 'realtime' },
+     ]
+    }
+  }
+});
+</script>
+
+
+
+<!--
 <button class="btn btn-outline-dark btn-sm" id="7" onClick="graph(this.id)">7 days</button>
 <button class="btn btn-outline-dark btn-sm" id="14" onClick="graph(this.id)">14 days</button>
 <button class="btn btn-outline-dark btn-sm" id="30" onClick="graph(this.id)">30 days</button>
 <button class="btn btn-outline-dark btn-sm" id="60" onClick="graph(this.id)">60 days</button>
 <button class="btn btn-outline-dark btn-sm" id="182" onClick="graph(this.id)">182 days</button>
 <button class="btn btn-outline-dark btn-sm" id="365" onClick="graph(this.id)">365 days</button>
-
-
 <div style="padding-top:10px;" id="cpu_benchmark" style="height: 400px; min-width: 310px"></div>
-
-
+-->
 
 </div>
 {%- endblock content %}
 {% block scripts %}
     {{ super() }}
+<!--
 <script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/graph_static.js') }}"></script>
+-->
 <script type=text/javascript>
   var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 </script>
