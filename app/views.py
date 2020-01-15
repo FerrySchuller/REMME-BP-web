@@ -9,7 +9,7 @@ import pymongo
 import random
 import requests
 from pprint import pprint
-from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_account, remcli_get_info, human_readable, db, listvoters
+from app.lib.josien import track_event, jlog, cmd_run, listproducers, get_account, remcli_get_info, human_readable, db, listvoters, get_block
 from app.app import app
 
 log_file = os.getenv('LOG_FILE', False)
@@ -114,6 +114,21 @@ def gen_graph():
 
     graph['values'] = values
     return(graph)
+
+
+@app.route('/_trxs')
+def _trxs():
+    get_info = remcli_get_info()
+    if get_info:
+        head_block_time  = get_info['head_block_time']
+        head_block_num  = get_info['head_block_num']
+        block = get_block(head_block_num)
+        dt = parse(head_block_time)
+        t = dt.timestamp() * 1000
+        y = len(block['transactions'])
+    d = {'t': t, 'y': y}
+    return jsonify(d)
+
 
 @app.route('/charts')
 def charts():

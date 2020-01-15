@@ -4,39 +4,93 @@
 <div class="container-fluid">
 
 
+<!--
 <script type="text/javascript" src="{{ url_for('static', filename='js/moment.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/Chart.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/chartjs-plugin-datalabels.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/chartjs-plugin-streaming.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/chartjs-chart-financial.js') }}"></script>
+-->
 
-
-
-<script type="text/javascript" src="{{ url_for('static', filename='js/chartjs-plugin-streaming.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.8.0"></script>
 
 
 <canvas id="myChart" width="200" height="50"></canvas>
 
-
 <script>
 
-var ctx = document.getElementById('myChart').getContext('2d');
-var chart = new Chart(ctx, {
+function onRefresh(chart) {
+    fetch('./_trxs')
+      .then((response) => {
+       return response.json();
+     })
+     .then((json) => {
+        chart.config.data.datasets.forEach(function(dataset) {
+        dataset.data.push({
+            // t: Date.now(),
+            t: json.t,
+            y: json.y
+        });
+    });
+
+  });
+}
+
+var config = {
   type: 'line',
   data: {
-    datasets: [{
-      data: []
-    }, {
-      data: []
-    }]
+    datasets: [ {
+            label: 'Transactions',
+            backgroundColor: 'rgb(54, 162, 235)',
+            borderColor: 'rgb(54, 162, 235)',
+            fill: false,
+            cubicInterpolationMode: 'monotone',
+            data: []
+        }
+    ],
   },
-  options: {
-    scales: {
-      xAxes: [ { type: 'realtime' },
-     ]
+
+    options: {
+        title: {
+            display: true,
+            text: 'Amount of transactions per 0.5 seconds'
+        },
+        scales: {
+            xAxes: [{
+                type: 'realtime',
+                realtime: {
+                    duration: 20000,
+                    refresh: 500,
+                    delay: 2000,
+                    onRefresh: onRefresh
+                }
+            }],
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'value'
+                }
+            }]
+        },
+        tooltips: {
+            mode: 'nearest',
+            intersect: false
+        },
+        hover: {
+            mode: 'nearest',
+            intersect: false
+        }
     }
-  }
-});
+
+};
+
+
+window.onload = function() {
+    var ctx = document.getElementById('myChart').getContext('2d');
+    window.myChart = new Chart(ctx, config);
+};
+
+
 </script>
 
 
@@ -55,10 +109,6 @@ var chart = new Chart(ctx, {
 {%- endblock content %}
 {% block scripts %}
     {{ super() }}
-<!--
-<script type="text/javascript" src="{{ url_for('static', filename='js/graph.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/graph_static.js') }}"></script>
--->
 <script type=text/javascript>
   var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 </script>
