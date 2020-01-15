@@ -14,6 +14,7 @@ Create venv and install packages:
 
 # cd /var/tmp
 # mkdir auto_unreg
+# cd auto_unreg
 # wget https://raw.githubusercontent.com/FerrySchuller/REMME-BP-web/master/app/toolkit/unreg.py
 # /var/tmp/auto_unreg$ python3 -m venv env
 # /var/tmp/auto_unreg$ . env/bin/activate
