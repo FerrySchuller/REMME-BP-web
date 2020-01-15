@@ -7,7 +7,6 @@ help:
 	@echo "make git commit=\"comment\""
 	@echo "make pull"
 
-
 .PHONY: git
 git:
 	#git rm --cached -r .
