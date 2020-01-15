@@ -37,18 +37,6 @@ systemctl enable remnode
 systemctl status remnode
 ```
 
-```
-# cat start_remnode.sh
-#!/bin/sh
-SERVICE="remnode"
-
-if ! pgrep -x "$SERVICE" >/dev/null
-then
-        echo "$SERVICE stopped, starting"
-        cd /prod/bp
-        remnode --config-dir ./config/ --data-dir ./data/ 2>&1 | logger -p local0.info &
-fi
-```
 
 rsyslog config for caching blocks with transactions:
 ```
