@@ -27,8 +27,8 @@ function onRefresh(chart) {
      .then((json) => {
         chart.config.data.datasets.forEach(function(dataset) {
         dataset.data.push({
-            // t: Date.now(),
-            t: json.t,
+            t: Date.now(),
+            // t: json.t,
             y: json.y
         });
     });
@@ -44,7 +44,6 @@ var config = {
             backgroundColor: 'rgb(54, 162, 235)',
             borderColor: 'rgb(54, 162, 235)',
             fill: false,
-            cubicInterpolationMode: 'monotone',
             data: []
         }
     ],

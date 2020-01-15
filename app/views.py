@@ -118,15 +118,18 @@ def gen_graph():
 
 @app.route('/_trxs')
 def _trxs():
-    get_info = remcli_get_info()
-    if get_info:
-        head_block_time  = get_info['head_block_time']
-        head_block_num  = get_info['head_block_num']
-        block = get_block(head_block_num)
-        dt = parse(head_block_time)
-        t = dt.timestamp() * 1000
-        y = len(block['transactions'])
-    d = {'t': t, 'y': y}
+    y = False
+    log  = db.logs.find_one({},sort=[('time', pymongo.DESCENDING)])
+    msg = log['msg'].split()
+    if len(msg) == 24:
+        y = msg[16].replace(',', '')
+
+    #get_info = remcli_get_info()
+    #if get_info:
+    #    head_block_num  = get_info['head_block_num']
+    #    block = get_block(head_block_num)
+    #    y = len(block['transactions'])
+    d = {'y': y}
     return jsonify(d)
 
 

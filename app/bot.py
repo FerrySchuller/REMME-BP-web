@@ -291,7 +291,7 @@ def dev():
         for row in bl:
             for cpu in row['data'] :
                 blocks.append(cpu['block'])
-        start = max(blocks)
+        start = max(blocks) + 1
 
     i = remcli_get_info()
     stop = i['last_irreversible_block_num']
