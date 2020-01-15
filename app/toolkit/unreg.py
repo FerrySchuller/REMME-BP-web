@@ -9,10 +9,7 @@ import os, sys
 import subprocess
 import requests
 import logging
-
-logging.basicConfig( format='REMME [%(asctime)s] %(filename)s %(module)s %(funcName)s %(levelname)s %(message)s', 
-                     level=logging.INFO )
-
+import logging.handlers
 
 
 '''
@@ -50,6 +47,31 @@ else:
     pubkey = 'EOS8a58FJsdusyMZz3UgbRfh8pJRkqvTVLzfRjtN9Bx9yhNBP1RqK'
     web = 'https://josien.net'
     walletpass = '/prod/remme/walletpass'
+
+
+
+def jlog(feil=False, stdout=False):
+    jlog = logging.getLogger(__name__)
+    jlog.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('jlog [%(asctime)s] %(filename)s %(module)s %(funcName)s %(levelname)s %(message)s')
+
+    syslog = logging.handlers.SysLogHandler(address = '/dev/log')
+    syslog.setFormatter(formatter)
+    jlog.addHandler(syslog)
+
+    if feil:
+        feil = logging.FileHandler(feil)
+        feil.setFormatter(formatter)
+        jlog.addHandler(feil)
+
+    if stdout:
+        stdout = logging.StreamHandler(sys.stdout)
+        stdout.setFormatter(formatter)
+        jlog.addHandler(stdout)
+
+    return jlog
+
+jlog = jlog(stdout=True, feil='/var/tmp/unregprod.log')
 
 
 def po(msg):
@@ -93,10 +115,10 @@ def main():
                     except:
                         print(sys.exc_info())
                 else:
-                    logging.info("{} is not is_active".format(producer))
-                    logging.info("regproducer {} with:".format(producer))
-                    logging.info("/usr/bin/remcli wallet unlock < {}".format(walletpass))
-                    logging.info("/usr/bin/remcli -u {} system regproducer {} {} {}".format(host, producer, pubkey, web))
+                    jlog.info("{} is not is_active".format(producer))
+                    jlog.info("regproducer {} with:".format(producer))
+                    jlog.info("/usr/bin/remcli wallet unlock < {}".format(walletpass))
+                    jlog.info("/usr/bin/remcli -u {} system regproducer {} {} {}".format(host, producer, pubkey, web))
     if divv and divv > treshold:
         unlock = subprocess.run('/usr/bin/remcli wallet unlock < {}'.format(walletpass), shell=True, 
                                 check=False, stdout=subprocess.PIPE, universal_newlines=True)
@@ -104,13 +126,13 @@ def main():
         unregprod = subprocess.run('/usr/bin/remcli -u {} system unregprod {}'.format(host, producer), shell=True, 
                                     check=False, stdout=subprocess.PIPE, universal_newlines=True)
 
-        logging.info('{} {}'.format(unlock.stdout, unregprod.stdout))
+        jlog.info('{} {}'.format(unlock.stdout, unregprod.stdout))
         msg = "Going to unreg producer {} {} seconds no last_block_time exceeds {} seconds treshold.".format(producer, divv, treshold)
-        logging.warning(msg)
+        jlog.warning(msg)
         po(msg)
     else:
         msg = "{} {} seconds no last_block_time does not exceeds {} seconds treshold.".format(producer, divv, treshold)
-        logging.info(msg)
+        jlog.info(msg)
 
 
 if __name__ == '__main__':
