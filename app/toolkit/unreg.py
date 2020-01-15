@@ -8,6 +8,12 @@ from chump import Application as Pushover
 import os, sys
 import subprocess
 import requests
+import logging
+
+logging.basicConfig( format='REMME [%(asctime)s] %(filename)s %(module)s %(funcName)s %(levelname)s %(message)s', 
+                     level=logging.INFO )
+
+
 
 '''
 Create venv and install packages:
@@ -87,10 +93,10 @@ def main():
                     except:
                         print(sys.exc_info())
                 else:
-                    print("{} is not is_active".format(producer))
-                    print("regproducer {} with:".format(producer))
-                    print("/usr/bin/remcli wallet unlock < {}".format(walletpass))
-                    print("/usr/bin/remcli -u {} system regproducer {} {} {}".format(host, producer, pubkey, web))
+                    logging.info("{} is not is_active".format(producer))
+                    logging.info("regproducer {} with:".format(producer))
+                    logging.info("/usr/bin/remcli wallet unlock < {}".format(walletpass))
+                    logging.info("/usr/bin/remcli -u {} system regproducer {} {} {}".format(host, producer, pubkey, web))
     if divv and divv > treshold:
         unlock = subprocess.run('/usr/bin/remcli wallet unlock < {}'.format(walletpass), shell=True, 
                                 check=False, stdout=subprocess.PIPE, universal_newlines=True)
@@ -98,10 +104,13 @@ def main():
         unregprod = subprocess.run('/usr/bin/remcli -u {} system unregprod {}'.format(host, producer), shell=True, 
                                     check=False, stdout=subprocess.PIPE, universal_newlines=True)
 
-        print(unlock.stdout, unregprod.stdout)
-        msg = "Going to unreg producer {} {} seconds no last_block_time exceeds {} seconds treshold ".format(producer, divv, treshold)
-        print(msg)
+        logging.info('{} {}'.format(unlock.stdout, unregprod.stdout))
+        msg = "Going to unreg producer {} {} seconds no last_block_time exceeds {} seconds treshold.".format(producer, divv, treshold)
+        logging.warning(msg)
         po(msg)
+    else:
+        msg = "{} {} seconds no last_block_time does not exceeds {} seconds treshold.".format(producer, divv, treshold)
+        logging.info(msg)
 
 
 if __name__ == '__main__':
