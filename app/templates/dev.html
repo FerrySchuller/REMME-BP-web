@@ -7,31 +7,52 @@
 
 <script>
 
-function onRefresh(chart) {
-    fetch('./_trxs')
-      .then((response) => {
-       return response.json();
-     })
-     .then((json) => {
-        chart.config.data.datasets.forEach(function(dataset) {
-        dataset.data.push({
-            t: Date.now(),
-            // t: json.t,
-            y: json.y
-        });
-    });
-
-  });
+function xo() {
+    return fetch('./_trxs')
+        .then(response => response.json())
+        .then((responseJSON) => {
+            const { statusCode, data } = responseJSON;
+            return responseJSON.y;
+        })
+        .catch((e) => {
+            console.error(e);
+        })
 }
+
+p = xo();
+
+p.then(
+  result => console.log(result), // shows "done!" after 1 second
+  error => console.log(error) // doesn't run
+);
+
+
+function onRefresh(chart) {
+    p = xo();
+    p.then( result =>
+    chart.config.data.datasets.forEach(function(dataset) {
+    dataset.data.push({
+            t: Date.now(),
+            y: result
+        });
+    }),
+    error =>  
+    chart.config.data.datasets.forEach(function(dataset) {
+    dataset.data.push({
+            t: Date.now(),
+            y: 0
+        });
+    }));
+}
+
 
 var config = {
   type: 'line',
   data: {
     datasets: [ {
-            label: 'Transactions',
+            label: 'trxs',
             backgroundColor: 'rgb(54, 162, 235)',
             borderColor: 'rgb(54, 162, 235)',
-            cubicInterpolationMode: 'monotone',
             fill: false,
             data: []
         }

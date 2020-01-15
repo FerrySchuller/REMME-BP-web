@@ -118,7 +118,7 @@ def gen_graph():
 
 @app.route('/_trxs')
 def _trxs():
-    y = False
+    y = 0
     log  = db.logs.find_one({},sort=[('time', pymongo.DESCENDING)])
     msg = log['msg'].split()
     if len(msg) == 24:

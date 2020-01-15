@@ -16,7 +16,27 @@ root@remme0:/prod/REMME-BP-web# . env/bin/activate
 ```
 
 
-remnode startup script with rsyslog logging enabled:
+remnode systemd file
+
+```
+# cat /etc/systemd/system/remnode.service
+[Unit]
+Description=remnode
+After=network.target
+RequiresMountsFor=/prod
+[Service]
+SyslogFacility=local0
+User=root
+Group=root
+ExecStart=/usr/bin/remnode --config-dir /prod/bp/config/ --data-dir /prod/bp/data/
+[Install]
+WantedBy=multi-user.target
+
+systemctl start remnode
+systemctl enable remnode
+systemctl status remnode
+```
+
 ```
 # cat start_remnode.sh
 #!/bin/sh
