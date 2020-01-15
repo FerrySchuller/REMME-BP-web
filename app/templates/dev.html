@@ -43,6 +43,7 @@ var config = {
             label: 'Transactions',
             backgroundColor: 'rgb(54, 162, 235)',
             borderColor: 'rgb(54, 162, 235)',
+            cubicInterpolationMode: 'monotone',
             fill: false,
             data: []
         }
@@ -58,7 +59,7 @@ var config = {
             xAxes: [{
                 type: 'realtime',
                 realtime: {
-                    duration: 20000,
+                    duration: 200000,
                     refresh: 500,
                     delay: 2000,
                     onRefresh: onRefresh
