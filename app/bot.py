@@ -283,57 +283,52 @@ def producers_slow(slaap=300):
         sleep(slaap)
 
      
-def dev():
-    bl = db.cpu_usage_us.find().limit(400)
-    blocks = []
-    start = 168517 # first benchmark block
-    if bl:
-        for row in bl:
-            for cpu in row['data'] :
-                blocks.append(cpu['block'])
-        if blocks:
-            start = max(blocks) + 1
-
-    i = remcli_get_info()
-    stop = i['last_irreversible_block_num']
-
-    for block in range(start, stop):
-        b = get_block(block)
-        timestamp = parse(b['timestamp'])
-        d = db.cpu_usage_us.find_one( { "producer": "{}".format(b['producer']) })
-        #if d and not list(filter(lambda xo: xo['block'] == block, d['data'])) and b['transactions']:
-        if b['transactions']:
-            for transaction in b['transactions']:
-                if isinstance(transaction['trx'], dict):
-                    for action in transaction['trx']['transaction']['actions']:
-                        if 'account' in action and 'name' in action and action['account'] == 'rembenchmark' and action['name'] == 'cpu':
-                            cpu_usage_us = transaction['cpu_usage_us']
-                            #if d and not list(filter(lambda xo: xo['timestamp'] == timestamp, d['data'])):
-                            if d and not list(filter(lambda xo: xo['block'] == block, d['data'])):
-                                d['data'].append( {"timestamp": timestamp, "cpu_usage_us": cpu_usage_us, "block": block})
-                            else:
-                                d = {}
-                                d['producer'] = b['producer']
-                                d['data'] = []
-                                d['data'].append( {"timestamp": timestamp, "cpu_usage_us": cpu_usage_us, "block": block})
+def cpu_usage_us(slaap=10):
+    while True:
+        trxs = False
+        bl = db.cpu_usage_us.find().limit(400)
+        blocks = []
+        start = 168517 # first benchmark block
+        if bl:
+            for row in bl:
+                for cpu in row['data'] :
+                    blocks.append(cpu['block'])
+            if blocks:
+                start = max(blocks) + 1
     
-                            ref = db.cpu_usage_us.update({"producer": '{}'.format(b['producer'])}, {"$set": d}, upsert=True)
-                            print(block, timestamp, ref)
+        i = remcli_get_info()
+        stop = i['last_irreversible_block_num']
+    
+        for block in range(start, stop):
+            b = get_block(block)
+            timestamp = parse(b['timestamp'])
+            d = db.cpu_usage_us.find_one( { "producer": "{}".format(b['producer']) })
+            if b['transactions']:
+                for transaction in b['transactions']:
+                    if isinstance(transaction['trx'], dict):
+                        for action in transaction['trx']['transaction']['actions']:
+                            if 'account' in action and 'name' in action and action['account'] == 'rembenchmark' and action['name'] == 'cpu':
+                                trxs = True
+                                cpu_usage_us = transaction['cpu_usage_us']
+                                if d and not list(filter(lambda xo: xo['block'] == block, d['data'])):
+                                    d['data'].append( {"timestamp": timestamp, "cpu_usage_us": cpu_usage_us, "block": block})
+                                else:
+                                    d = {}
+                                    d['producer'] = b['producer']
+                                    d['data'] = []
+                                    d['data'].append( {"timestamp": timestamp, "cpu_usage_us": cpu_usage_us, "block": block})
+        
+                                ref = db.cpu_usage_us.update({"producer": '{}'.format(b['producer'])}, {"$set": d}, upsert=True)
+                                jlog.info('{} {} {}'.format(block, timestamp, ref))
+        if not trxs:
+            jlog.info('Sleeping for: {} seconds'.format(slaap))
+            sleep(slaap)
 
 
+def dev():
+    pass
 def dev1():
-    for block in range(3389477, 3389877):
-        b = get_block(block)
-        #timestamp = parse(b['timestamp'])
-        #d = db.cpu_usage_us.find_one( { "producer": "{}".format(b['producer']) })
-        #if d and not list(filter(lambda xo: xo['block'] == block, d['data'])) and b['transactions']:
-        if b['transactions']:
-            for transaction in b['transactions']:
-                for action in transaction['trx']['transaction']['actions']:
-                    print(action)
-        #    for transaction in b['transactions']:
-        #        if isinstance(transaction['trx'], dict):
-
+    pass
 
     '''
     dt = (datetime.now() - timedelta(seconds=30000))
@@ -351,7 +346,6 @@ def dev1():
     '''
 
 
-
 def main():
     if not is_running():
         jlog.info('{}'.format('Starting bot'))
@@ -364,10 +358,11 @@ def main():
         producers_slow_thread = threading.Thread(target=producers_slow, args=(), name='producers_slow')
         producers_slow_thread.start()
 
-        notify_thread = threading.Thread(target=notify, args=(), name='notify')
-        notify_thread.start()
+        cpu_usage_us_thread = threading.Thread(target=cpu_usage_us, args=(), name='cpu_usage_us')
+        cpu_usage_us_thread.start()
 
-
+        #notify_thread = threading.Thread(target=notify, args=(), name='notify')
+        #notify_thread.start()
     else:
         jlog.info("allready running".format())
 
