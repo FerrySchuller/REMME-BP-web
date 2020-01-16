@@ -424,7 +424,7 @@ def _listproducers():
                         if producer['is_active'] and owner['position'] > 21:
                             i['is_active'] = '<span style="display:inline-block; width:60px" class="badge badge-warning">Rotated</span>'
                         if producer['is_active'] and owner['position'] > 25:
-                            i['is_active'] = '<span style="display:inline-block; width:60px" class="badge badge-danger">Standy</span>'
+                            i['is_active'] = '<span style="display:inline-block; width:60px" class="badge badge-danger">Standby</span>'
                         if not producer['is_active']:
                             i['is_active'] = '<span style="color: Tomato;"><i class="fa fa-times"></i></text></span>'
 
