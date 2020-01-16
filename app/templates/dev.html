@@ -3,48 +3,28 @@
 {% block content -%}
 <div class="container-fluid">
 
+
 <canvas id="myChart" width="200" height="50"></canvas>
 
 <script>
 
-function xo() {
-    return fetch('./_trxs')
-        .then(response => response.json())
-        .then((responseJSON) => {
-            const { statusCode, data } = responseJSON;
-            return responseJSON.y;
-        })
-        .catch((e) => {
-            console.error(e);
-        })
-}
-
-p = xo();
-
-p.then(
-  result => console.log(result), // shows "done!" after 1 second
-  error => console.log(error) // doesn't run
-);
+var url='./_trxs';
 
 
-function onRefresh(chart) {
-    p = xo();
-    p.then( result =>
+function onRefresh(chart){
+  fetch(url)
+  .then((res) => res.json())
+  .then((data) => {
     chart.config.data.datasets.forEach(function(dataset) {
-    dataset.data.push({
-            t: Date.now(),
-            y: result
-        });
-    }),
-    error =>  
-    chart.config.data.datasets.forEach(function(dataset) {
-    dataset.data.push({
-            t: Date.now(),
-            y: 0
-        });
-    }));
+        dataset.data.push({
+                // t: Date.now(),
+                t: data.t,
+                y: data.y
+            });
+        })
+  })
+  .catch((err) => console.log(err))
 }
-
 
 var config = {
   type: 'line',
@@ -58,8 +38,8 @@ var config = {
         }
     ],
   },
-
     options: {
+        events: [],
         title: {
             display: true,
             text: 'Amount of transactions per 0.5 seconds'
@@ -81,25 +61,18 @@ var config = {
                 }
             }]
         },
-        tooltips: {
-            mode: 'nearest',
-            intersect: false
-        },
-        hover: {
-            mode: 'nearest',
-            intersect: false
-        }
+        // tooltips: { mode: 'nearest', intersect: false },
+        tooltips: {enabled: false},
+        states: { hover: { filter: { type: 'none', } }, },
+        hover: {mode: null}
+        // hover: { mode: 'nearest', intersect: false }
     }
-
 };
-
 
 window.onload = function() {
     var ctx = document.getElementById('myChart').getContext('2d');
     window.myChart = new Chart(ctx, config);
 };
-
-
 </script>
 
 

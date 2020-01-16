@@ -22,7 +22,7 @@ remnode systemd file
 # cat /etc/systemd/system/remnode.service
 [Unit]
 Description=remnode
-After=network.target
+After=network.target mongod.service
 RequiresMountsFor=/prod
 [Service]
 SyslogFacility=local0

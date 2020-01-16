@@ -122,6 +122,8 @@ def _trxs():
     log  = db.logs.find_one({},sort=[('time', pymongo.DESCENDING)])
     msg = log['msg'].split()
     if len(msg) == 24:
+        dt = parse(msg[1])
+        t = dt.timestamp() * 1000
         y = msg[16].replace(',', '')
 
     #get_info = remcli_get_info()
@@ -129,7 +131,7 @@ def _trxs():
     #    head_block_num  = get_info['head_block_num']
     #    block = get_block(head_block_num)
     #    y = len(block['transactions'])
-    d = {'y': y}
+    d = {'t': t, 'y': y}
     return jsonify(d)
 
 
