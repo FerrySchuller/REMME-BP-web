@@ -116,22 +116,35 @@ def gen_graph():
     return(graph)
 
 
+@app.route('/_cpu_usage')
+def _cpu_usage():
+    cpus = db.cpu_usage_us.find_one({"producer": "josiendotnet"})
+    pprint(cpus)
+    
+
+    '''
+    producers = db.producers.find({}, {"name": 1, "position": 1, "_id": 0})
+    if producers:
+        for p in producers:
+            if p['position'] < 22:
+                pass
+                db.cpu_usage_us.find_one({"producer": "josiendotnet"})
+    '''
+
+    d = {}
+    return jsonify(d)
+
 @app.route('/_trxs')
 def _trxs():
     y = 0
     log  = db.logs.find_one({},sort=[('time', pymongo.DESCENDING)])
     msg = log['msg'].split()
     if len(msg) == 24:
-        dt = parse(msg[1])
-        t = dt.timestamp() * 1000
         y = msg[16].replace(',', '')
+        #dt = parse(msg[1])
+        #t = dt.timestamp() * 1000
 
-    #get_info = remcli_get_info()
-    #if get_info:
-    #    head_block_num  = get_info['head_block_num']
-    #    block = get_block(head_block_num)
-    #    y = len(block['transactions'])
-    d = {'t': t, 'y': y}
+    d = {'y': y}
     return jsonify(d)
 
 
@@ -142,8 +155,7 @@ def charts():
 
 @app.route('/dev')
 def dev():
-    d = {}
-    return render_template( 'dev.html', d=d )
+    return render_template( 'dev.html' )
 
 
 @app.route('/_get_account/<owner>')

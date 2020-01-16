@@ -8,8 +8,7 @@
 
 <script>
 
-var url='./_trxs';
-
+let url='./_trxs';
 
 function onRefresh(chart){
   fetch(url)
@@ -17,8 +16,8 @@ function onRefresh(chart){
   .then((data) => {
     chart.config.data.datasets.forEach(function(dataset) {
         dataset.data.push({
-                // t: Date.now(),
-                t: data.t,
+                t: Date.now(),
+                // t: data.t,
                 y: data.y
             });
         })
