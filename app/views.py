@@ -116,23 +116,65 @@ def gen_graph():
     return(graph)
 
 
+def rounder(t):
+    # Rounds to nearest hour by adding a timedelta hour if minute >= 30
+    return (t.replace(second=0, microsecond=0, minute=0, hour=t.hour)
+               +timedelta(hours=t.minute//90))
+
+
 @app.route('/_cpu_usage')
 def _cpu_usage():
-    cpus = db.cpu_usage_us.find_one({"producer": "josiendotnet"})
-    pprint(cpus)
-    
+    l = []
+    dt = (datetime.now() - timedelta(seconds=3))
 
-    '''
-    producers = db.producers.find({}, {"name": 1, "position": 1, "_id": 0})
+    producers = db.producers.find({}, {"name": 1, "position": 1, "_id": 0}).limit(4)
     if producers:
+        d = {}
         for p in producers:
             if p['position'] < 22:
-                pass
-                db.cpu_usage_us.find_one({"producer": "josiendotnet"})
+                cpu = db.cpu_usage_us.find_one( { "$and": [ { "producer": "{}".format(p['name']) } ] },
+                                                { "_id": 0, "data.block": 0 })
+                if cpu:
+                    for data in cpu['data']:
+                        if data['timestamp'] < dt:
+                            rond = rounder(data['timestamp'])
+                            d = {}
+                            d['dataset'] = p['name']
+                            #d['t'] = data['timestamp'].timestamp() * 1000
+                            d['t'] =  rond.timestamp() * 1000
+                            d['value'] = data['cpu_usage_us'] / 10000
+                            l.append(d)
+
+    '''
+    d = [{ "dataset": "josiendotnet",
+          "t": 1579181227500.0,
+          "value": 0.0345
+      }, {
+          "dataset": "josiendotnet",
+          "t": 1579182112000.0,
+          "value": 0.0359
+      }, {
+          "dataset": "josiendotnet",
+          "t": 1579182742000.0,
+          "value": 0.0366
+      }, {
+          "dataset": "xoxo",
+          "t": 1579181227500.0,
+          "value": 0.0245
+      }, {
+          "dataset": "xoxo",
+          "t": 1579182112000.0,
+          "value": 0.0459
+      }, {
+          "dataset": "xoxo",
+          "t": 1579182742000.0,
+          "value": 0.0466
+      }]
     '''
 
-    d = {}
-    return jsonify(d)
+
+
+    return jsonify(l)
 
 @app.route('/_trxs')
 def _trxs():

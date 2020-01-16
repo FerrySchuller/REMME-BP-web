@@ -53,12 +53,6 @@ var config = {
                     onRefresh: onRefresh
                 }
             }],
-            yAxes: [{
-                scaleLabel: {
-                    display: true,
-                    labelString: 'value'
-                }
-            }]
         },
         // tooltips: { mode: 'nearest', intersect: false },
         tooltips: {enabled: false},
@@ -73,8 +67,6 @@ window.onload = function() {
     window.trxs = new Chart(ctx, config);
 };
 </script>
-
-
 
 <!--
 <button class="btn btn-outline-dark btn-sm" id="7" onClick="graph(this.id)">7 days</button>

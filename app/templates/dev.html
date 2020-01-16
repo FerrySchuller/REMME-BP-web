@@ -2,56 +2,90 @@
 {% block title %}EU Block Producer by josiendotnet{% endblock %}
 {% block content -%}
 <div class="container-fluid">
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datasource@0.1.0"></script>
+    <div>
+        <canvas id="myChart"></canvas>
+    </div>
 
-
-<canvas id="line-chart" width="300" height="100"></canvas>
-
-<!--
 <script>
-new Chart(document.getElementById("line-chart"), {
+function getRandomRgb() {
+  var num = Math.round(0xffffff * Math.random());
+  var r = num >> 16;
+  var g = num >> 8 & 255;
+  var b = num & 255;
+  return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+}
 
-  type: 'line',
-  scaleOverride: true,
-  scaleStartValue: 0,
-  scaleShowVerticalLines: true,
-  scaleShowGridLines : true,
-  barShowStroke : true,
-  scaleShowLabels: true,
-  bezierCurve: false,
-
-  data: {
-    datasets: [ 
-                {#
-                {% for data in graph['values'] %} {
-                {% for k,v in data.items() %}
-                {% if k == 'data' %}
-                {{ k }}: [
-                {% for i in v %}
-                {t: new Date({{ i.t }}), y: {{ i.y }}},
-                {% endfor %}
-                ],
-                {% else %}
-                {{ k }}: "{{ v }}",
-                {% endif %}
-                {% endfor %}
+var config = {
+    type: 'line',
+    data: {
+        datasets: [{
+            type: 'line',
+            backgroundColor: 'transparent',
+            borderColor: getRandomRgb(),
+            pointBackgroundColor: getRandomRgb(),
+            tension: 0,
+            fill: false
+        }
+        ]
+    },
+    plugins: [ChartDataSource],
+    options: {
+        title: {
+            display: true,
+            text: 'JSON data source (datapoint) sample'
+        },
+        scales: {
+            xAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Month'
+                }
+            }],
+            yAxes: [{
+                id: 'temperature',
+                gridLines: {
+                    drawOnChartArea: false
                 },
-                {% endfor %}
-                #}
-   ] 
-  },
-  options: {
-    title: { display: true, text: "{#{ graph.title }#}" },
-    // legend: false
-    scales: { xAxes: [ { type: 'time', 
-                         ticks: { autoSkip: true, maxTicksLimit: 20 } }] },
-    legend: { display: true, labels: { fontColor: "#000000", "boxWidth": 8 }, position: 'bottom' },
-    tooltips: { enabled: true, intersect: true, mode: 'index' },
-  }
-});
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Temperature (°C)'
+                }
+            }, {
+                id: 'precipitation',
+                position: 'right',
+                gridLines: {
+                    drawOnChartArea: false
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Precipitation (mm)'
+                }
+            }]
+        },
+        plugins: {
+            datasource: {
+                type: 'json',
+                url: './_cpu_usage',
+                rowMapping: 'datapoint',
+                datapointLabelMapping: {
+                    _dataset: 'dataset',
+                    _index: 't',
+                    t: 't',
+                    y: 'value'
+                },
+                data: '*.*'
+            }
+        }
+    }
+};
 
-
+window.onload = function() {
+    var ctx = document.getElementById('myChart').getContext('2d');
+    window.myChart = new Chart(ctx, config);
+};
 </script>
--->
+
 
 </div>
 {%- endblock content %}
