@@ -358,8 +358,8 @@ def main():
         producers_slow_thread = threading.Thread(target=producers_slow, args=(), name='producers_slow')
         producers_slow_thread.start()
 
-        cpu_usage_us_thread = threading.Thread(target=cpu_usage_us, args=(), name='cpu_usage_us')
-        cpu_usage_us_thread.start()
+        #cpu_usage_us_thread = threading.Thread(target=cpu_usage_us, args=(), name='cpu_usage_us')
+        #cpu_usage_us_thread.start()
 
         #notify_thread = threading.Thread(target=notify, args=(), name='notify')
         #notify_thread.start()
