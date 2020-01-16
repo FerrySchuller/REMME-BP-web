@@ -140,9 +140,10 @@ def _trxs():
     log  = db.logs.find_one({},sort=[('time', pymongo.DESCENDING)])
     msg = log['msg'].split()
     if len(msg) == 24:
-        y = msg[16].replace(',', '')
-        #dt = parse(msg[1])
-        #t = dt.timestamp() * 1000
+        try:
+            y = int(msg[16].replace(',', ''))
+        except:
+            jlog.critical('trxs ERROR: {}'.format(sys.exc_info()))
 
     d = {'y': y}
     return jsonify(d)
