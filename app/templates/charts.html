@@ -1,82 +1,100 @@
 {% extends "base.html" %}
-{% block title %}Josien.net dev{% endblock %}
+{% block title %}EU Block Producer by josiendotnet{% endblock %}
 {% block content -%}
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/chart.js') }}"></script>
+
 <div class="container-fluid">
 
 
-<canvas id="trxs" width="200" height="50"></canvas>
+<ul class="list-inline">
+<li class="list-inline-item">
+<form role="form" class="form-inline" method="post" action="{{ url_for('charts') }}">
+<input type="hidden" name="roundTo" value="28800">
+<input type="hidden" name="seconds" value="1209600">
+   <button class="btn btn-primary form-edit-button" type="submit" >1 week</button></li>
+</form>
+</li>
+
+<li class="list-inline-item">
+<form role="form" class="form-inline" method="post" action="{{ url_for('charts') }}">
+<input type="hidden" name="roundTo" value="28800">
+<input type="hidden" name="seconds" value="2592000">
+   <button class="btn btn-primary form-edit-button" type="submit" >30 days</button></li>
+</form>
+</li>
+
+<li class="list-inline-item">
+<form role="form" class="form-inline" method="post" action="{{ url_for('charts') }}">
+<input type="hidden" name="roundTo" value="28800">
+<input type="hidden" name="seconds" value="15768000">
+   <button class="btn btn-primary form-edit-button" type="submit" >Half year</button></li>
+</form>
+</li>
+
+<li class="list-inline-item">
+<form role="form" class="form-inline" method="post" action="{{ url_for('charts') }}">
+<input type="hidden" name="roundTo" value="28800">
+<input type="hidden" name="seconds" value="31536000">
+   <button class="btn btn-primary form-edit-button" type="submit" >One year</button></li>
+</form>
+</li>
+
+</ul>
+
+
+{% if cpu_usage %}
+
+    <div>
+        <canvas id="myChart"></canvas>
+    </div>
 
 <script>
-
-let url='./_trxs';
-
-function onRefresh(chart){
-  fetch(url)
-  .then((res) => res.json())
-  .then((data) => {
-    chart.config.data.datasets.forEach(function(dataset) {
-        dataset.data.push({
-                t: Date.now(),
-                // t: data.t,
-                y: data.y
-            });
-        })
-  })
-  .catch((err) => console.log(err))
-}
+var timeFormat = 'MM/DD/YYYY HH:mm';
 
 var config = {
-  type: 'line',
-  data: {
-    datasets: [ {
-            label: 'trxs',
-            backgroundColor: '#533a75',
-            borderColor: '#533a75',
-            fill: false,
-            data: []
-        }
-    ],
-  },
+    type: 'line',
+     data: {
+        datasets: [
+            {% for data in cpu_usage %}
+            { backgroundColor: "{{ data.backgroundColor }}",
+              borderColor: "{{ data.borderColor }}",
+              fill: "{{ data.fill }}",
+              label: "{{ data.label }}",
+              data: [
+            {% for d in data.data %}
+              {t: new Date({{ d.t }}), y: {{ d.y }}},
+            {% endfor %}
+            ] },
+            {% endfor %}
+    ]},
     options: {
-        events: [],
-        title: {
-            display: true,
-            text: 'Amount of transactions per 0.5 seconds'
-        },
-        scales: {
-            xAxes: [{
-                type: 'realtime',
-                realtime: {
-                    duration: 200000,
-                    refresh: 500,
-                    delay: 2000,
-                    onRefresh: onRefresh
-                }
-            }],
-        },
-        // tooltips: { mode: 'nearest', intersect: false },
-        tooltips: {enabled: false},
-        states: { hover: { filter: { type: 'none', } }, },
-        hover: {mode: null}
-        // hover: { mode: 'nearest', intersect: false }
-    }
+                title: {
+                    text: 'Chart.js Time Scale'
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            parser: timeFormat,
+                            // round: 'day'
+                            tooltipFormat: 'll HH:mm'
+                        }
+                    }],
+                    yAxes: [{
+                    }]
+                },
+            }
 };
 
 window.onload = function() {
-    var ctx = document.getElementById('trxs').getContext('2d');
-    window.trxs = new Chart(ctx, config);
+    var ctx = document.getElementById('myChart').getContext('2d');
+    window.myChart = new Chart(ctx, config);
 };
 </script>
+{% endif %}
 
-<!--
-<button class="btn btn-outline-dark btn-sm" id="7" onClick="graph(this.id)">7 days</button>
-<button class="btn btn-outline-dark btn-sm" id="14" onClick="graph(this.id)">14 days</button>
-<button class="btn btn-outline-dark btn-sm" id="30" onClick="graph(this.id)">30 days</button>
-<button class="btn btn-outline-dark btn-sm" id="60" onClick="graph(this.id)">60 days</button>
-<button class="btn btn-outline-dark btn-sm" id="182" onClick="graph(this.id)">182 days</button>
-<button class="btn btn-outline-dark btn-sm" id="365" onClick="graph(this.id)">365 days</button>
-<div style="padding-top:10px;" id="cpu_benchmark" style="height: 400px; min-width: 310px"></div>
--->
 
 </div>
 {%- endblock content %}
@@ -85,4 +103,5 @@ window.onload = function() {
 <script type=text/javascript>
   var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 </script>
+
 {%- endblock scripts %}

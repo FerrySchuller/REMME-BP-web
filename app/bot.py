@@ -326,24 +326,82 @@ def cpu_usage_us(slaap=10):
 
 
 def dev():
-    pass
-def dev1():
-    pass
+    for block in range(5120359, 5121359):
+        b = get_block(block)
+        if len(b['transactions']) != 0 and len(b['transactions']) != 1 and len(b['transactions']) != 2:
+            pprint(b)
 
-    '''
-    dt = (datetime.now() - timedelta(seconds=30000))
-    logs = db.logs.find({"time": {"$gt": dt}}).sort([("time", pymongo.ASCENDING)])
-    for log in logs:
-        msg = log['msg'].split()
-        if len(msg) == 24:
 
-            block = msg[9].replace('#', '')
-            produced_on = parse(msg[11])
-            block_owner = msg[14]
-            trxs = msg[16].replace(',', '')
+def roundTime(dt=None, roundTo=60):
+   if dt == None : dt = datetime.datetime.now()
+   seconds = (dt.replace(tzinfo=None) - dt.min).seconds
+   rounding = (seconds+roundTo/2) // roundTo * roundTo
+   r = dt + timedelta(0,rounding-seconds,-dt.microsecond)
+   return(r.timestamp() * 1000)
+   #return dt + timedelta(0,rounding-seconds,-dt.microsecond)
+   #return dt + timedelta(0,rounding-seconds,-dt.microsecond)
 
-            print(block, produced_on, block_owner, trxs)
-    '''
+
+def dev1(roundTo=3600, seconds=86400):
+    dt = (datetime.now() - timedelta(seconds=seconds))
+    producers = db.producers.find({}, {"name": 1, "position": 1, "_id": 0}).limit(30)
+    resp = []
+    if producers:
+        for p in producers:
+            if p['position'] < 22:
+
+                chart = {}
+                chart['backgroundColor'] = 'xx'
+                chart['borderColor'] = 'xx'
+                chart['fill'] = 'false'
+                chart['label'] = p['name']
+                chart['data'] = []
+
+
+                cpu_usage = db.cpu_usage_us.find_one( { "producer": "{}".format(p['name']) },
+                                                { "_id": 0, "data.block": 0, },sort=([('time', pymongo.DESCENDING)]))
+            
+                l = []
+                low = []
+                if cpu_usage:
+                    for data in cpu_usage['data']:
+                        if data['timestamp']> dt:
+                            y = data['cpu_usage_us'] / 10000
+                            t = roundTime(data['timestamp'], roundTo=roundTo)
+                            d = {}
+                            d['t'] = t
+                            d['y'] = y
+                            low.append(t)
+                            l.append(d)
+            
+                low = min(low)
+                ty = []
+                data = []
+                for xo in l:
+                    if xo['t'] == low:
+                        ty.append(xo['y'])
+                    else:
+                        low = xo['t']
+                        d = {}
+                        try:
+                            av = "{:.4f}".format(sum(ty) / len(ty))
+                            d = {}
+                            d['t'] = xo['t']
+                            d['y'] = av
+                            chart['data'].append(d)
+                        except:
+                            pass
+                        ty = []
+
+                resp.append(chart)
+    pprint(resp)
+
+#        try:
+#            av = sum(ly) / len(ly)
+#            print(xo['t'], av)
+#        except:
+#            pass
+
 
 
 def main():
@@ -358,8 +416,8 @@ def main():
         producers_slow_thread = threading.Thread(target=producers_slow, args=(), name='producers_slow')
         producers_slow_thread.start()
 
-        #cpu_usage_us_thread = threading.Thread(target=cpu_usage_us, args=(), name='cpu_usage_us')
-        #cpu_usage_us_thread.start()
+        cpu_usage_us_thread = threading.Thread(target=cpu_usage_us, args=(), name='cpu_usage_us')
+        cpu_usage_us_thread.start()
 
         #notify_thread = threading.Thread(target=notify, args=(), name='notify')
         #notify_thread.start()

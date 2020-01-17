@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, flash, url_for, redirect, abort
+from flask import render_template, jsonify, flash, url_for, redirect, abort, request
 import os, sys
 import json
 from datetime import datetime, timedelta, timezone, time
@@ -116,65 +116,71 @@ def gen_graph():
     return(graph)
 
 
-def rounder(t):
-    # Rounds to nearest hour by adding a timedelta hour if minute >= 30
-    return (t.replace(second=0, microsecond=0, minute=0, hour=t.hour)
-               +timedelta(hours=t.minute//90))
+def chart_time(dt=None, roundTo=60):
+   if dt == None : dt = datetime.datetime.now()
+   seconds = (dt.replace(tzinfo=None) - dt.min).seconds
+   rounding = (seconds+roundTo/2) // roundTo * roundTo
+   r = dt + timedelta(0,rounding-seconds,-dt.microsecond)
+   return(r.timestamp() * 1000)
 
 
-@app.route('/_cpu_usage')
-def _cpu_usage():
-    l = []
-    dt = (datetime.now() - timedelta(seconds=3))
-
-    producers = db.producers.find({}, {"name": 1, "position": 1, "_id": 0}).limit(4)
+def cpu_usage(roundTo=7200, seconds=1209600):
+    dt = (datetime.now() - timedelta(seconds=seconds))
+    producers = db.producers.find({}, {"name": 1, "position": 1, "_id": 0}).limit(30)
+    resp = []
     if producers:
-        d = {}
         for p in producers:
             if p['position'] < 22:
-                cpu = db.cpu_usage_us.find_one( { "$and": [ { "producer": "{}".format(p['name']) } ] },
-                                                { "_id": 0, "data.block": 0 })
-                if cpu:
-                    for data in cpu['data']:
-                        if data['timestamp'] < dt:
-                            rond = rounder(data['timestamp'])
+
+                color = random_color()
+                red = '#ed0c0c'
+                chart = {}
+                chart['backgroundColor'] = color
+                chart['borderColor'] = color
+                chart['fill'] = 'false'
+                chart['label'] = p['name']
+                chart['data'] = []
+
+                cpu_usage = db.cpu_usage_us.find_one( { "producer": "{}".format(p['name']) },
+                                                { "_id": 0, "data.block": 0, },sort=([('time', pymongo.DESCENDING)]))
+
+                l = []
+                low = []
+                if cpu_usage:
+                    for data in cpu_usage['data']:
+                        if data['timestamp']> dt:
+                            y = data['cpu_usage_us'] / 10000
+                            t = chart_time(data['timestamp'], roundTo=roundTo)
                             d = {}
-                            d['dataset'] = p['name']
-                            #d['t'] = data['timestamp'].timestamp() * 1000
-                            d['t'] =  rond.timestamp() * 1000
-                            d['value'] = data['cpu_usage_us'] / 10000
+                            d['t'] = t
+                            d['y'] = y
+                            low.append(t)
                             l.append(d)
 
-    '''
-    d = [{ "dataset": "josiendotnet",
-          "t": 1579181227500.0,
-          "value": 0.0345
-      }, {
-          "dataset": "josiendotnet",
-          "t": 1579182112000.0,
-          "value": 0.0359
-      }, {
-          "dataset": "josiendotnet",
-          "t": 1579182742000.0,
-          "value": 0.0366
-      }, {
-          "dataset": "xoxo",
-          "t": 1579181227500.0,
-          "value": 0.0245
-      }, {
-          "dataset": "xoxo",
-          "t": 1579182112000.0,
-          "value": 0.0459
-      }, {
-          "dataset": "xoxo",
-          "t": 1579182742000.0,
-          "value": 0.0466
-      }]
-    '''
+                low = min(low)
+                ty = []
+                for xo in l:
+                    if xo['t'] == low:
+                        ty.append(xo['y'])
+                    else:
+                        low = xo['t']
+                        d = {}
+                        try:
+                            av = "{:.4f}".format(sum(ty) / len(ty))
+                            if float(av) > 0.3:
+                                chart['backgroundColor'] = red
+                                chart['borderColor'] = red
+                            d = {}
+                            d['t'] = xo['t']
+                            d['y'] = av
+                            chart['data'].append(d)
+                        except:
+                            jlog.critical('cpu_usage ERROR: {}'.format(sys.exc_info()))
+                        ty = []
 
+                resp.append(chart)
+    return (resp)
 
-
-    return jsonify(l)
 
 @app.route('/_trxs')
 def _trxs():
@@ -191,14 +197,34 @@ def _trxs():
     return jsonify(d)
 
 
-@app.route('/charts')
+@app.route('/charts', methods = ['POST', 'GET'])
 def charts():
-    return render_template('charts.html', graph=gen_graph() )
+    cpu = False
+    if request.method == "POST" and request.form and 'roundTo' in request.form and 'seconds' in request.form:
+        roundTo = request.form['roundTo']
+        seconds = request.form['seconds']
+        cpu = cpu_usage(float(roundTo), float(seconds))
+    else:
+        cpu = cpu_usage()
 
 
-@app.route('/dev')
+    return render_template( 'charts.html', cpu_usage=cpu )
+
+
+
+@app.route('/dev', methods = ['POST', 'GET'])
 def dev():
-    return render_template( 'dev.html' )
+    cpu = False
+    if request.method == "POST" and request.form and 'roundTo' in request.form and 'seconds' in request.form:
+        roundTo = request.form['roundTo']
+        seconds = request.form['seconds']
+        cpu = cpu_usage(float(roundTo), float(seconds))
+    else:
+        cpu = cpu_usage()
+
+
+    return render_template( 'dev.html', cpu_usage=cpu )
+
 
 
 @app.route('/_get_account/<owner>')
