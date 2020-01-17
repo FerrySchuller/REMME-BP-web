@@ -11,7 +11,7 @@
 <ul class="list-inline">
 <li class="list-inline-item">
 <form role="form" class="form-inline" method="post" action="{{ url_for('charts') }}">
-<input type="hidden" name="roundTo" value="28800">
+<input type="hidden" name="roundTo" value="3600">
 <input type="hidden" name="seconds" value="1209600">
    <button class="btn btn-primary form-edit-button" type="submit" >1 week</button></li>
 </form>
@@ -61,6 +61,7 @@ var config = {
             { backgroundColor: "{{ data.backgroundColor }}",
               borderColor: "{{ data.borderColor }}",
               fill: "{{ data.fill }}",
+              borderWidth: "{{ data.borderWidth }}",
               label: "{{ data.label }}",
               data: [
             {% for d in data.data %}
@@ -72,6 +73,11 @@ var config = {
     options: {
                 title: {
                     text: 'Chart.js Time Scale'
+                },
+                elements: {
+                    point:{
+                        radius: 1
+                    }
                 },
                 scales: {
                     xAxes: [{

@@ -137,6 +137,7 @@ def cpu_usage(roundTo=7200, seconds=1209600):
                 chart = {}
                 chart['backgroundColor'] = color
                 chart['borderColor'] = color
+                chart['borderWidth'] = "1.8"
                 chart['fill'] = 'false'
                 chart['label'] = p['name']
                 chart['data'] = []
