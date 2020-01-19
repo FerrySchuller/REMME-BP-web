@@ -326,10 +326,11 @@ def cpu_usage_us(slaap=10):
 
 
 def dev():
-    for block in range(5120359, 5121359):
-        b = get_block(block)
-        if len(b['transactions']) != 0 and len(b['transactions']) != 1 and len(b['transactions']) != 2:
-            pprint(b)
+    import randomcolor
+    rand_color = randomcolor.RandomColor()
+    print(rand_color.generate(luminosity="dark")[0])
+
+
 
 
 def roundTime(dt=None, roundTo=60):
