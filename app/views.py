@@ -76,7 +76,18 @@ def owner(owner):
 
 
 def random_color():
-    return("#{:06x}".format(random.randint(0, 0xFFFFFF)))
+    #import colorsys
+    #h,s,l = random.random(), 0.5 + random.random()/2.0, 0.4 + random.random()/5.0
+    #r,g,b = [int(256*i) for i in colorsys.hls_to_rgb(h,l,s)]
+    #print(r,g,b)
+    #print(h,s,l)
+
+    return("#{:06x}".format(random.randint(200, 0xFFFFFF)))
+
+#def random_color():
+#        rand = lambda: random.randint(100, 255)
+#        return '#%02X%02X%02X' % (rand(), rand(), rand())
+
 
 
 def gen_graph():

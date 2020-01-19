@@ -98,3 +98,12 @@ $(document).ready(function() {
       $('#listproducers').DataTable().ajax.reload(null, false);
   }, 10000);
 });
+
+
+$("#toggle").click(function() {
+     cpu_usage.data.datasets.forEach(function(ds) {
+    ds.hidden = !ds.hidden;
+  });
+  cpu_usage.update();
+});
+

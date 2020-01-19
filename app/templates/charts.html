@@ -9,11 +9,20 @@
 
 
 <ul class="list-inline">
+
+<li class="list-inline-item">
+<form role="form" class="form-inline" method="post" action="{{ url_for('charts') }}">
+<input type="hidden" name="roundTo" value="1800">
+<input type="hidden" name="seconds" value="86400">
+<button class="btn btn-outline-dark btn-sm" type="submit">1 Day</button>
+</form>
+</li>
+
 <li class="list-inline-item">
 <form role="form" class="form-inline" method="post" action="{{ url_for('charts') }}">
 <input type="hidden" name="roundTo" value="3600">
 <input type="hidden" name="seconds" value="1209600">
-   <button class="btn btn-primary form-edit-button" type="submit" >1 week</button></li>
+<button class="btn btn-outline-dark btn-sm" type="submit">1 Week</button>
 </form>
 </li>
 
@@ -21,33 +30,18 @@
 <form role="form" class="form-inline" method="post" action="{{ url_for('charts') }}">
 <input type="hidden" name="roundTo" value="28800">
 <input type="hidden" name="seconds" value="2592000">
-   <button class="btn btn-primary form-edit-button" type="submit" >30 days</button></li>
+<button class="btn btn-outline-dark btn-sm" type="submit">30 days</button>
 </form>
 </li>
 
-<li class="list-inline-item">
-<form role="form" class="form-inline" method="post" action="{{ url_for('charts') }}">
-<input type="hidden" name="roundTo" value="28800">
-<input type="hidden" name="seconds" value="15768000">
-   <button class="btn btn-primary form-edit-button" type="submit" >Half year</button></li>
-</form>
-</li>
-
-<li class="list-inline-item">
-<form role="form" class="form-inline" method="post" action="{{ url_for('charts') }}">
-<input type="hidden" name="roundTo" value="28800">
-<input type="hidden" name="seconds" value="31536000">
-   <button class="btn btn-primary form-edit-button" type="submit" >One year</button></li>
-</form>
-</li>
-
+<button class="btn btn-outline-dark btn-sm" id="toggle">Toggle all</button>
 </ul>
 
 
 {% if cpu_usage %}
 
     <div>
-        <canvas height="140" id="myChart"></canvas>
+        <canvas height="140" id="cpu_usage"></canvas>
     </div>
 
 <script>
@@ -95,9 +89,12 @@ var config = {
 };
 
 window.onload = function() {
-    var ctx = document.getElementById('myChart').getContext('2d');
-    window.myChart = new Chart(ctx, config);
+    var ctx = document.getElementById('cpu_usage').getContext('2d');
+    window.cpu_usage = new Chart(ctx, config);
 };
+
+
+
 </script>
 {% endif %}
 
