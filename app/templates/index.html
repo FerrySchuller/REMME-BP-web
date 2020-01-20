@@ -62,8 +62,11 @@ var config = {
             borderWidth: 1.6,
             pointRadius: 0.6,
             fill: false,
-            data: [ {"y": 0, "t": Date.now() } ]
-            // data: [ ]
+            data: [ {% if trxs %} 
+                    {% for trx in trxs %}
+                        { 't': {{ trx.t }}, "y": {{ trx.y }} },
+                    {% endfor %} 
+                    {% endif %} ]
         }
     ],
   },

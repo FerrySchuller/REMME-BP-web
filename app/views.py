@@ -39,10 +39,22 @@ def gen_health(title, fa_class='fa-times', color='tomato', text=''):
     return(msg)
 
 
+def gen_trxs():
+    dt = (datetime.now() - timedelta(seconds=240))
+    trxs  = db.trxs.find( {"created_at": { "$gt": dt } }, { "_id": 0 } )
+    l = []
+    if trxs:
+        for trx in trxs:
+            t = trx['data']['t'].timestamp() * 1000
+            y = trx['data']['y']
+            l.append({ 't': t, 'y': y })
+    return(l)
+
+
 @app.route('/')
 def index():
     #track_event( category='index', action='index')
-    return render_template( 'index.html' )
+    return render_template( 'index.html', trxs=gen_trxs() )
 
 
 @app.route('/offline')
@@ -187,18 +199,8 @@ def cpu_usage(roundTo=7200, seconds=1209600):
 
 @app.route('/_trxs')
 def _trxs():
-    dt = (datetime.now() - timedelta(seconds=5))
-    y = 0
-    logs  = db.logs.find( {"time": { "$gt": dt } } )
-    if logs:
-        for log in logs:
-            msg = log['msg'].split()
-            if len(msg) == 24:
-                try:
-                    y += int(msg[16].replace(',', ''))
-                except:
-                    jlog.critical('trxs ERROR: {}'.format(sys.exc_info()))
-
+    trx = db.trxs.find_one( { "tag": "trxs" }, { "_id": 0, "created_at": 0 },sort=([('created_at', pymongo.DESCENDING)]))
+    y = trx['data']['y']
     d = {'y': y}
     return jsonify(d)
 
