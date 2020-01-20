@@ -187,14 +187,17 @@ def cpu_usage(roundTo=7200, seconds=1209600):
 
 @app.route('/_trxs')
 def _trxs():
+    dt = (datetime.now() - timedelta(seconds=5))
     y = 0
-    log  = db.logs.find_one({},sort=[('time', pymongo.DESCENDING)])
-    msg = log['msg'].split()
-    if len(msg) == 24:
-        try:
-            y = int(msg[16].replace(',', ''))
-        except:
-            jlog.critical('trxs ERROR: {}'.format(sys.exc_info()))
+    logs  = db.logs.find( {"time": { "$gt": dt } } )
+    if logs:
+        for log in logs:
+            msg = log['msg'].split()
+            if len(msg) == 24:
+                try:
+                    y += int(msg[16].replace(',', ''))
+                except:
+                    jlog.critical('trxs ERROR: {}'.format(sys.exc_info()))
 
     d = {'y': y}
     return jsonify(d)

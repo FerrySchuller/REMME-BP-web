@@ -350,20 +350,21 @@ def cpu_usage_us(slaap=10):
 
 
 def dev():
-    producer = 'josiendotnet'
-    seconds = 3600
-    dt = (datetime.now() - timedelta(seconds=seconds))
-    usage = db.cpu_usage_us.find( { "producer": "{}".format(producer) } )
+    dt = (datetime.now() - timedelta(seconds=60))
+    y = 0
+    logs  = db.logs.find( {"time": { "$gt": dt } } )
+    if logs:
+        for log in logs:
+            msg = log['msg'].split()
+            if len(msg) == 24:
+                try:
+                    y += int(msg[16].replace(',', ''))
+                except:
+                    jlog.critical('trxs ERROR: {}'.format(sys.exc_info()))
 
-    if usage:
-        l = []
-        for use in usage:
-            for cpu in use['data']:
-                if cpu['timestamp'] > dt:
-                    l.append(cpu['cpu_usage_us'])
-                    pprint(cpu)
-        if l:
-            print(mean(l))
+    d = {'y': y}
+    print(d)
+
         
 
 def roundTime(dt=None, roundTo=60):

@@ -59,8 +59,11 @@ var config = {
             label: 'trxs',
             backgroundColor: '#533a75',
             borderColor: '#533a75',
+            borderWidth: 1.6,
+            pointRadius: 0.6,
             fill: false,
-            data: []
+            data: [ {"y": 0, "t": Date.now() } ]
+            // data: [ ]
         }
     ],
   },
@@ -68,14 +71,14 @@ var config = {
         events: [],
         title: {
             display: true,
-            text: 'Amount of transactions per 0.5 seconds'
+            text: 'Amount of transactions per 5 seconds'
         },
         scales: {
             xAxes: [{
                 type: 'realtime',
                 realtime: {
                     duration: 200000,
-                    refresh: 500,
+                    refresh: 5000,
                     delay: 2000,
                     onRefresh: onRefresh
                 }
