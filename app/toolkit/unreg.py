@@ -127,11 +127,11 @@ def main():
                                     check=False, stdout=subprocess.PIPE, universal_newlines=True)
 
         jlog.info('{} {}'.format(unlock.stdout, unregprod.stdout))
-        msg = "Going to unreg producer {} {} seconds no last_block_time exceeds {} seconds treshold.".format(producer, divv, treshold)
+        msg = "Going to unreg producer {} {} seconds, last_block_time exceeds {} seconds treshold.".format(producer, divv, treshold)
         jlog.warning(msg)
         po(msg)
     else:
-        msg = "{} {} seconds no last_block_time does not exceeds {} seconds treshold.".format(producer, divv, treshold)
+        msg = "{} {} seconds, last_block_time does not exceeds {} seconds treshold.".format(producer, divv, treshold)
         jlog.info(msg)
 
 

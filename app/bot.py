@@ -14,6 +14,7 @@ from datetime import datetime, timedelta, timezone
 from dateutil.parser import parse
 from re import search
 from pprint import pprint
+from statistics import mean
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -89,6 +90,7 @@ def get_actions(seconds=60):
             if b and b['transactions'] and isinstance(b['transactions'], list):
                 for transaction in b['transactions']:
                     for action in transaction['trx']['transaction']['actions']:
+                        '''
                         if action['account'] == 'rembenchmark' and action['name'] == 'cpu':
                             o = db.producers.find_one( { "name": "{}".format(block_owner) })
                             if o:
@@ -102,6 +104,7 @@ def get_actions(seconds=60):
 
                                 add_db(col='cache', tag='cpu_usage_us', slug='cpu_usage_us', owner=block_owner, data=db_info)
                                 ref = db.producers.update({"name": '{}'.format(block_owner)}, {"$set": data}, upsert=True)
+                        '''
                         if action['account'] == 'rem.oracle' and action['name'] == 'setprice':
                             o = db.producers.find_one( { "name": "{}".format(action['data']['producer']) })
                             if o:
@@ -174,7 +177,28 @@ def producers_fast(slaap=20):
                     data['bp_json_url'] = ''
                     data['health'] = []
                     data['created_at'] = datetime.now(timezone.utc)
+
     
+                usage = db.cpu_usage_us.find( { "producer": "{}".format(p['owner']) } )
+                dt = (datetime.now() - timedelta(seconds=3600))
+                if usage:
+                    l = []
+                    for use in usage:
+                        for cpu in use['data']:
+                            if cpu['timestamp'] > dt:
+                                l.append(cpu['cpu_usage_us'])
+
+
+                    if l:
+                        try:
+                            data['cpu_usage_us'] = mean(l)
+                        except:
+                            jlog.critical("cpu_usage_us error: {} {}".format(p['name'], sys.exc_info()))
+
+
+
+
+
                 data['producer'] = p
 
                 if p['is_active'] == 1:
@@ -326,12 +350,21 @@ def cpu_usage_us(slaap=10):
 
 
 def dev():
-    import randomcolor
-    rand_color = randomcolor.RandomColor()
-    print(rand_color.generate(luminosity="dark")[0])
+    producer = 'josiendotnet'
+    seconds = 3600
+    dt = (datetime.now() - timedelta(seconds=seconds))
+    usage = db.cpu_usage_us.find( { "producer": "{}".format(producer) } )
 
-
-
+    if usage:
+        l = []
+        for use in usage:
+            for cpu in use['data']:
+                if cpu['timestamp'] > dt:
+                    l.append(cpu['cpu_usage_us'])
+                    pprint(cpu)
+        if l:
+            print(mean(l))
+        
 
 def roundTime(dt=None, roundTo=60):
    if dt == None : dt = datetime.datetime.now()
