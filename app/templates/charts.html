@@ -8,7 +8,7 @@
 
 <div class="container-fluid">
 {% if trxs %}
-<canvas id="trxs" width="350" height="100"></canvas>
+<div> <canvas id="trxs" width="650" height="100"></canvas></div>
 <script>
 // var timeFormat = 'MM/DD/YYYY HH:mm';
 var ctx = document.getElementById('trxs').getContext('2d');
@@ -83,7 +83,7 @@ var myChart = new Chart(ctx, {
 {% if cpu_usage %}
 
     <div>
-        <canvas height="140" id="cpu_usage"></canvas>
+        <canvas height="140", width="650" id="cpu_usage"></canvas>
     </div>
 
 <script>
