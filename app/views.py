@@ -362,6 +362,7 @@ def _listproducers():
             d['last_block_time'] = row['last_block_time']
             d['is_active'] = row['is_active']
             d['punished_until'] = False
+            d['total_votes'] = row['total_votes']
 
             try:
                 dt = parse(row['punished_until'])
@@ -395,12 +396,15 @@ def _listproducers():
                     
               
 
+            
             try:
-                total_votes = (float(owner['producer']['total_votes']) / 10000)
-                i['total_votes'] = '{:0,.0f}'.format(total_votes)
+                if producers and isinstance(producers, list):
+                    for producer in producers:
+                        if producer['owner'] == owner['name']:
+                            total_votes = (float(producer['total_votes']) / 10000)
+                            i['total_votes'] = '{:0,.0f}'.format(total_votes)
             except:
                 i['total_votes'] = False
-                jlog.critical('total_votes ERROR: {}'.format(sys.exc_info()))
 
 
             i['voters'] = owner['voters_count']
