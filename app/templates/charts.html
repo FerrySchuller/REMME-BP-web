@@ -10,7 +10,7 @@
 {% if trxs %}
 <canvas id="trxs" width="350" height="100"></canvas>
 <script>
-var timeFormat = 'MM/DD/YYYY HH:mm';
+// var timeFormat = 'MM/DD/YYYY HH:mm';
 var ctx = document.getElementById('trxs').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'line',
@@ -35,14 +35,14 @@ var myChart = new Chart(ctx, {
         legend: { display: false },
         title: { display: true, text: '# Transactions on remchain, 5 seconds interval.' },
         scales: {
-          xAxes: [{
-            type: 'time',
-            time: {
-            parser: timeFormat,
-            // round: 'day'
-            tooltipFormat: 'll HH:mm'
-            }
-          }],
+          xAxes: [ { type: 'time', 
+                     time: { // parser: timeFormat, 
+                             tooltipFormat: 'HH:mm', 
+                             // unit: 'seconds', 
+                             // unitStepSize: 600  
+                            } } ], 
+          yAxes: [ {  } ],
+
        }
     }
 });
