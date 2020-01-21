@@ -38,7 +38,8 @@ treshold = 300 # seconds
 if prod:
     host = 'https://remchain.remme.io'
     producer = 'josiendotnet'
-    pubkey = 'EOS7mATonnQyXoEsh8x5oUDSPM3vpLw3zM9SmVCYmkHf8Cmhhx4uY'
+    #pubkey = 'EOS7mATonnQyXoEsh8x5oUDSPM3vpLw3zM9SmVCYmkHf8Cmhhx4uY'
+    pubkey = 'EOS7DTnVFPPcKZJo4uGbKwCmtyNtgqUZhWoXohxkYYW4XLRXyttUQ'
     web = 'https://josien.net'
     walletpass = '/prod/remme/walletpass'
 else:

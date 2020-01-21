@@ -5,8 +5,50 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/chart.js') }}"></script>
 
-<div class="container-fluid">
 
+<div class="container-fluid">
+{% if trxs %}
+<canvas id="trxs" width="350" height="100"></canvas>
+<script>
+var timeFormat = 'MM/DD/YYYY HH:mm';
+var ctx = document.getElementById('trxs').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        datasets: [{
+            label: 'Transactions on remchain.',
+            backgroundColor: '#533a75',
+            borderColor: '#533a75',
+            borderWidth: 1.6,
+            pointRadius: 0.6,
+
+            fill: false,
+            data: [
+{% for trx in trxs %}
+{ 't': {{ trx.t }}, "y": {{ trx.y }} },
+{% endfor %}
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        legend: { display: false },
+        title: { display: true, text: '# Transactions on remchain, 5 seconds interval.' },
+        scales: {
+          xAxes: [{
+            type: 'time',
+            time: {
+            parser: timeFormat,
+            // round: 'day'
+            tooltipFormat: 'll HH:mm'
+            }
+          }],
+       }
+    }
+});
+</script>
+<br />
+{% endif %}
 
 <ul class="list-inline">
 
@@ -65,9 +107,8 @@ var config = {
             {% endfor %}
     ]},
     options: {
-                title: {
-                    text: 'Chart.js Time Scale'
-                },
+                title: { display: true, text: 'Execution time of contract benchmark.' },
+ 
                 elements: {
                     point:{
                         radius: 1

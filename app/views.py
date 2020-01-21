@@ -39,8 +39,8 @@ def gen_health(title, fa_class='fa-times', color='tomato', text=''):
     return(msg)
 
 
-def gen_trxs():
-    dt = (datetime.now() - timedelta(seconds=240))
+def gen_trxs(seconds):
+    dt = (datetime.now() - timedelta(seconds=seconds))
     trxs  = db.trxs.find( {"created_at": { "$gt": dt } }, { "_id": 0 } )
     l = []
     if trxs:
@@ -54,7 +54,7 @@ def gen_trxs():
 @app.route('/')
 def index():
     #track_event( category='index', action='index')
-    return render_template( 'index.html', trxs=gen_trxs() )
+    return render_template( 'index.html', trxs=gen_trxs(200) )
 
 
 @app.route('/offline')
@@ -216,7 +216,7 @@ def charts():
         cpu = cpu_usage()
 
 
-    return render_template( 'charts.html', cpu_usage=cpu )
+    return render_template( 'charts.html', cpu_usage=cpu, trxs=gen_trxs(86400) )
 
 
 
