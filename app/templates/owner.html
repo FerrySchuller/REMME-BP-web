@@ -2,8 +2,22 @@
 {% block title %}EU Block Producer by Josien.net{% endblock %}
 {% block content -%}
 <div class="container-fluid">
-{% if owner %}
 
+
+
+{% if voter %}
+<h4>{{ voter.account_name }}</h4>
+<dl class="row">
+{% for k,v in voter.items() %}
+<dt class="col-sm-2">{{ k }}</dt>
+<dd class="col-sm-10">{{ v }}</dd>
+{% endfor %}
+</dl>
+{% endif %}
+
+
+
+{% if owner %}
 <h4>{{ owner.name }}</h4>
 {% if owner.bp_json and 'org' in owner.bp_json and owner.bp_json.org.branding.logo_256 %}
 <img src="{{ owner.bp_json.org.branding.logo_256 }}" class="img-fluid">

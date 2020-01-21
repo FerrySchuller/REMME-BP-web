@@ -84,8 +84,11 @@ def ownership_disclosure():
 @app.route('/owner/<owner>')
 def owner(owner):
     #track_event( category='index', action='owner')
-    owner = db.producers.find_one( {"name": "{}".format(owner)} )
-    return render_template( 'owner.html', owner=owner )
+    voter = False
+    get_owner = db.producers.find_one( {"name": "{}".format(owner)} )
+    if not get_owner:
+        voter = get_account(owner)
+    return render_template( 'owner.html', owner=get_owner, voter=voter  )
 
 
 def random_color():
