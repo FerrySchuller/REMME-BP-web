@@ -143,14 +143,15 @@ def chart_time(dt=None, roundTo=60):
 
 def cpu_usage(roundTo=7200, seconds=1209600):
     dt = (datetime.now() - timedelta(seconds=seconds))
-    producers = db.producers.find({}, {"name": 1, "position": 1, "_id": 0}).limit(30)
+    producers = db.producers.find({}, {"name": 1, "position": 1, "color": 1, "_id": 0}).limit(30)
     resp = []
     if producers:
         for p in producers:
             if p['position'] < 22:
 
-                color = random_color()
-                red = '#ed0c0c'
+                #color = random_color()
+                color = p['color']
+                red = '#FF2323'
                 chart = {}
                 chart['backgroundColor'] = color
                 chart['borderColor'] = color

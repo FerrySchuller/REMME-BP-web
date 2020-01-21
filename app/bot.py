@@ -15,6 +15,7 @@ from dateutil.parser import parse
 from re import search
 from pprint import pprint
 from statistics import mean
+import randomcolor
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -73,6 +74,10 @@ def is_running():
 
     return(False)
 
+
+def random_color():
+    rand_color = randomcolor.RandomColor()
+    return(rand_color.generate(luminosity="dark")[0])
 
 
 def get_actions(seconds=60):
@@ -165,6 +170,7 @@ def producers_fast(slaap=20):
                     data['updated_at'] = datetime.now(timezone.utc)
                     data['health'] = []
                 else:
+                    ''' init producer '''
                     data = {}
                     data['name'] = p['owner']
                     data['position'] = 99
@@ -176,6 +182,7 @@ def producers_fast(slaap=20):
                     data['bp_json'] = ''
                     data['bp_json_url'] = ''
                     data['health'] = []
+                    data['color'] = random_color()
                     data['created_at'] = datetime.now(timezone.utc)
 
     
