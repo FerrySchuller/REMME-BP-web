@@ -220,7 +220,7 @@ def charts():
         cpu = cpu_usage()
 
 
-    return render_template( 'charts.html', cpu_usage=cpu, trxs=gen_trxs(86400) )
+    return render_template( 'charts.html', cpu_usage=cpu, trxs=gen_trxs(21600) )
 
 
 

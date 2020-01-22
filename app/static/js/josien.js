@@ -106,4 +106,3 @@ $("#toggle").click(function() {
   });
   cpu_usage.update();
 });
-
