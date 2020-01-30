@@ -364,9 +364,9 @@ def trxs(slaap=5):
         if logs:
             for log in logs:
                 msg = log['msg'].split()
-                produced_on = parse(msg[11])
                 if len(msg) == 24:
                     try:
+                        produced_on = parse(msg[11])
                         y += int(msg[16].replace(',', ''))
                     except:
                         jlog.critical('trxs ERROR: {}'.format(sys.exc_info()))
@@ -390,19 +390,26 @@ def roundTime(dt=None, roundTo=60):
    #return dt + timedelta(0,rounding-seconds,-dt.microsecond)
 
 def dev():
-    trx = db.trxs.find_one( { "tag": "trxs" }, { "_id": 0, "created_at": 0 },sort=([('time', pymongo.DESCENDING)]))
-    y = trx['data']['y']
-    #print({ 'y': y })
+    lp = listproducers()
+    rows = lp['rows']
+    producer = next((item for item in rows if item["owner"] == "josiendotnet"), None)
+    #pprint(producer)
+    owners = db.producers.find({"name":"remamsterdam"})
+    html = ''
+    for owner in owners:
+        html += '<ul>'
+        for h in owner['health']:
+            html += '<il>{}</il>\n'.format(h['title'])
+        html += '</ul>'
 
-    dt = (datetime.now() - timedelta(seconds=60))
-    trxs  = db.trxs.find( {"created_at": { "$gt": dt } }, { "_id": 0 } )
-    l = []
-    if trxs:
-        for trx in trxs:
-            t = trx['data']['t'].timestamp() * 1000
-            y = trx['data']['y']
-            l.append({ 't': t, 'y': y })
-    pprint(l)
+
+        #html += '<ul>'
+        #for voter in owner['voters']:
+        #    html += '<il>{}</il>\n'.format(voter)
+        #html += '</ul>'
+    print(html)
+
+
 
 
 

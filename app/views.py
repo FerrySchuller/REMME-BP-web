@@ -226,16 +226,122 @@ def charts():
 
 @app.route('/dev', methods = ['POST', 'GET'])
 def dev():
-    cpu = False
-    if request.method == "POST" and request.form and 'roundTo' in request.form and 'seconds' in request.form:
-        roundTo = request.form['roundTo']
-        seconds = request.form['seconds']
-        cpu = cpu_usage(float(roundTo), float(seconds))
-    else:
-        cpu = cpu_usage()
+    return render_template( 'dev.html' )
 
 
-    return render_template( 'dev.html', cpu_usage=cpu )
+@app.route('/_dev')
+def _dev():
+    get_info = remcli_get_info()
+    producing = False
+    if get_info:
+        producing = get_info['head_block_producer']
+
+    lp = listproducers()
+    rows = lp['rows']
+    owners = db.producers.find()
+    data = []
+    for owner in owners:
+
+        health = '<div><ul class="health">'
+        if owner['health']:
+            for issue in owner['health']:
+                health += gen_health(issue['title'])
+
+
+        html = '<div class="alert alert-info alert-dismissible fade show" role="alert">'
+        name = owner['name'] 
+        html += '<h4>{}</h4>'.format(name)
+        producer = next((item for item in rows if item["owner"] == name), None)
+        if producer and producing:
+            d = {}
+
+            d['punished_until'] = False
+            dt = parse(producer['punished_until'])
+            days = dt - datetime.now()
+            if days.days > 0:
+                d['punished_until'] = days.days
+
+            if d['punished_until']:
+                health += gen_health(title='punished_until {}'.format(d['punished_until']), text=' {}'.format(d['punished_until']))
+                html += '<h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Punished for {} days.</h4>'.format(d['punished_until'])
+
+            d['position'] = owner['position']
+            d['name'] = name
+            d['total_votes'] = '{:0,.0f}'.format(float(producer['total_votes']) / 10000)
+            d['voters'] = owner['voters_count']
+            d['social'] = owner['social']
+
+            d['cpu_usage_us'] = False
+            try:
+                if owner['cpu_usage_us']:
+                    cpu_usage_ms = owner['cpu_usage_us'] / 1000
+                    if cpu_usage_ms > 1:
+                        d['cpu_usage_us'] = "<medium class='text-warning'>{:.2f} ms</medium>".format(cpu_usage_ms)
+                    if cpu_usage_ms < 1:
+                        d['cpu_usage_us'] = "<medium class='text-success'>{:.2f} ms</medium>".format(cpu_usage_ms)
+                    if cpu_usage_ms > 2:
+                        d['cpu_usage_us'] = "<medium class='text-danger'>{:.2f} ms</medium>".format(cpu_usage_ms)
+                        html += '<h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Slow CPU execution time.</h4>'.format()
+                        health += gen_health(title='Slow CPU')
+            except:
+                jlog.critical('cpu_usage_us ERROR: {}'.format(sys.exc_info()))
+
+
+
+            d['last_work_done'] = False
+            ldt = parse(producer['last_block_time'])
+            ld = datetime.now() - ldt
+
+            if owner['name'] == producing:
+                d['last_work_done'] = '<i class="fas fa-sync fa-spin fa-1x"></i>'
+            else:
+                if ld.seconds < 1800:
+                    d['last_work_done'] = ("<medium class='text-success'>{:.0f}</medium>".format(ld.seconds))
+                if ld.seconds > 1801:
+                    d['last_work_done'] = ("<medium class='text-warning'>{:.0f} Minutes</medium>".format(ld.seconds / 60))
+
+
+            if owner['bp_json_url']:
+                d['bp_json'] = '<a target="_blank" href="{}"><i class="fa fa-check"></i></a>'.format(owner['bp_json_url'])
+            else:
+                health += gen_health(title='bp.json is missing')
+                html += '<h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> bp.json is missing.</h4>'.format()
+                d['bp_json'] = ''
+
+
+
+            d['is_active'] = ''
+            if producer['is_active']:
+                d['is_active'] = '<span style="display:inline-block; width:60px" class="badge badge-success">Active</span>'
+            if producer['is_active'] and owner['position'] > 21:
+                d['is_active'] = '<span style="display:inline-block; width:60px" class="badge badge-warning">Rotated</span>'
+            if producer['is_active'] and owner['position'] > 25:
+                d['is_active'] = '<span style="display:inline-block; width:60px" class="badge badge-danger">Standby</span>'
+            if not producer['is_active']:
+                d['is_active'] = '<span style="color: Tomato;"><i class="fa fa-times"></i></text></span>'
+
+            #if not owner['health']:
+            #    html += '<h4 class="alert-heading"><i class="far fa-thumbs-up"></i></h4>'
+            #else:
+
+            for h in owner['health']:
+                html += '<h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> {}!</h4>'.format(h['title'])
+
+            for voter in owner['voters']:
+                pass
+
+
+            html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+            html += '</div>'
+            #d['dev'] = '<div data-toggle="tooltip" data-placement="top" title="dev!">dev</div>'
+            d['html'] = html 
+
+            health += '</div></ul>'
+            d['health'] = health
+
+            data.append(d)
+
+    return jsonify(data)
 
 
 

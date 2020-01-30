@@ -55,3 +55,7 @@ ul.health li {
 .is_active {
     text-align: center;
 }
+
+.hiddenRow {
+    padding: 0 !important;
+}

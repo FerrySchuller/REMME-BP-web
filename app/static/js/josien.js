@@ -1,11 +1,3 @@
-$( document ).ready(function() {
-  $('[data-toggle="tooltip"]').tooltip({
-     "html": true,
-     "delay": {"show": 0, "hide": 100},
-     });
-});
-
-
 $(document).ready(function(owner) {
     var owner = 'josiendotnet';
     $('#josiendotnet').DataTable( {
@@ -59,14 +51,15 @@ $(document).ready(function(owner) {
 
 $(document).ready(function() {
 
+    /*
     $('#listproducers').on('mousemove', function () {
       $('[data-toggle="tooltip"]').tooltip({
          "html": true,
-         "delay": {"show": 0, "hide": 200},
+         "delay": {"show": 0, "hide": 0},
          "animation": false,
          });
     });
-
+    */
 
     $('#listproducers').DataTable( {
         "ajax": "./_listproducers",
@@ -101,8 +94,27 @@ $(document).ready(function() {
 
 
 $("#toggle").click(function() {
-     cpu_usage.data.datasets.forEach(function(ds) {
+    cpu_usage.data.datasets.forEach(function(ds) {
     ds.hidden = !ds.hidden;
   });
   cpu_usage.update();
+});
+
+
+$(document).ready(function() {
+  $('[data-toggle="tooltip"]').tooltip({
+     "html": true,
+     "container": 'body',
+     "delay": {"show": 0, "hide": 0},
+     "trigger": 'hover'
+     });
+});
+
+
+
+$('#dashboard').bootstrapTable({
+    search: false,
+    onClickRow: function (row, $element) {
+        document.getElementById("zien").innerHTML = row.html;
+    }
 });
