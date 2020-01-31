@@ -370,6 +370,8 @@ def trxs(slaap=5):
                         y += int(msg[16].replace(',', ''))
                     except:
                         jlog.critical('trxs ERROR: {}'.format(sys.exc_info()))
+                else:
+                    jlog.warning('trxs WARN len(msg) not 24: {}'.format(msg))
     
         t = datetime.now()
         d = { 't': t, 'y': y }

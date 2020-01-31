@@ -19,9 +19,12 @@ db = db()
 
 # lets encrypt once for domain validation
 # certbot certonly --manual
-#@app.route("/.well-known/acme-challenge/<key>")
-#def letsencrypt():
-#    return "<key>.<xo>"
+cert_key = os.getenv('cert_key', False)
+cert_handshake = os.getenv('cert_handshake', False)
+
+@app.route("/.well-known/acme-challenge/{}".format(cert_key))
+def letsencrypt():
+    return "{}".format(cert_handshake)
 
 
 #@app.before_request
