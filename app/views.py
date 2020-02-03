@@ -179,10 +179,14 @@ def cpu_usage(roundTo=7200, seconds=1209600):
                             low.append(t)
                             l.append(d)
 
-                low = min(low)
+                try:
+                    low = min(low)
+                except:
+                    low = False
+                    jlog.critical('low : {}'.format(sys.exc_info()))
                 ty = []
                 for xo in l:
-                    if xo['t'] == low:
+                    if low and xo['t'] == low:
                         ty.append(xo['y'])
                     else:
                         low = xo['t']
