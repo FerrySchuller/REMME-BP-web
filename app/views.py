@@ -44,7 +44,8 @@ def gen_health(title, fa_class='fa-times', color='tomato', text=''):
 
 def gen_trxs(seconds):
     dt = (datetime.now() - timedelta(seconds=seconds))
-    trxs  = db.trxs.find( {"created_at": { "$gt": dt } }, { "_id": 0 } )
+    trxs  = db.trxs.find( { "$and": [ {"created_at": { "$gt": dt } },
+                                      {"tag": 5 } ] }, { "_id": 0 } )
     l = []
     if trxs:
         for trx in trxs:
@@ -183,7 +184,7 @@ def cpu_usage(roundTo=7200, seconds=1209600):
                     low = min(low)
                 except:
                     low = False
-                    jlog.critical('low : {}'.format(sys.exc_info()))
+                    jlog.critical('low: {} {}'.format(p['name'], sys.exc_info()))
                 ty = []
                 for xo in l:
                     if low and xo['t'] == low:
@@ -208,9 +209,9 @@ def cpu_usage(roundTo=7200, seconds=1209600):
     return (resp)
 
 
-@app.route('/_trxs')
-def _trxs():
-    trx = db.trxs.find_one( { "tag": "trxs" }, { "_id": 0, "created_at": 0 },sort=([('created_at', pymongo.DESCENDING)]))
+@app.route('/_trxs/<int:tag>')
+def _trxs(tag):
+    trx = db.trxs.find_one( { "tag": tag }, { "_id": 0, "created_at": 0 },sort=([('created_at', pymongo.DESCENDING)]))
     y = trx['data']['y']
     d = {'y': y}
     return jsonify(d)

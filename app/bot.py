@@ -356,7 +356,7 @@ def cpu_usage_us(slaap=10):
             sleep(slaap)
 
 
-def trxs(slaap=5):
+def trxs(slaap):
     while True:
         dt = (datetime.now() - timedelta(seconds=slaap))
         y = 0
@@ -375,7 +375,7 @@ def trxs(slaap=5):
     
         t = datetime.now()
         d = { 't': t, 'y': y }
-        add_db('trxs', slug='trxs', tag='trxs', data=d)
+        add_db('trxs', slug='trxs', tag=slaap, data=d)
 
         jlog.info('Sleeping trxs for: {} seconds'.format(slaap))
         sleep(slaap)
@@ -391,25 +391,34 @@ def roundTime(dt=None, roundTo=60):
    #return dt + timedelta(0,rounding-seconds,-dt.microsecond)
    #return dt + timedelta(0,rounding-seconds,-dt.microsecond)
 
-def dev():
-    lp = listproducers()
-    rows = lp['rows']
-    producer = next((item for item in rows if item["owner"] == "josiendotnet"), None)
-    #pprint(producer)
-    owners = db.producers.find({"name":"remamsterdam"})
-    html = ''
-    for owner in owners:
-        html += '<ul>'
-        for h in owner['health']:
-            html += '<il>{}</il>\n'.format(h['title'])
-        html += '</ul>'
 
 
-        #html += '<ul>'
-        #for voter in owner['voters']:
-        #    html += '<il>{}</il>\n'.format(voter)
-        #html += '</ul>'
-    print(html)
+
+def dev(slaap=300):
+    dt = (datetime.now() - timedelta(seconds=slaap))
+    y = 0
+    logs  = db.logs.find( {"time": { "$gt": dt } } )
+    if logs:
+        for log in logs:
+            msg = log['msg'].split()
+            if len(msg) == 24:
+                try:
+                    produced_on = parse(msg[11])
+                    y += int(msg[16].replace(',', ''))
+                except:
+                    jlog.critical('trxs ERROR: {}'.format(sys.exc_info()))
+            else:
+                jlog.warning('trxs WARN len(msg) not 24: {}'.format(msg))
+
+    t = datetime.now()
+    d = { 't': t, 'y': y }
+    print(dt)
+    print(t)
+    pprint(d)
+    #add_db('trxs', slug='trxs', tag='trxs', data=d)
+
+    #jlog.info('Sleeping trxs for: {} seconds'.format(slaap))
+
 
 
 
@@ -490,8 +499,12 @@ def main():
         producers_slow_thread = threading.Thread(target=producers_slow, args=(), name='producers_slow')
         producers_slow_thread.start()
 
-        trxs_thread = threading.Thread(target=trxs, args=(), name='trxs')
-        trxs_thread.start()
+        trxs5_thread = threading.Thread(target=trxs, args=[5], name='trxs')
+        trxs5_thread.start()
+
+        trxs300_thread = threading.Thread(target=trxs, args=[300], name='trxs')
+        trxs300_thread.start()
+
 
         cpu_usage_us_thread = threading.Thread(target=cpu_usage_us, args=(), name='cpu_usage_us')
         cpu_usage_us_thread.start()
@@ -512,7 +525,7 @@ if __name__ == '__main__':
         init(stdout=False)
         main()
 
-    if 'dev' in args:
+    if 'tev' in args:
         init()
         dev()
 
