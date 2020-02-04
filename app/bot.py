@@ -505,6 +505,8 @@ def main():
         trxs300_thread = threading.Thread(target=trxs, args=[300], name='trxs')
         trxs300_thread.start()
 
+        trxs86400 = threading.Thread(target=trxs, args=[86400], name='trxs')
+        trxs86400.start()
 
         cpu_usage_us_thread = threading.Thread(target=cpu_usage_us, args=(), name='cpu_usage_us')
         cpu_usage_us_thread.start()

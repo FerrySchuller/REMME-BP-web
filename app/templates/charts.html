@@ -26,6 +26,15 @@
 </form>
 </li>
 
+<li class="list-inline-item">
+<form role="form" class="form-inline" method="post" action="{{ url_for('charts') }}">
+<input type="hidden" name="trxs" value="true">
+<input type="hidden" name="seconds" value="86400">
+<button class="btn btn-outline-dark btn-sm" type="submit">86400 sec</button>
+</form>
+</li>
+
+
 </ul>
 
 

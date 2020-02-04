@@ -230,13 +230,22 @@ def charts():
     else:
         cpu = cpu_usage()
 
-    if request.method == "POST" and request.form and 'trxs' in request.form and 'seconds' in request.form:
+    if request.method == "POST" and request.form and 'trxs' in request.form and 'seconds' in request.form and request.form['seconds'] == '300':
         try:
             d['t'] = '# Transactions on remchain, 300 seconds interval.'
             tag = int(request.form['seconds'])
             trxs=gen_trxs(21600, tag)
         except:
             jlog.critical('chart ERROR: {}'.format(sys.exc_info()))
+
+    if request.method == "POST" and request.form and 'trxs' in request.form and 'seconds' in request.form and request.form['seconds'] == '86400':
+        try:
+            d['t'] = '# Transactions on remchain, 86400 seconds interval.'
+            tag = int(request.form['seconds'])
+            trxs=gen_trxs(21600, tag)
+        except:
+            jlog.critical('chart ERROR: {}'.format(sys.exc_info()))
+
 
 
     return render_template( 'charts.html', cpu_usage=cpu, trxs=trxs, d=d )
