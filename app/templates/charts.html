@@ -7,10 +7,31 @@
 
 
 <div class="container-fluid">
+
+<ul class="list-inline">
+<li class="list-inline-item">
+<form role="form" class="form-inline" method="post" action="{{ url_for('charts') }}">
+<input type="hidden" name="trxs" value="true">
+<input type="hidden" name="seconds" value="5">
+<button class="btn btn-outline-dark btn-sm" type="submit">5 sec</button>
+</form>
+</li>
+
+
+<li class="list-inline-item">
+<form role="form" class="form-inline" method="post" action="{{ url_for('charts') }}">
+<input type="hidden" name="trxs" value="true">
+<input type="hidden" name="seconds" value="300">
+<button class="btn btn-outline-dark btn-sm" type="submit">300 sec</button>
+</form>
+</li>
+
+</ul>
+
+
 {% if trxs %}
 <div> <canvas id="trxs" width="650" height="100"></canvas></div>
 <script>
-// var timeFormat = 'MM/DD/YYYY HH:mm';
 var ctx = document.getElementById('trxs').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'line',
@@ -33,7 +54,7 @@ var myChart = new Chart(ctx, {
     },
     options: {
         legend: { display: false },
-        title: { display: true, text: '# Transactions on remchain, 5 seconds interval.' },
+        title: { display: true, text: '' },
         scales: {
           xAxes: [ { type: 'time', 
                      time: { // parser: timeFormat, 

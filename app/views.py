@@ -42,10 +42,10 @@ def gen_health(title, fa_class='fa-times', color='tomato', text=''):
     return(msg)
 
 
-def gen_trxs(seconds):
+def gen_trxs(seconds, tag):
     dt = (datetime.now() - timedelta(seconds=seconds))
     trxs  = db.trxs.find( { "$and": [ {"created_at": { "$gt": dt } },
-                                      {"tag": 5 } ] }, { "_id": 0 } )
+                                      {"tag": tag } ] }, { "_id": 0 } )
     l = []
     if trxs:
         for trx in trxs:
@@ -58,7 +58,7 @@ def gen_trxs(seconds):
 @app.route('/')
 def index():
     #track_event( category='index', action='index')
-    return render_template( 'index.html', trxs=gen_trxs(200) )
+    return render_template( 'index.html', trxs=gen_trxs(200, 5) )
 
 
 @app.route('/offline')
@@ -220,6 +220,9 @@ def _trxs(tag):
 @app.route('/charts', methods = ['POST', 'GET'])
 def charts():
     cpu = False
+    trxs=gen_trxs(21600, 5)
+    d = {}
+    d['t'] = '# Transactions on remchain, 5 seconds interval.'
     if request.method == "POST" and request.form and 'roundTo' in request.form and 'seconds' in request.form:
         roundTo = request.form['roundTo']
         seconds = request.form['seconds']
@@ -227,8 +230,16 @@ def charts():
     else:
         cpu = cpu_usage()
 
+    if request.method == "POST" and request.form and 'trxs' in request.form and 'seconds' in request.form:
+        try:
+            d['t'] = '# Transactions on remchain, 300 seconds interval.'
+            tag = int(request.form['seconds'])
+            trxs=gen_trxs(21600, tag)
+        except:
+            jlog.critical('chart ERROR: {}'.format(sys.exc_info()))
 
-    return render_template( 'charts.html', cpu_usage=cpu, trxs=gen_trxs(21600) )
+
+    return render_template( 'charts.html', cpu_usage=cpu, trxs=trxs, d=d )
 
 
 
