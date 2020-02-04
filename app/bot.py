@@ -392,6 +392,18 @@ def roundTime(dt=None, roundTo=60):
    #return dt + timedelta(0,rounding-seconds,-dt.microsecond)
 
 
+def pruning():
+    day = 86400
+    dt = (datetime.now() - timedelta(seconds=day))
+    trxs  = db.trxs.find( { "$and": [ {"created_at": { "$lt": dt } },
+                                      {"tag": 5 } ] } )
+
+    for trx in trxs:
+        _id = trx['_id']
+        #print(db.trxs.remove({"_id": _id}))
+        print(_id)
+
+
 
 
 def dev(slaap=300):
@@ -505,6 +517,9 @@ def main():
         trxs300_thread = threading.Thread(target=trxs, args=[300], name='trxs')
         trxs300_thread.start()
 
+        trxs3600 = threading.Thread(target=trxs, args=[3600], name='trxs')
+        trxs3600.start()
+
         trxs86400 = threading.Thread(target=trxs, args=[86400], name='trxs')
         trxs86400.start()
 
@@ -527,7 +542,12 @@ if __name__ == '__main__':
         init(stdout=False)
         main()
 
-    if 'tev' in args:
+    if 'pruning' in args:
+        init()
+        pruning()
+
+
+    if 'dev' in args:
         init()
         dev()
 

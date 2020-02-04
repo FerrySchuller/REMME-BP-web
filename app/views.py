@@ -238,6 +238,15 @@ def charts():
         except:
             jlog.critical('chart ERROR: {}'.format(sys.exc_info()))
 
+    if request.method == "POST" and request.form and 'trxs' in request.form and 'seconds' in request.form and request.form['seconds'] == '3600':
+        try:
+            d['t'] = '# Transactions on remchain, 3600 seconds interval.'
+            tag = int(request.form['seconds'])
+            trxs=gen_trxs(21600, tag)
+        except:
+            jlog.critical('chart ERROR: {}'.format(sys.exc_info()))
+
+
     if request.method == "POST" and request.form and 'trxs' in request.form and 'seconds' in request.form and request.form['seconds'] == '86400':
         try:
             d['t'] = '# Transactions on remchain, 86400 seconds interval.'
