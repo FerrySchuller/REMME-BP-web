@@ -392,16 +392,19 @@ def roundTime(dt=None, roundTo=60):
    #return dt + timedelta(0,rounding-seconds,-dt.microsecond)
 
 
-def pruning():
-    day = 86400
-    dt = (datetime.now() - timedelta(seconds=day))
-    trxs  = db.trxs.find( { "$and": [ {"created_at": { "$lt": dt } },
-                                      {"tag": 5 } ] } )
+def pruning(slaap=3600):
+    while True:
+        dt = (datetime.now() - timedelta(days=1))
+        trxs  = db.trxs.find( { "$and": [ {"created_at": { "$lt": dt } },
+                                          {"tag": 5 } ] } )
+    
+        for trx in trxs:
+            _id = trx['_id']
+            p = db.trxs.remove({"_id": _id})
+            jlog.info('pruning {} {}'.format(_id, p))
 
-    for trx in trxs:
-        _id = trx['_id']
-        #print(db.trxs.remove({"_id": _id}))
-        print(_id)
+        jlog.info('Pruning sleeping for: {} seconds'.format(slaap))
+        sleep(slaap)
 
 
 
@@ -510,6 +513,10 @@ def main():
 
         producers_slow_thread = threading.Thread(target=producers_slow, args=(), name='producers_slow')
         producers_slow_thread.start()
+
+        pruning_thread = threading.Thread(target=pruning, args=(), name='pruning')
+        pruning_thread.start()
+
 
         trxs5_thread = threading.Thread(target=trxs, args=[5], name='trxs')
         trxs5_thread.start()
