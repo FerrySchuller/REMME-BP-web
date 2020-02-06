@@ -242,7 +242,7 @@ def charts():
         try:
             d['t'] = '# Transactions on remchain, 3600 seconds interval.'
             tag = int(request.form['seconds'])
-            trxs = gen_trxs(172800, tag)
+            trxs = gen_trxs(572800, tag)
         except:
             jlog.critical('chart ERROR: {}'.format(sys.exc_info()))
 
