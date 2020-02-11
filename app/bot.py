@@ -410,33 +410,33 @@ def pruning(slaap=3600):
 
 
 def dev(slaap=300):
-    dt = (datetime.now() - timedelta(seconds=slaap))
-    y = 0
-    logs  = db.logs.find( {"time": { "$gt": dt } } )
-    if logs:
-        for log in logs:
-            msg = log['msg'].split()
-            if len(msg) == 24:
+    lv = listvoters()
+    for g in lv['rows']:
+        if not 'error' in g.keys():# and g['owner'] == 'hectorhector':
+            if (float(g['staked']) > 2500000000):
+                data = {}
+                data['account'] = get_account(g['owner'])
+                ref = db.guardians.update({"name": '{}'.format(g['owner'])}, {"$set": data}, upsert=True)
+
+                '''
+                #pprint(get_account(g['owner']))
+                i = {}
+                i['pending_perstake_reward_usd'] = ''
+
                 try:
-                    produced_on = parse(msg[11])
-                    y += int(msg[16].replace(',', ''))
+                    dt = parse(g['last_reassertion_time'])
+                    days = datetime.now() - dt
+                    print(days.days, g['owner'])
+                    i['last_reassertion_time'] = '{}'.format(days.days)
+                    if days.days > 20:
+                        i['last_reassertion_time'] = '<medium class="text-warning">{}</medium>'.format(days.days)
+                    if days.days > 25:
+                        i['last_reassertion_time'] = '<medium class="text-danger">{}</medium>'.format(days.days)
+                    if days.days == 18267:
+                        i['last_reassertion_time'] = ''
                 except:
-                    jlog.critical('trxs ERROR: {}'.format(sys.exc_info()))
-            else:
-                jlog.warning('trxs WARN len(msg) not 24: {}'.format(msg))
-
-    t = datetime.now()
-    d = { 't': t, 'y': y }
-    print(dt)
-    print(t)
-    pprint(d)
-    #add_db('trxs', slug='trxs', tag='trxs', data=d)
-
-    #jlog.info('Sleeping trxs for: {} seconds'.format(slaap))
-
-
-
-
+                    i['last_reassertion_time'] = ''
+                '''
 
 
 
