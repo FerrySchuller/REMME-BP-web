@@ -10,6 +10,10 @@ from pprint import pprint
 snapshot_dir = os.getenv('SNAPSHOT_DIR', False)
 snapshot_symlink = os.getenv('SNAPSHOT_SYMLINK', False)
 
+#snapshot_dir = '/prod/bp/data/snapshots/*'
+#snapshot_symlink = '/prod/bp/data/snapshots/latest.bin'
+
+
 def create_snap():
     url = "http://127.0.0.1:8888/v1/producer/create_snapshot"
 
