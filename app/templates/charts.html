@@ -90,6 +90,7 @@ var myChart = new Chart(ctx, {
 <br />
 {% endif %}
 
+<!--
 <ul class="list-inline">
 
 <li class="list-inline-item">
@@ -118,9 +119,10 @@ var myChart = new Chart(ctx, {
 
 <button class="btn btn-outline-dark btn-sm" id="toggle">Toggle all</button>
 </ul>
+-->
 
 
-{% if cpu_usage %}
+{% if not cpu_usage %}
 
     <div>
         <canvas height="140", width="650" id="cpu_usage"></canvas>
