@@ -39,12 +39,13 @@ def init(stdout=True):
         sys.exit(1)
 
 
-def add_db(col, slug=False, tag=False, data=False, owner=False):
+def add_db(col, slug=False, tag=False, data=False, owner=False, block=False):
     d = {}
     d['created_at'] = datetime.now()
     d['slug'] = slug
     d['tag'] = tag
     d['owner'] = owner
+    d['block'] = block
     d['data'] = data
     try:
         ref = db[col].insert_one(d)
@@ -403,41 +404,65 @@ def pruning(slaap=3600):
             p = db.trxs.remove({"_id": _id})
             jlog.info('pruning {} {}'.format(_id, p))
 
+
+        transactions  = db.transactions.find( { "$and": [ {"created_at": { "$lt": dt } },
+                                                          {"tag": 'transactions' } ] } )
+    
+        for transaction in transactions:
+            _id = transaction['_id']
+            p = db.transactions.remove({"_id": _id})
+            jlog.info('pruning {} {}'.format(_id, p))
+
+
         jlog.info('Pruning sleeping for: {} seconds'.format(slaap))
         sleep(slaap)
 
 
 
 
-def dev(slaap=300):
-    lv = listvoters()
-    for g in lv['rows']:
-        if not 'error' in g.keys():# and g['owner'] == 'hectorhector':
-            if (float(g['staked']) > 2500000000):
-                data = {}
-                data['account'] = get_account(g['owner'])
-                ref = db.guardians.update({"name": '{}'.format(g['owner'])}, {"$set": data}, upsert=True)
+def transactions(slaap=2):
+    while True:
+        last = db.transactions.find_one( { "tag": 'transactions' }, { "_id": 0, "created_at": 0 },sort=([('created_at', pymongo.DESCENDING)]))
+        i = remcli_get_info()
+        if i and 'head_block_num' in i:
+            stop = i['head_block_num']
+    
+    
+        if last and 'block' in last:
+            start = last['block'] + 1
+        else:
+            start = i['head_block_num'] - 10
+        
+    
+        blocks = []
+        for block in range(start, stop):
+            blocks.append(get_block(block))
+        for b in blocks:
+            if b['transactions']:
+                for t in b['transactions']:
+                    for action in t['trx']['transaction']['actions']:
+                        d = {}
+                        d['account'] = action['account']
+                        d['id'] = b['id']
+                        d['producer'] = b['producer']
+                        d['block_num'] = b['block_num']
+                        d['timestamp'] = parse(b['timestamp'])
+                        d['cpu_usage_us'] = t['cpu_usage_us']
+                        add_db(col='transactions', slug='transactions', tag='transactions', data=d, owner=False, block=b['block_num'])
 
-                '''
-                #pprint(get_account(g['owner']))
-                i = {}
-                i['pending_perstake_reward_usd'] = ''
+        jlog.info('Transacions sleeping for: {} seconds'.format(slaap))
+        sleep(slaap)
 
-                try:
-                    dt = parse(g['last_reassertion_time'])
-                    days = datetime.now() - dt
-                    print(days.days, g['owner'])
-                    i['last_reassertion_time'] = '{}'.format(days.days)
-                    if days.days > 20:
-                        i['last_reassertion_time'] = '<medium class="text-warning">{}</medium>'.format(days.days)
-                    if days.days > 25:
-                        i['last_reassertion_time'] = '<medium class="text-danger">{}</medium>'.format(days.days)
-                    if days.days == 18267:
-                        i['last_reassertion_time'] = ''
-                except:
-                    i['last_reassertion_time'] = ''
-                '''
 
+def dev(slaap=2):
+    dt = (datetime.now() - timedelta(minutes=1))
+    transactions  = db.transactions.find( { "$and": [ {"created_at": { "$lt": dt } },
+                                          {"tag": 'transactions' } ] } )
+
+    for transaction in transactions:
+        _id = transaction['_id']
+        p = db.transactions.remove({"_id": _id})
+        print(p)
 
 
 def dev1(roundTo=3600, seconds=86400):
@@ -532,6 +557,11 @@ def main():
 
         cpu_usage_us_thread = threading.Thread(target=cpu_usage_us, args=(), name='cpu_usage_us')
         cpu_usage_us_thread.start()
+
+        transactions_thread = threading.Thread(target=transactions, args=(), name='transactions')
+        transactions_thread.start()
+
+
 
         #notify_thread = threading.Thread(target=notify, args=(), name='notify')
         #notify_thread.start()

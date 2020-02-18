@@ -261,6 +261,24 @@ def charts():
 
 
 
+@app.route('/transactions')
+def transactions():
+    return render_template( 'transactions.html' )
+
+
+@app.route('/_transactions')
+def _transactions():
+    data = []
+    transactions = db.transactions.find({}, {"_id": 0}, sort=[('created_at', pymongo.DESCENDING)]).limit(30)
+    if transactions:
+        for transaction in transactions:
+            data.append(transaction)
+
+    return jsonify(data)
+
+
+
+
 @app.route('/dev', methods = ['POST', 'GET'])
 def dev():
     return render_template( 'dev.html' )
