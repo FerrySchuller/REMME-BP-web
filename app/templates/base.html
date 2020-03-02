@@ -70,6 +70,24 @@
         </ul>
 
         <ul class="navbar-nav navbar-right">
+
+<!--
+    {% if g.snapshots %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Snapshots 
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            {% for s in g.snapshots %} 
+            <a class="dropdown-item" href="{{ s }}">{{ s.split('/')[-1] }}</a>
+
+            {{ s }}
+            {% endfor %}
+        </div>
+      </li>
+    {% endif %}
+-->
+
           <li class="nav-item {% if request.path == '/bs.json' %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('bp') }}">bp.json <span class="sr-only">(current)</span></a>
           </li>

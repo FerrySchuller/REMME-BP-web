@@ -33,7 +33,7 @@ PUSHOVER_USER="xoxoxoxo"
 '''
 
 prod = True
-treshold = 300 # seconds
+treshold = 1500 # seconds
 
 if prod:
     host = 'https://remchain.remme.io'

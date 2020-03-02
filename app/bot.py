@@ -333,9 +333,14 @@ def cpu_usage_us(slaap=10):
     
         for block in range(start, stop):
             b = get_block(block)
-            timestamp = parse(b['timestamp'])
-            d = db.cpu_usage_us.find_one( { "producer": "{}".format(b['producer']) })
-            if b['transactions']:
+            try:
+                timestamp = parse(b['timestamp'])
+            except:
+                timestamp = False
+                jlog.critical('timestamp ERROR: {}'.format(sys.exc_info()))
+            if timestamp:
+                d = db.cpu_usage_us.find_one( { "producer": "{}".format(b['producer']) })
+            if timestamp and b['transactions']:
                 for transaction in b['transactions']:
                     if isinstance(transaction['trx'], dict):
                         for action in transaction['trx']['transaction']['actions']:

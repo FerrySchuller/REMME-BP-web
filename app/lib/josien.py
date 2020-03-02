@@ -10,6 +10,12 @@ from pymongo import MongoClient
 GA_TRACKING_ID = os.getenv('GA_TRACKING_ID', False)
 
 
+def josiendotnet_db():
+    c = MongoClient(connect=False)
+    db = c[os.getenv('DB')]
+    return db
+
+
 def db():
     c = MongoClient(connect=False)
     db = c[os.getenv('DB_NAME')]

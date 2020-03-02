@@ -1,9 +1,10 @@
-from flask import render_template, jsonify, flash, url_for, redirect, abort, request
+from flask import render_template, jsonify, flash, url_for, redirect, abort, request, g
 import os, sys
 import json
 from datetime import datetime, timedelta, timezone, time
 from dateutil.parser import parse
 from pathlib import Path
+from glob import glob
 from time import sleep
 import pymongo
 import random
@@ -27,14 +28,14 @@ def letsencrypt():
     return "{}".format(cert_handshake)
 
 
-#@app.before_request
-#def before_request():
-#    i = remcli_get_info()
-#    if i and 'head_block_time' in i:
-#        dt = parse(i['head_block_time'])
-#        d = datetime.now() - dt
-#        if d.seconds > 30:
-#            abort(400)
+'''
+@app.before_request
+def before_request():
+    d = os.getenv('SNAPSHOTS', False)
+    if d:
+        snapshots = glob('{}/*'.format(d))
+        g.snapshots = snapshots
+'''
 
 
 def gen_health(title, fa_class='fa-times', color='tomato', text=''):
@@ -579,6 +580,7 @@ def _listproducers():
 
 
             i['cpu_usage_us'] = False
+            '''
             try:
                 if owner['cpu_usage_us']:
                     cpu_usage_ms = owner['cpu_usage_us'] / 1000
@@ -591,6 +593,7 @@ def _listproducers():
                         i['cpu_usage_us'] = "<medium class='text-danger'>{:.2f} ms</medium>".format(cpu_usage_ms)
             except:
                 jlog.critical('cpu_usage_us ERROR: {}'.format(sys.exc_info()))
+            '''
 
             i['last_work_done'] = False
 
