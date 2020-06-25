@@ -445,15 +445,20 @@ def transactions(slaap=2):
         for b in blocks:
             if b['transactions']:
                 for t in b['transactions']:
-                    for action in t['trx']['transaction']['actions']:
-                        d = {}
-                        d['account'] = action['account']
-                        d['id'] = b['id']
-                        d['producer'] = b['producer']
-                        d['block_num'] = b['block_num']
-                        d['timestamp'] = parse(b['timestamp'])
-                        d['cpu_usage_us'] = t['cpu_usage_us']
-                        add_db(col='transactions', slug='transactions', tag='transactions', data=d, owner=False, block=b['block_num'])
+                    try:
+                        for action in t['trx']['transaction']['actions']:
+                            print('x0', action)
+                            d = {}
+                            d['account'] = action['account']
+                            d['id'] = b['id']
+                            d['producer'] = b['producer']
+                            d['block_num'] = b['block_num']
+                            d['timestamp'] = parse(b['timestamp'])
+                            d['cpu_usage_us'] = t['cpu_usage_us']
+                            add_db(col='transactions', slug='transactions', tag='transactions', data=d, owner=False, block=b['block_num'])
+                    except:
+                        jlog.critical("{}".format(sys.exc_info()))
+
 
         jlog.info('Transacions sleeping for: {} seconds'.format(slaap))
         sleep(slaap)
