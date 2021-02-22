@@ -434,7 +434,7 @@ def _listvoters():
         r = 1
         for g in lv['rows']:
             if not 'error' in g.keys():
-                if (float(g['staked']) > 2500000000):
+                if (float(g['staked']) > 2499999999):
                     i = {}
                     i['pending_perstake_reward_usd'] = ''
 
